@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# testing
+.cache/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# env files — only the example is committed
+.env*
+!.env.example
+
+# lint smoke-test fixture (tests/lint), removed after each run
+src/modules/__lint_fixture__/
+
+# platform
+.vercel/
+.DS_Store
+*.log

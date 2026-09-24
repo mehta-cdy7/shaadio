@@ -1,0 +1,10 @@
+/*
+ * Wedding website + invitation themes (SYSTEM_DESIGN §28). Presentation only: each theme overrides
+ * a subset of the --sh-* tokens. Applied with data-theme on the public page root, e.g.
+ * <div data-theme="classic">. Milestone 1 ships CLASSIC; MINIMAL and MODERN come later.
+ */
+[data-theme='classic'] {
+  /* PLACEHOLDER: fill from the Stitch "Classic Indian" screens. */
+  --sh-color-primary: #9b1b30;
+  --sh-color-accent: #c8963e;
+}

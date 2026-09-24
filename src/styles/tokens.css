@@ -1,0 +1,43 @@
+/*
+ * Design tokens: the ONLY place colours, fonts and radii are defined.
+ * Components use the Tailwind utilities generated below (bg-primary, text-ink…), never raw hex values.
+ *
+ * PLACEHOLDER VALUES: replace with the Stitch export. Keep the semantic names; change the values.
+ * Wedding themes (themes.css) override the --sh-* variables, so names must stay semantic.
+ */
+:root {
+  --sh-color-primary: #9b1b30; /* placeholder: deep red */
+  --sh-color-primary-ink: #ffffff; /* text on primary */
+  --sh-color-accent: #c8963e; /* placeholder: marigold gold */
+  --sh-color-surface: #fdf8f3; /* page background */
+  --sh-color-surface-raised: #ffffff; /* cards */
+  --sh-color-ink: #2b1d1a; /* body text */
+  --sh-color-ink-muted: #6b5b55; /* secondary text */
+  --sh-color-line: #e8ddd3; /* borders, dividers */
+  --sh-color-danger: #b42318;
+  --sh-color-success: #1f7a4d;
+
+  --sh-font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sh-font-display: Georgia, 'Times New Roman', serif; /* placeholder until Stitch fonts land */
+
+  --sh-radius-card: 0.75rem;
+}
+
+/* `inline` makes utilities read the variables at runtime, so [data-theme] overrides apply. */
+@theme inline {
+  --color-primary: var(--sh-color-primary);
+  --color-primary-ink: var(--sh-color-primary-ink);
+  --color-accent: var(--sh-color-accent);
+  --color-surface: var(--sh-color-surface);
+  --color-surface-raised: var(--sh-color-surface-raised);
+  --color-ink: var(--sh-color-ink);
+  --color-ink-muted: var(--sh-color-ink-muted);
+  --color-line: var(--sh-color-line);
+  --color-danger: var(--sh-color-danger);
+  --color-success: var(--sh-color-success);
+
+  --font-sans: var(--sh-font-sans);
+  --font-display: var(--sh-font-display);
+
+  --radius-card: var(--sh-radius-card);
+}

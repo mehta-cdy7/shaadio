@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+@import './tokens.css';
+@import './themes.css';
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-surface font-sans text-ink antialiased;
+  }
+}

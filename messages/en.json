@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "title": "Shaadioo",
+    "description": "Plan your wedding together, in one place."
+  },
+  "home": {
+    "title": "Shaadioo",
+    "tagline": "Events, guests, invitations and photos for your wedding, in one shared workspace."
+  },
+  "notFound": {
+    "title": "This link isn't available.",
+    "body": "Please check the link, or ask the family to share it again."
+  }
+}
