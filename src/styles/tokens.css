@@ -45,6 +45,8 @@
   --sh-primary-hover: color-mix(in oklab, var(--sh-brand-primary) 86%, white);
   --sh-primary-subtle: color-mix(in oklab, var(--sh-brand-primary) 6%, white);
   --sh-on-primary: #ffffff;
+  /* accents (focus ring, underlines) on a bg-primary band; must contrast with --sh-primary */
+  --sh-on-primary-accent: var(--sh-brand-secondary);
 
   --sh-secondary: var(--sh-brand-secondary);
   --sh-secondary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 22%, white);
@@ -81,6 +83,7 @@
     --sh-primary-hover: color-mix(in oklab, var(--sh-brand-secondary) 85%, white);
     --sh-primary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 12%, transparent);
     --sh-on-primary: var(--sh-brand-primary);
+    --sh-on-primary-accent: var(--sh-brand-primary);
 
     --sh-secondary: var(--sh-brand-secondary);
     --sh-secondary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 16%, transparent);
@@ -109,6 +112,7 @@
   --sh-primary-hover: color-mix(in oklab, var(--sh-brand-secondary) 85%, white);
   --sh-primary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 12%, transparent);
   --sh-on-primary: var(--sh-brand-primary);
+  --sh-on-primary-accent: var(--sh-brand-primary);
 
   --sh-secondary: var(--sh-brand-secondary);
   --sh-secondary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 16%, transparent);
@@ -135,6 +139,7 @@
   --color-primary-hover: var(--sh-primary-hover);
   --color-primary-subtle: var(--sh-primary-subtle);
   --color-on-primary: var(--sh-on-primary);
+  --color-on-primary-accent: var(--sh-on-primary-accent);
   --color-secondary: var(--sh-secondary);
   --color-secondary-subtle: var(--sh-secondary-subtle);
   --color-on-secondary: var(--sh-on-secondary);
