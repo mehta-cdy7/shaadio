@@ -1,12 +1,34 @@
-import { getTranslations } from 'next-intl/server';
+import { Chapters } from './_components/chapters';
+import { Faq } from './_components/faq';
+import { FinalCta } from './_components/final-cta';
+import { GuestsNoApp } from './_components/guests-no-app';
+import { Hero } from './_components/hero';
+import { HowItWorks } from './_components/how-it-works';
+import { IndianWeddings } from './_components/indian-weddings';
+import { Privacy } from './_components/privacy';
+import { Problem } from './_components/problem';
+import { SiteFooter } from './_components/site-footer';
+import { SiteHeader } from './_components/site-header';
+import { WorkspacePreview } from './_components/workspace-preview';
 
-export default async function HomePage() {
-  const t = await getTranslations('home');
-
+/** Public landing page. Static: no session, no database. */
+export default function HomePage() {
   return (
-    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center gap-4 px-6">
-      <h1 className="font-display text-4xl text-primary">{t('title')}</h1>
-      <p className="text-lg text-ink-muted">{t('tagline')}</p>
-    </main>
+    <>
+      <SiteHeader />
+      <main>
+        <Hero />
+        <WorkspacePreview />
+        <Problem />
+        <Chapters />
+        <GuestsNoApp />
+        <IndianWeddings />
+        <HowItWorks />
+        <Privacy />
+        <Faq />
+        <FinalCta />
+      </main>
+      <SiteFooter />
+    </>
   );
 }

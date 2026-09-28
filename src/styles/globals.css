@@ -5,9 +5,23 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-surface font-sans text-ink antialiased;
+    @apply bg-canvas font-sans text-body text-ink antialiased;
   }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-focus;
+  }
+}
+
+/* Faint dotted lattice used behind hero sections (jaali motif). Colour comes from tokens. */
+@utility bg-lattice {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--sh-primary) 16%, transparent) 0.8px,
+    transparent 0.8px
+  );
+  background-size: 22px 22px;
 }

@@ -9,7 +9,7 @@ export default async function NotFound() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-3 px-6 text-center">
-      <h1 className="font-display text-2xl text-ink">{t('title')}</h1>
+      <h1 className="font-display text-headline-md text-ink">{t('title')}</h1>
       <p className="text-ink-muted">{t('body')}</p>
     </main>
   );

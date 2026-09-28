@@ -1,14 +1,217 @@
 {
   "meta": {
     "title": "Shaadioo",
-    "description": "Plan your wedding together, in one place."
-  },
-  "home": {
-    "title": "Shaadioo",
-    "tagline": "Events, guests, invitations and photos for your wedding, in one shared workspace."
+    "description": "Plan every wedding event with your family, share invitations on WhatsApp, and know exactly who's coming."
   },
   "notFound": {
     "title": "This link isn't available.",
     "body": "Please check the link, or ask the family to share it again."
+  },
+  "landing": {
+    "nav": {
+      "label": "Main",
+      "features": "Features",
+      "howItWorks": "How it works",
+      "privacy": "Privacy",
+      "faq": "FAQ",
+      "signIn": "Sign in",
+      "startPlanning": "Start planning"
+    },
+    "hero": {
+      "badge": "Free for families",
+      "title": "From roka to reception, all in one place.",
+      "body": "Plan every event with your family, send invitations your guests open on WhatsApp, and know exactly who's coming.",
+      "primaryCta": "Start planning — it's free",
+      "secondaryCta": "See how it works",
+      "ceremoniesLabel": "Made for every ceremony:",
+      "imageAlt": "A guest's invitation on a phone, showing three events and a confirmed RSVP for three guests."
+    },
+    "ceremonies": {
+      "roka": "Roka",
+      "mehendi": "Mehendi",
+      "haldi": "Haldi",
+      "sangeet": "Sangeet",
+      "wedding": "Wedding",
+      "reception": "Reception"
+    },
+    "workspace": {
+      "eyebrow": "Family workspace",
+      "title": "One family workspace. Total peace of mind.",
+      "body": "From headcounts for every ceremony to every rupee spent, the whole family works from the same plan.",
+      "imageAlt": "The family workspace, showing confirmed guests by side, the share of guests who replied, recorded expenses, recent family activity and guest status for the Sangeet."
+    },
+    "problem": {
+      "eyebrow": "The reality of wedding planning",
+      "title": "Right now, your wedding lives in fifty places.",
+      "items": {
+        "whatsapp": "A family WhatsApp group with 400 unread messages",
+        "excel": "A guest list in someone's out-of-date Excel sheet",
+        "vendors": "Vendor phone numbers saved in five different phones",
+        "photos": "Photos scattered across every guest's camera roll"
+      },
+      "closing": "Shaadioo brings it all into one quiet, shared plan."
+    },
+    "chapters": {
+      "plan": {
+        "eyebrow": "Chapter 01 · Together",
+        "title": "Plan together, without the chaos.",
+        "body": "Invite parents, siblings and friends to help. Assign tasks, and follow every event from roka to reception.",
+        "points": {
+          "one": "Simple roles: Admins and Managers",
+          "two": "Every important change recorded in an activity log"
+        },
+        "imageAlt": "A task list with two completed tasks and one in progress, each assigned to a family member."
+      },
+      "invite": {
+        "eyebrow": "Chapter 02 · Invitations",
+        "title": "Invite beautifully. Zero app downloads.",
+        "body": "A personal invitation link for every family, shared on WhatsApp or by email. Guests reply in seconds: no app, no sign-up, no password.",
+        "points": {
+          "one": "One link per household, not per person",
+          "two": "Each family sees only the events they're invited to"
+        },
+        "imageAlt": "Two household invitations: the Kapoor family attending with four people, and the Singhal family who have opened their link."
+      },
+      "numbers": {
+        "eyebrow": "Chapter 03 · Headcount & expenses",
+        "title": "Know your exact numbers at all times.",
+        "body": "See the confirmed headcount for every ceremony, and every rupee spent along with who paid it.",
+        "points": {
+          "one": "Amounts in rupees, lakhs and crores",
+          "two": "Record who paid: Papa, Chacha or the groom's family"
+        },
+        "imageAlt": "Recorded expenses per ceremony with the number of confirmed guests and who paid, totalling ₹24,50,000."
+      },
+      "memories": {
+        "eyebrow": "Chapter 04 · Memories",
+        "title": "Celebrate, and keep every memory.",
+        "body": "A simple wedding website, a YouTube livestream for family abroad, and a private photo gallery guests add to by scanning a QR code.",
+        "points": {
+          "one": "Guests upload photos without an account",
+          "two": "Website and gallery hidden from search engines"
+        },
+        "imageAlt": "Photo albums per ceremony, a YouTube livestream card and a table QR code for guest uploads."
+      }
+    },
+    "guests": {
+      "eyebrow": "Simplicity first",
+      "title": "Your guests don't need an app.",
+      "body": "Built so that even Daadi can confirm in one tap.",
+      "items": {
+        "whatsapp": {
+          "title": "Opens straight from WhatsApp",
+          "body": "No app store and no updates. A personal link opens in any mobile browser."
+        },
+        "phone": {
+          "title": "Works on any phone",
+          "body": "Built for budget Android phones on a 4G connection at the venue."
+        },
+        "password": {
+          "title": "No passwords, ever",
+          "body": "Each household gets its own private link. There's nothing to remember."
+        }
+      }
+    },
+    "indian": {
+      "eyebrow": "Made for Indian weddings",
+      "title": "Made specifically for Indian weddings.",
+      "body": "Most wedding software assumes one dinner and individual RSVPs. Indian celebrations work differently.",
+      "items": {
+        "events": {
+          "title": "Many events, one plan",
+          "body": "Invite close family to the Haldi and 400 people to the reception, from one guest list."
+        },
+        "sides": {
+          "title": "Bride's side and groom's side",
+          "body": "Tag every guest by side and filter your list in one tap."
+        },
+        "households": {
+          "title": "Whole households",
+          "body": "You invite the whole family. One link collects the answer for everyone in it."
+        },
+        "rupees": {
+          "title": "Rupees and lakhs",
+          "body": "Every amount is shown the way Indian families count: ₹12,45,000."
+        }
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "title": "How Shaadioo works.",
+      "body": "Three steps from sign-up to your first RSVP.",
+      "steps": {
+        "one": {
+          "title": "Create your wedding",
+          "body": "Add the couple, your dates and every ceremony with its venue."
+        },
+        "two": {
+          "title": "Bring in your family",
+          "body": "Invite parents, siblings and cousins to help. Everyone sees the same plan."
+        },
+        "three": {
+          "title": "Share your invitations",
+          "body": "Share each family's invitation link on WhatsApp, and watch the headcount update as families reply."
+        }
+      }
+    },
+    "privacy": {
+      "eyebrow": "Privacy",
+      "title": "Private by design.",
+      "body": "Indian weddings are deeply personal. We never sell or share your family's data.",
+      "items": {
+        "links": {
+          "title": "Private invitation links",
+          "body": "Every household's link is unguessable, and you can replace it at any time."
+        },
+        "unlisted": {
+          "title": "Hidden from search",
+          "body": "Your wedding website and gallery are kept out of Google and other search engines."
+        },
+        "gallery": {
+          "title": "A private photo gallery",
+          "body": "Photos stay in your gallery, reached only through your private link or QR code."
+        },
+        "delete": {
+          "title": "Delete any time",
+          "body": "Delete your wedding and every guest's details are permanently removed."
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "Everything you need to know.",
+      "items": {
+        "free": {
+          "q": "Is Shaadioo free?",
+          "a": "Yes. Shaadioo is free for couples and families: create your events, invite your family, share invitations on WhatsApp and track RSVPs."
+        },
+        "download": {
+          "q": "Do guests need to download anything?",
+          "a": "No. Guests tap the link you share on WhatsApp or by email, and it opens in their phone's browser. They see their events and reply in one tap."
+        },
+        "parents": {
+          "q": "Can my parents use it easily?",
+          "a": "Yes. It's designed for parents and elders: large text, clear cards, prominent numbers and one-tap WhatsApp sharing."
+        },
+        "guestList": {
+          "q": "Who can see our guest list?",
+          "a": "Only the family members you invite to help plan. Each guest sees only their own invitation and the events they're invited to."
+        },
+        "photos": {
+          "q": "What happens to our photos after the wedding?",
+          "a": "Photos stay in your private gallery for 12 months after the wedding, and you can download them at any time. We keep web-quality copies, not the original full-resolution files."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Less chaos. More celebration.",
+      "body": "Bring your family together on Shaadioo. Free, with no credit card.",
+      "primaryCta": "Start planning — it's free",
+      "secondaryCta": "See how it works"
+    },
+    "footer": {
+      "tagline": "Wedding planning and invitations for Indian families.",
+      "copyright": "© {year} Shaadioo"
+    }
   }
 }

@@ -50,6 +50,28 @@ export default defineConfig([
     },
   },
 
+  // --- Theme: UI code uses token utilities, never raw colours (src/styles/tokens.css) ----------
+  {
+    files: ['src/app/**/*.tsx', 'src/components/**/*.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        COLLECTION_RULE,
+        ...OTHER_MONGO_RULES,
+        {
+          selector: 'Literal[value=/#[0-9a-fA-F]{3,8}\\b|rgba?\\(|hsla?\\(|oklch\\(/]',
+          message:
+            'Raw colour in UI code. Use a token utility (bg-primary, text-ink…) from src/styles/tokens.css.',
+        },
+        {
+          selector: 'TemplateElement[value.raw=/#[0-9a-fA-F]{3,8}\\b|rgba?\\(|hsla?\\(|oklch\\(/]',
+          message:
+            'Raw colour in UI code. Use a token utility (bg-primary, text-ink…) from src/styles/tokens.css.',
+        },
+      ],
+    },
+  },
+
   // --- Architectural boundaries (plan §B: app → modules → server + lib) ------------------------
   {
     files: ['src/**/*.{ts,tsx}'],

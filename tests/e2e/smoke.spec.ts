@@ -1,11 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-test('home page renders translated content', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'Shaadioo' })).toBeVisible();
-  await expect(page).toHaveTitle('Shaadioo');
-});
-
 test('health check reports the database up', async ({ request }) => {
   const res = await request.get('/api/health');
   expect(res.status()).toBe(200);

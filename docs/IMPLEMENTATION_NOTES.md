@@ -115,6 +115,54 @@ Environment variables: `MONGODB_URI` (must be a replica set) and `APP_ORIGIN`. E
 
 ---
 
+## 2026-09-28 — Slice 0: design foundation + public landing page
+
+Built:
+- **Theme tokens** (`src/styles/tokens.css`), in three layers:
+  - brand values (`--sh-brand-*`);
+  - semantic roles (`--sh-canvas`, `--sh-primary`, `--sh-primary-hover`…), whose shades are derived with `color-mix()`;
+  - Tailwind utilities (`bg-primary`, `text-ink`, `border-line`…).
+
+  Values come from the Stitch design system "Royal Velvet Fig & Warm Alabaster" (primary `#261424`, secondary `#BCA177`). Re-theming means editing layer 1. The type scale, radii and shadows are tokens too.
+- **Dark mode** follows the OS setting; `<html data-color-scheme="light|dark">` forces a scheme, ready for a future toggle. In dark mode the primary action uses the secondary (brass) colour.
+- **Fonts:** Bodoni Moda (display) and Inter (body), self-hosted with `next/font`.
+- **UI components** in `src/components/ui`: Button/ButtonLink (primary, outline, ghost, inverse), Container, Section, Eyebrow/Heading/Lead, Card, Badge, and inline SVG icons. Plus `src/lib/cn.ts`.
+- **Landing page `/`** in `src/app/(marketing)` with 12 section components: header, hero, workspace preview, problem, 4 feature chapters, guests, Indian weddings, how it works, privacy, FAQ (native `<details>`), final call to action, footer. It is fully static: no session, database or client JavaScript.
+- **Static images** in `public/images/landing/*.webp` (about 245 KB in total). They were rendered from Stitch's HTML mock-ups with a transparent background so they work in both schemes.
+- **Copy** is in `messages/en.json` under `landing`. Translation keys are type-checked (`src/i18n/next-intl.d.ts`).
+- **Links:** "Start planning" goes to `/signup` and "Sign in" to `/login`. Both return 404 until slice 1.
+
+**Copy corrected against the PRD.** The Stitch landing copy and mock-ups promised things V1 does not do; these were removed or reworded:
+- separate permissions per bride/groom side (PRD Rule 6)
+- splitting payments between families, budgets and buffers (§7)
+- room allocation (§7)
+- dietary tracking and individual people inside a household (§7)
+- "WhatsApp API sync" (§9.14)
+- end-to-end encryption and full-resolution originals (§9.22)
+- "export your data"
+- real-time sync
+- invented social proof
+- links to Terms and Contact pages that do not exist
+
+The "Sample invitation" link now points to "How it works", because no sample exists yet. The landing page in Stitch used Fraunces; the design system specifies Bodoni Moda, so we use Bodoni Moda.
+
+**Guardrail:** ESLint bans raw colours (`#hex`, `rgb()`, `hsl()`, `oklch()`) in `src/app/**/*.tsx` and `src/components/**/*.tsx`. The lint-rule smoke test covers it.
+
+**Verification:**
+- lint, format, typecheck, test (38 passing) and build all green.
+- e2e passes 18 tests (mobile + desktop): landing sections, the `/signup` link, FAQ opens, no sideways scroll on mobile, changing `--sh-brand-primary` recolours the primary button, OS dark mode changes the page, `data-color-scheme` forces a scheme, health, not-found.
+- Screenshots reviewed at 1280px and 390px, light and dark.
+
+**Design alignment:** PRD §12.3 (mobile), §12.6 (translation-ready), SYSTEM_DESIGN §3.6 (guest pages light: none yet), §28 (themes override brand values).
+
+### Known gaps
+1. **No guest-facing designs yet** (invitation, gallery, website) and no mobile screens in Stitch. They are needed before slices 5 and 7. **Open.**
+2. **Mock-up images are raster.** Any change to them means re-rendering from Stitch. **Open.**
+3. **No colour-scheme toggle in the UI.** The attribute hook is in place. **Open.**
+4. **Hero image text mismatch.** The couple's names in the hero image ("Priyanka & Nick") do not match the monogram ("A & P"). Cosmetic; fix in Stitch. **Open.**
+
+---
+
 ## Template for future entries
 
 ```

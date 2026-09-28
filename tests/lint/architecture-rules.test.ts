@@ -45,6 +45,15 @@ describe('architecture lint rules', () => {
     expect(await ruleIds(code, 'src/app/api/x/route.ts')).not.toContain('boundaries/dependencies');
   });
 
+  it('bans raw colours in UI code', async () => {
+    for (const cls of ['bg-[#261424]', 'text-[rgb(0,0,0)]', 'border-[oklch(50%_0.1_20)]']) {
+      const code = `export const A = () => <div className="${cls}" />;\n`;
+      expect(await ruleIds(code, 'src/components/ui/x.tsx')).toContain('no-restricted-syntax');
+    }
+    const ok = 'export const A = () => <div className="bg-primary text-on-primary" />;\n';
+    expect(await ruleIds(ok, 'src/app/x/page.tsx')).not.toContain('no-restricted-syntax');
+  });
+
   describe('module entry points', () => {
     // Boundaries rules need real files to resolve, so a throwaway module is written for this block.
     // The folder name is git-ignored in case a run is interrupted before cleanup.
