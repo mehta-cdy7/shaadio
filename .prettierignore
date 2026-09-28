@@ -1,0 +1,10 @@
+# Design docs are hand-written; never reformat them.
+docs/
+# Kept compact on purpose (under 60 lines).
+CLAUDE.md
+pnpm-lock.yaml
+.next/
+node_modules/
+coverage/
+playwright-report/
+test-results/

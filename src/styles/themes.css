@@ -1,0 +1,11 @@
+/*
+ * Wedding website + invitation themes (SYSTEM_DESIGN §28). Presentation only: a theme overrides
+ * LAYER 1 brand values from tokens.css, and every semantic role and utility follows.
+ * Applied on the public page root: <div data-theme="classic">. The same mechanism will carry
+ * per-couple custom themes in V2.
+ *
+ * Milestone 1 ships CLASSIC, which is the base brand. MINIMAL and MODERN come later.
+ */
+[data-theme='classic'] {
+  /* Inherits the base brand in tokens.css. */
+}
