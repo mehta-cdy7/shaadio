@@ -130,7 +130,7 @@ Built:
 - **Landing page `/`** in `src/app/(marketing)` with 12 section components: header, hero, workspace preview, problem, 4 feature chapters, guests, Indian weddings, how it works, privacy, FAQ (native `<details>`), final call to action, footer. It is fully static: no session, database or client JavaScript.
 - **Static images** in `public/images/landing/*.webp` (about 245 KB in total). They were rendered from Stitch's HTML mock-ups with a transparent background so they work in both schemes.
 - **Copy** is in `messages/en.json` under `landing`. Translation keys are type-checked (`src/i18n/next-intl.d.ts`).
-- **Links:** "Start planning" goes to `/signup` and "Sign in" to `/login`. Both return 404 until slice 1.
+- **Links:** "Start planning" goes to `/signup` and "Sign in" to `/login`. Both show a "Coming soon" placeholder (`src/app/(auth)/_components/coming-soon.tsx`, `noindex`) until slice 1 replaces them with the real forms.
 
 **Copy corrected against the PRD.** The Stitch landing copy and mock-ups promised things V1 does not do; these were removed or reworded:
 - separate permissions per bride/groom side (PRD Rule 6)
@@ -160,6 +160,7 @@ The "Sample invitation" link now points to "How it works", because no sample exi
 2. **Mock-up images are raster.** Any change to them means re-rendering from Stitch. **Open.**
 3. **No colour-scheme toggle in the UI.** The attribute hook is in place. **Open.**
 4. **Hero image text mismatch.** The couple's names in the hero image ("Priyanka & Nick") do not match the monogram ("A & P"). Cosmetic; fix in Stitch. **Open.**
+5. **Focus on the primary band.** In dark mode the band and the focus ring were both brass, so keyboard focus was invisible on the final call to action. Fixed with a `--sh-on-primary-accent` token that `Section tone="primary"` uses for focus rings, also used for the link underline there; covered by an e2e test. **Closed.**
 
 ---
 

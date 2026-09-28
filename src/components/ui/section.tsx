@@ -6,7 +6,9 @@ type Tone = 'canvas' | 'muted' | 'primary';
 const tones: Record<Tone, string> = {
   canvas: 'bg-canvas text-ink',
   muted: 'bg-canvas-muted text-ink',
-  primary: 'bg-primary text-on-primary',
+  // Focus rings inside the band use the on-primary accent: the default focus colour can match
+  // the band (brass on brass in dark mode).
+  primary: 'bg-primary text-on-primary [--sh-focus:var(--sh-on-primary-accent)]',
 };
 
 /** A full-width page band with consistent vertical rhythm. */

@@ -18,6 +18,20 @@ test.describe('landing page', () => {
     await expect(cta).toHaveAttribute('href', '/signup');
   });
 
+  test('sign-in and sign-up links open a coming-soon page, not a 404', async ({ page }) => {
+    for (const [name, heading] of [
+      [/Start planning — it's free/, 'Start planning'],
+      ['Sign in', 'Sign in'],
+    ] as const) {
+      await page.goto('/');
+      await page.getByRole('link', { name }).first().click();
+      await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
+      await expect(page.getByText('Coming soon')).toBeVisible();
+      await page.getByRole('link', { name: 'Back to home' }).click();
+      await expect(page).toHaveURL('/');
+    }
+  });
+
   test('FAQ answers open without JavaScript state', async ({ page }) => {
     await page.goto('/');
     await page.getByText('Is Shaadioo free?').click();
@@ -60,6 +74,23 @@ test.describe('theming', () => {
       return bg;
     };
     expect(await bodyBg('dark')).not.toBe(await bodyBg('light'));
+  });
+
+  test('focus ring stays visible on the final call-to-action band in dark mode', async ({
+    browser,
+  }) => {
+    const page = await browser.newPage({ colorScheme: 'dark' });
+    await page.goto('/');
+    const link = page.getByRole('link', { name: 'See how it works' }).last();
+    await link.focus();
+    const { outlineStyle, outline, band } = await link.evaluate((el) => ({
+      outlineStyle: getComputedStyle(el).outlineStyle,
+      outline: getComputedStyle(el).outlineColor,
+      band: getComputedStyle(el.closest('section')!).backgroundColor,
+    }));
+    expect(outlineStyle).not.toBe('none');
+    expect(outline).not.toBe(band);
+    await page.close();
   });
 
   test('data-color-scheme forces a scheme', async ({ page }) => {

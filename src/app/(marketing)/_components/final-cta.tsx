@@ -18,7 +18,7 @@ export async function FinalCta() {
           </ButtonLink>
           <a
             href="#how-it-works"
-            className="inline-flex h-12 items-center px-6 text-body font-semibold underline decoration-secondary underline-offset-4"
+            className="inline-flex h-12 items-center px-6 text-body font-semibold underline decoration-on-primary-accent underline-offset-4"
           >
             {t('secondaryCta')}
           </a>
