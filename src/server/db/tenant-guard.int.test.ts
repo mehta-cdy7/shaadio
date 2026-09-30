@@ -52,9 +52,11 @@ describe('tenantGuard', () => {
   });
 
   beforeEach(async () => {
-    const both = { weddingId: { $in: [weddingA, weddingB] } };
-    await Thing.deleteMany(both);
-    await Owner.deleteMany(both);
+    // One wedding per call: the guard rejects `$in` across weddings.
+    for (const weddingId of [weddingA, weddingB]) {
+      await Thing.deleteMany({ weddingId });
+      await Owner.deleteMany({ weddingId });
+    }
     await Thing.create([
       { weddingId: weddingA, name: 'a' },
       { weddingId: weddingB, name: 'a' },
