@@ -69,8 +69,15 @@ export function errorResponse(error: unknown, requestId: string): Response {
     },
   };
 
-  return Response.json(body, {
-    status: ERROR_STATUS[appError.code],
-    headers: { 'Cache-Control': 'no-store', 'X-Request-Id': requestId },
-  });
+  const headers: Record<string, string> = {
+    'Cache-Control': 'no-store',
+    'X-Request-Id': requestId,
+  };
+  const retryAfter = (appError.details as { retryAfterSeconds?: unknown } | undefined)
+    ?.retryAfterSeconds;
+  if (appError.code === 'RATE_LIMITED' && typeof retryAfter === 'number') {
+    headers['Retry-After'] = String(retryAfter);
+  }
+
+  return Response.json(body, { status: ERROR_STATUS[appError.code], headers });
 }
