@@ -34,8 +34,18 @@ test.describe('landing page', () => {
 
   test('FAQ answers open without JavaScript state', async ({ page }) => {
     await page.goto('/');
-    await page.getByText('Is Shaadioo free?').click();
+    // The first answer starts open, as in the Stitch design.
     await expect(page.getByText(/free for couples and families/)).toBeVisible();
+    await page.getByText('Do guests need to download anything?').click();
+    await expect(page.getByText(/No app download at all/)).toBeVisible();
+  });
+
+  test('each product mock-up reads as one described image', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('main').getByRole('img')).toHaveCount(6);
+    await expect(
+      page.getByRole('img', { name: /sample invitation for Priyanka & Nik's wedding/ }),
+    ).toBeVisible();
   });
 
   test('page never scrolls sideways', async ({ page }) => {
@@ -46,6 +56,24 @@ test.describe('landing page', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+/** WCAG contrast ratio of two computed `rgb(…)` colours. */
+function contrastRatio(a: string, b: string): number {
+  const luminance = (css: string) => {
+    const channels = css
+      .match(/[\d.]+/g)
+      ?.slice(0, 3)
+      .map(Number);
+    if (!channels || channels.length < 3) throw new Error(`Unexpected colour: ${css}`);
+    const [r, g, bl] = channels.map((c) => {
+      const s = c / 255;
+      return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * bl!;
+  };
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi! + 0.05) / (lo! + 0.05);
+}
 
 test.describe('theming', () => {
   const primaryButtonBg = (page: import('@playwright/test').Page) =>
@@ -76,22 +104,32 @@ test.describe('theming', () => {
     expect(await bodyBg('dark')).not.toBe(await bodyBg('light'));
   });
 
-  test('focus ring stays visible on the final call-to-action band in dark mode', async ({
-    browser,
-  }) => {
-    const page = await browser.newPage({ colorScheme: 'dark' });
-    await page.goto('/');
-    const link = page.getByRole('link', { name: 'See how it works' }).last();
-    await link.focus();
-    const { outlineStyle, outline, band } = await link.evaluate((el) => ({
-      outlineStyle: getComputedStyle(el).outlineStyle,
-      outline: getComputedStyle(el).outlineColor,
-      band: getComputedStyle(el.closest('section')!).backgroundColor,
-    }));
-    expect(outlineStyle).not.toBe('none');
-    expect(outline).not.toBe(band);
-    await page.close();
-  });
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`focus ring stays visible on the final call-to-action band (${colorScheme})`, async ({
+      browser,
+    }) => {
+      const page = await browser.newPage({ colorScheme });
+      await page.goto('/');
+      const link = page.locator('#get-started').getByRole('link', { name: /Start planning/ });
+      await link.focus();
+      const ring = () =>
+        link.evaluate((el) => ({
+          style: getComputedStyle(el).outlineStyle,
+          colour: getComputedStyle(el).outlineColor,
+          band: getComputedStyle(el.closest('section')!).backgroundColor,
+        }));
+      expect((await ring()).style).not.toBe('none');
+      // WCAG 1.4.11: a focus indicator needs 3:1 against what surrounds it. Buttons animate colour
+      // changes, so wait for the ring's transition to settle.
+      await expect
+        .poll(async () => {
+          const { colour, band } = await ring();
+          return contrastRatio(colour, band);
+        })
+        .toBeGreaterThanOrEqual(3);
+      await page.close();
+    });
+  }
 
   test('data-color-scheme forces a scheme', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });

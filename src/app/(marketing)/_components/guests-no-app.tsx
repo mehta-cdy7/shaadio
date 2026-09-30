@@ -1,14 +1,16 @@
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
-import { ChatIcon, KeyIcon, PhoneIcon } from '@/components/ui/icons';
+import { DevicesIcon, LinkIcon, LockOpenIcon } from '@/components/ui/icons';
 import { Section } from '@/components/ui/section';
-import { Eyebrow, Heading, Lead } from '@/components/ui/typography';
+import { Eyebrow } from '@/components/ui/typography';
+import { IconTile } from './icon-tile';
+import { SectionIntro } from './section-intro';
 
 const ITEMS = [
-  { key: 'whatsapp', Icon: ChatIcon },
-  { key: 'phone', Icon: PhoneIcon },
-  { key: 'password', Icon: KeyIcon },
+  { key: 'link', Icon: LinkIcon },
+  { key: 'device', Icon: DevicesIcon },
+  { key: 'password', Icon: LockOpenIcon },
 ] as const;
 
 export async function GuestsNoApp() {
@@ -16,20 +18,24 @@ export async function GuestsNoApp() {
 
   return (
     <Section tone="muted">
-      <Container className="flex flex-col items-center gap-10 text-center">
-        <div className="flex flex-col items-center gap-4">
-          <Eyebrow>{t('eyebrow')}</Eyebrow>
-          <Heading>{t('title')}</Heading>
-          <Lead>{t('body')}</Lead>
-        </div>
-        <ul className="grid w-full gap-4 md:grid-cols-3">
+      <Container className="flex flex-col gap-12">
+        <SectionIntro
+          eyebrow={t('eyebrow')}
+          title={t('title')}
+          body={t('body')}
+          className="max-w-2xl"
+        />
+        <ul className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {ITEMS.map(({ key, Icon }) => (
             <li key={key}>
-              <Card className="flex h-full flex-col gap-3 text-left">
-                <span className="flex size-10 items-center justify-center rounded-full bg-secondary-subtle text-on-secondary">
-                  <Icon />
-                </span>
-                <h3 className="text-title-lg font-semibold">{t(`items.${key}.title`)}</h3>
+              <Card className="flex h-full flex-col items-start">
+                <IconTile>
+                  <Icon className="size-6" />
+                </IconTile>
+                <Eyebrow className="mt-6 mb-2">{t(`items.${key}.eyebrow`)}</Eyebrow>
+                <h3 className="mb-3 text-title font-semibold text-ink-accent">
+                  {t(`items.${key}.title`)}
+                </h3>
                 <p className="text-body text-ink-muted">{t(`items.${key}.body`)}</p>
               </Card>
             </li>

@@ -1,6 +1,7 @@
 /*
  * Design tokens — the ONLY place colours, fonts, type sizes, radii and shadows are defined.
- * Source: Stitch design system "Royal Velvet Fig & Warm Alabaster".
+ * Source: Stitch design system "Shaadioo" (Stitch project 17426117529538129036). Where the design
+ * notes and the rendered screens differ, the values follow the rendered screens.
  *
  * Three layers. To re-theme the app, edit LAYER 1 only.
  *
@@ -16,17 +17,21 @@
 
 /* ── Layer 1: brand ────────────────────────────────────────────────────────────────────── */
 :root {
-  --sh-brand-primary: #261424; /* Royal Velvet Fig */
-  --sh-brand-secondary: #bca177; /* Antique Brushed Brass */
+  --sh-brand-primary: #4a2943; /* Soft Royal Plum: buttons, active states */
+  --sh-brand-primary-deep: #32142d; /* Deep plum: closing band, plum headings */
+  --sh-brand-primary-soft: #ffd7f2; /* Plum blush: icon circles, highlight pills */
+  --sh-brand-secondary: #bca177; /* Antique Brushed Brass: hairline accents, dots */
+  --sh-brand-secondary-ink: #715b37; /* Dark brass: brass-coloured text, icons, bars */
+  --sh-brand-secondary-soft: #fddeb0; /* Sandalwood: pending states, countdown pills */
+  --sh-brand-on-secondary-soft: #271900;
   --sh-brand-canvas: #fbf8f5; /* Warm Alabaster */
-  --sh-brand-parchment: #efe8dc; /* Raw Silk Sand */
   --sh-brand-ink: #181119; /* Fig-Ink */
-  --sh-brand-muted: #6e636a; /* Smoked Mauve-Stone */
-  --sh-brand-hairline: #e6ded4;
-  --sh-brand-danger: #a23b3b;
-  --sh-brand-success: #3f6b4e;
+  --sh-brand-muted: #4e444a; /* Mauve-Stone */
+  --sh-brand-hairline: #e6ded4; /* Muted Parchment Wire */
+  --sh-brand-danger: #ba1a1a;
+  --sh-brand-success: #3f6b4e; /* Sage: attending, done */
 
-  --sh-brand-font-display: var(--font-bodoni-moda), Georgia, 'Times New Roman', serif;
+  --sh-brand-font-display: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
   --sh-brand-font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
@@ -35,31 +40,45 @@
   color-scheme: light;
 
   --sh-canvas: var(--sh-brand-canvas); /* page background */
-  --sh-canvas-muted: var(--sh-brand-parchment); /* alternate sections, sidebars, pills */
+  --sh-canvas-muted: color-mix(in oklab, var(--sh-brand-ink) 2%, var(--sh-brand-canvas));
+  --sh-canvas-sunken: color-mix(in oklab, var(--sh-brand-ink) 4%, var(--sh-brand-canvas));
   --sh-surface: #ffffff; /* cards, panels */
+  --sh-fill: color-mix(in oklab, var(--sh-brand-ink) 6%, var(--sh-brand-canvas)); /* chips, wells */
   --sh-ink: var(--sh-brand-ink); /* body text */
   --sh-ink-muted: var(--sh-brand-muted); /* secondary text */
+  --sh-ink-accent: var(--sh-brand-primary-deep); /* plum titles and emphasis */
   --sh-line: var(--sh-brand-hairline); /* borders, dividers */
 
   --sh-primary: var(--sh-brand-primary);
-  --sh-primary-hover: color-mix(in oklab, var(--sh-brand-primary) 86%, white);
-  --sh-primary-subtle: color-mix(in oklab, var(--sh-brand-primary) 6%, white);
+  --sh-primary-hover: var(--sh-brand-primary-deep);
+  --sh-primary-subtle: color-mix(in oklab, var(--sh-brand-primary) 8%, white);
+  --sh-primary-soft: var(--sh-brand-primary-soft);
+  --sh-on-primary-soft: var(--sh-brand-primary-deep);
   --sh-on-primary: #ffffff;
-  /* accents (focus ring, underlines) on a bg-primary band; must contrast with --sh-primary */
-  --sh-on-primary-accent: var(--sh-brand-secondary);
 
-  --sh-secondary: var(--sh-brand-secondary);
-  --sh-secondary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 22%, white);
-  --sh-on-secondary: var(--sh-brand-primary);
+  --sh-secondary: var(--sh-brand-secondary); /* decorative only: 2.3:1 on canvas */
+  --sh-secondary-ink: var(--sh-brand-secondary-ink); /* brass that is safe for text */
 
+  /* The closing call-to-action band. */
+  --sh-band: var(--sh-brand-primary-deep);
+  --sh-on-band: var(--sh-brand-canvas);
+  --sh-on-band-muted: color-mix(in oklab, var(--sh-brand-canvas) 75%, var(--sh-brand-primary-deep));
+  --sh-on-band-focus: var(--sh-brand-secondary); /* the dark-brass default is 2.6:1 on the band */
+
+  --sh-success: var(--sh-brand-success);
+  --sh-success-subtle: color-mix(in oklab, var(--sh-brand-success) 12%, white);
+  --sh-pending: var(--sh-brand-secondary-soft);
+  --sh-on-pending: var(--sh-brand-on-secondary-soft);
   --sh-danger: var(--sh-brand-danger);
   --sh-danger-subtle: color-mix(in oklab, var(--sh-brand-danger) 6%, white);
-  --sh-success: var(--sh-brand-success);
-  --sh-focus: var(--sh-brand-secondary);
+  --sh-focus: var(--sh-brand-secondary-ink);
 
+  --sh-shadow-card:
+    0 1px 2px color-mix(in oklab, var(--sh-brand-primary) 8%, transparent),
+    0 1px 3px color-mix(in oklab, var(--sh-brand-primary) 4%, transparent);
   --sh-shadow-float:
-    0 12px 32px -4px color-mix(in oklab, var(--sh-brand-primary) 6%, transparent),
-    0 4px 12px -2px color-mix(in oklab, var(--sh-brand-primary) 3%, transparent);
+    0 24px 48px -12px color-mix(in oklab, var(--sh-brand-primary) 16%, transparent),
+    0 8px 16px -8px color-mix(in oklab, var(--sh-brand-primary) 10%, transparent);
 }
 
 /*
@@ -72,58 +91,80 @@
   :root:not([data-color-scheme='light']) {
     color-scheme: dark;
 
-    --sh-canvas: color-mix(in oklab, var(--sh-brand-primary) 30%, #0b090b);
-    --sh-canvas-muted: color-mix(in oklab, var(--sh-brand-primary) 45%, #141014);
-    --sh-surface: color-mix(in oklab, var(--sh-brand-primary) 55%, #1b171b);
+    --sh-canvas: color-mix(in oklab, var(--sh-brand-primary-deep) 30%, #0b090b);
+    --sh-canvas-muted: color-mix(in oklab, var(--sh-brand-primary-deep) 40%, #120e12);
+    --sh-canvas-sunken: color-mix(in oklab, var(--sh-brand-primary-deep) 48%, #161216);
+    --sh-surface: color-mix(in oklab, var(--sh-brand-primary-deep) 55%, #1b171b);
+    --sh-fill: color-mix(in oklab, var(--sh-brand-primary-deep) 60%, #221c22);
     --sh-ink: #f3edf1;
     --sh-ink-muted: #b5aab1;
+    --sh-ink-accent: color-mix(in oklab, var(--sh-brand-primary) 30%, white);
     --sh-line: color-mix(in oklab, var(--sh-brand-secondary) 18%, #2e272d);
 
     --sh-primary: var(--sh-brand-secondary);
     --sh-primary-hover: color-mix(in oklab, var(--sh-brand-secondary) 85%, white);
     --sh-primary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 12%, transparent);
+    --sh-primary-soft: color-mix(in oklab, var(--sh-brand-primary) 45%, #1b171b);
+    --sh-on-primary-soft: color-mix(in oklab, var(--sh-brand-primary) 30%, white);
     --sh-on-primary: var(--sh-brand-primary);
-    --sh-on-primary-accent: var(--sh-brand-primary);
 
     --sh-secondary: var(--sh-brand-secondary);
-    --sh-secondary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 16%, transparent);
-    --sh-on-secondary: #f3edf1;
+    --sh-secondary-ink: var(--sh-brand-secondary);
 
+    --sh-band: var(--sh-brand-primary);
+    --sh-on-band: var(--sh-brand-canvas);
+    --sh-on-band-muted: color-mix(in oklab, var(--sh-brand-canvas) 75%, var(--sh-brand-primary));
+
+    --sh-success: #9ccfae;
+    --sh-success-subtle: color-mix(in oklab, var(--sh-brand-success) 22%, #1b171b);
+    --sh-pending: color-mix(in oklab, var(--sh-brand-secondary-soft) 16%, #1b171b);
+    --sh-on-pending: var(--sh-brand-secondary-soft);
     --sh-danger: #f2a7a7;
     --sh-danger-subtle: color-mix(in oklab, var(--sh-brand-danger) 22%, transparent);
-    --sh-success: #9ccfae;
     --sh-focus: var(--sh-brand-secondary);
 
-    --sh-shadow-float: 0 12px 32px -4px rgb(0 0 0 / 0.45), 0 4px 12px -2px rgb(0 0 0 / 0.3);
+    --sh-shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+    --sh-shadow-float: 0 24px 48px -12px rgb(0 0 0 / 0.55), 0 8px 16px -8px rgb(0 0 0 / 0.4);
   }
 }
 
 :root[data-color-scheme='dark'] {
   color-scheme: dark;
 
-  --sh-canvas: color-mix(in oklab, var(--sh-brand-primary) 30%, #0b090b);
-  --sh-canvas-muted: color-mix(in oklab, var(--sh-brand-primary) 45%, #141014);
-  --sh-surface: color-mix(in oklab, var(--sh-brand-primary) 55%, #1b171b);
+  --sh-canvas: color-mix(in oklab, var(--sh-brand-primary-deep) 30%, #0b090b);
+  --sh-canvas-muted: color-mix(in oklab, var(--sh-brand-primary-deep) 40%, #120e12);
+  --sh-canvas-sunken: color-mix(in oklab, var(--sh-brand-primary-deep) 48%, #161216);
+  --sh-surface: color-mix(in oklab, var(--sh-brand-primary-deep) 55%, #1b171b);
+  --sh-fill: color-mix(in oklab, var(--sh-brand-primary-deep) 60%, #221c22);
   --sh-ink: #f3edf1;
   --sh-ink-muted: #b5aab1;
+  --sh-ink-accent: color-mix(in oklab, var(--sh-brand-primary) 30%, white);
   --sh-line: color-mix(in oklab, var(--sh-brand-secondary) 18%, #2e272d);
 
   --sh-primary: var(--sh-brand-secondary);
   --sh-primary-hover: color-mix(in oklab, var(--sh-brand-secondary) 85%, white);
   --sh-primary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 12%, transparent);
+  --sh-primary-soft: color-mix(in oklab, var(--sh-brand-primary) 45%, #1b171b);
+  --sh-on-primary-soft: color-mix(in oklab, var(--sh-brand-primary) 30%, white);
   --sh-on-primary: var(--sh-brand-primary);
-  --sh-on-primary-accent: var(--sh-brand-primary);
 
   --sh-secondary: var(--sh-brand-secondary);
-  --sh-secondary-subtle: color-mix(in oklab, var(--sh-brand-secondary) 16%, transparent);
-  --sh-on-secondary: #f3edf1;
+  --sh-secondary-ink: var(--sh-brand-secondary);
 
+  --sh-band: var(--sh-brand-primary);
+  --sh-on-band: var(--sh-brand-canvas);
+  --sh-on-band-muted: color-mix(in oklab, var(--sh-brand-canvas) 75%, var(--sh-brand-primary));
+
+  --sh-success: #9ccfae;
+  --sh-success-subtle: color-mix(in oklab, var(--sh-brand-success) 22%, #1b171b);
+  --sh-pending: color-mix(in oklab, var(--sh-brand-secondary-soft) 16%, #1b171b);
+  --sh-on-pending: var(--sh-brand-secondary-soft);
   --sh-danger: #f2a7a7;
   --sh-danger-subtle: color-mix(in oklab, var(--sh-brand-danger) 22%, transparent);
-  --sh-success: #9ccfae;
   --sh-focus: var(--sh-brand-secondary);
 
-  --sh-shadow-float: 0 12px 32px -4px rgb(0 0 0 / 0.45), 0 4px 12px -2px rgb(0 0 0 / 0.3);
+  --sh-shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --sh-shadow-float: 0 24px 48px -12px rgb(0 0 0 / 0.55), 0 8px 16px -8px rgb(0 0 0 / 0.4);
 }
 
 /* ── Layer 3: Tailwind utilities ───────────────────────────────────────────────────────── */
@@ -131,66 +172,78 @@
 @theme inline {
   --color-canvas: var(--sh-canvas);
   --color-canvas-muted: var(--sh-canvas-muted);
+  --color-canvas-sunken: var(--sh-canvas-sunken);
   --color-surface: var(--sh-surface);
+  --color-fill: var(--sh-fill);
   --color-ink: var(--sh-ink);
   --color-ink-muted: var(--sh-ink-muted);
+  --color-ink-accent: var(--sh-ink-accent);
   --color-line: var(--sh-line);
   --color-primary: var(--sh-primary);
   --color-primary-hover: var(--sh-primary-hover);
   --color-primary-subtle: var(--sh-primary-subtle);
+  --color-primary-soft: var(--sh-primary-soft);
+  --color-on-primary-soft: var(--sh-on-primary-soft);
   --color-on-primary: var(--sh-on-primary);
-  --color-on-primary-accent: var(--sh-on-primary-accent);
   --color-secondary: var(--sh-secondary);
-  --color-secondary-subtle: var(--sh-secondary-subtle);
-  --color-on-secondary: var(--sh-on-secondary);
+  --color-secondary-ink: var(--sh-secondary-ink);
+  --color-band: var(--sh-band);
+  --color-on-band: var(--sh-on-band);
+  --color-on-band-muted: var(--sh-on-band-muted);
+  --color-success: var(--sh-success);
+  --color-success-subtle: var(--sh-success-subtle);
+  --color-pending: var(--sh-pending);
+  --color-on-pending: var(--sh-on-pending);
   --color-danger: var(--sh-danger);
   --color-danger-subtle: var(--sh-danger-subtle);
-  --color-success: var(--sh-success);
   --color-focus: var(--sh-focus);
 
   --font-display: var(--sh-brand-font-display);
   --font-sans: var(--sh-brand-font-sans);
 
+  --shadow-card: var(--sh-shadow-card);
   --shadow-float: var(--sh-shadow-float);
 }
 
 /* Static scales (not brand colours): type, radii, layout. */
 @theme {
   /* Type scale from Stitch. Display/headline use font-display; the rest Inter. */
-  --text-display: 3.5rem;
-  --text-display--line-height: 4rem;
+  --text-display: 3rem;
+  --text-display--line-height: 1.08;
   --text-display--letter-spacing: -0.02em;
-  --text-display-sm: 2.25rem;
-  --text-display-sm--line-height: 2.75rem;
-  --text-display-sm--letter-spacing: -0.01em;
-  --text-headline-lg: 2.5rem;
-  --text-headline-lg--line-height: 3rem;
-  --text-headline-lg--letter-spacing: -0.015em;
+  --text-display-sm: 2.125rem;
+  --text-display-sm--line-height: 2.625rem;
+  --text-display-sm--letter-spacing: -0.015em;
+  --text-headline-lg: 2rem;
+  --text-headline-lg--line-height: 2.5rem;
+  --text-headline-lg--letter-spacing: -0.01em;
   --text-headline-lg-sm: 1.75rem;
   --text-headline-lg-sm--line-height: 2.25rem;
-  --text-headline-md: 2rem;
-  --text-headline-md--line-height: 2.5rem;
+  --text-headline-lg-sm--letter-spacing: -0.01em;
+  --text-headline-md: 1.5rem;
+  --text-headline-md--line-height: 2rem;
   --text-headline-md--letter-spacing: -0.01em;
-  --text-headline-sm: 1.375rem;
+  --text-headline-sm: 1.25rem;
   --text-headline-sm--line-height: 1.75rem;
-  --text-title-lg: 1.125rem;
-  --text-title-lg--line-height: 1.625rem;
   --text-title: 1rem;
   --text-title--line-height: 1.5rem;
-  --text-body-lg: 1.125rem;
-  --text-body-lg--line-height: 1.75rem;
-  --text-body: 0.9375rem;
-  --text-body--line-height: 1.5rem;
+  --text-title--letter-spacing: -0.01em;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.625rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
   --text-body-sm: 0.8125rem;
   --text-body-sm--line-height: 1.25rem;
-  --text-label: 0.6875rem;
+  --text-label: 0.75rem;
   --text-label--line-height: 1rem;
-  --text-label--letter-spacing: 0.12em;
-  --text-label-sm: 0.75rem;
-  --text-label-sm--line-height: 1rem;
+  --text-label--letter-spacing: 0.02em;
+  --text-label-sm: 0.6875rem;
+  --text-label-sm--line-height: 0.875rem;
+  --text-label-sm--letter-spacing: 0.06em;
 
-  --radius-control: 0.25rem; /* buttons, inputs */
-  --radius-card: 0.5rem; /* cards, modals */
+  --radius-control: 0.75rem; /* buttons, inputs */
+  --radius-card: 1rem; /* cards, panels, modals */
+  --radius-arch: 3.375rem; /* jharokha arch: top corners of feature cards */
 
   --container-page: 75rem; /* 1200px content width */
 }
