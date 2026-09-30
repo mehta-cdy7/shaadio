@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { InvalidEnvError, parseCoreEnv } from './env';
+import { InvalidEnvError, parseAuthEnv, parseCoreEnv } from './env';
 
 describe('parseCoreEnv', () => {
   const valid = {
@@ -19,6 +19,20 @@ describe('parseCoreEnv', () => {
   it('names the variable but never echoes its value', () => {
     const secret = 'mongodb-but-wrong://user:hunter2@host';
     expect(() => parseCoreEnv({ ...valid, MONGODB_URI: secret })).toThrow(
+      expect.objectContaining({ message: expect.not.stringContaining('hunter2') }),
+    );
+  });
+});
+
+describe('parseAuthEnv', () => {
+  it('accepts a secret of at least 32 characters', () => {
+    const secret = 'x'.repeat(32);
+    expect(parseAuthEnv({ SESSION_SECRET: secret })).toEqual({ SESSION_SECRET: secret });
+  });
+
+  it('rejects a missing or short secret without echoing it', () => {
+    expect(() => parseAuthEnv({})).toThrow(/SESSION_SECRET/);
+    expect(() => parseAuthEnv({ SESSION_SECRET: 'short-hunter2' })).toThrow(
       expect.objectContaining({ message: expect.not.stringContaining('hunter2') }),
     );
   });

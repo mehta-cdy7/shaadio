@@ -10,6 +10,7 @@ export async function setup(): Promise<void> {
   replSet = await MongoMemoryReplSet.create({ replSet: { count: 1, storageEngine: 'wiredTiger' } });
   process.env.MONGODB_URI = replSet.getUri('shaadioo-test');
   process.env.APP_ORIGIN ??= 'http://localhost:3000';
+  process.env.SESSION_SECRET ??= 'integration-test-session-secret-0123456789';
 }
 
 export async function teardown(): Promise<void> {

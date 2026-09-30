@@ -180,6 +180,39 @@ The tenant guard (`src/server/db/tenant-guard.ts`) only checked that `weddingId`
 
 ---
 
+## 2026-09-30 — Slice 1a: accounts and sessions (API only)
+
+Email/password accounts with server-side sessions. The sign-in and sign-up pages still show "Coming soon"; they are built in slice 1b from the Stitch designs.
+
+- **Endpoints** (API_DESIGN §10): `POST /api/auth/signup`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/me`. `/api/me` returns only `user` until weddings exist.
+- **Module `src/modules/auth`:** `users` and `sessions` models, strict Zod schemas (shared with the future forms), the auth service, and `withUser`, the route wrapper for signed-in endpoints. `withMember` will build on it.
+- **Infrastructure:**
+  - `src/server/auth`: random tokens and their HMAC, scrypt password hashing, the common-password list, and the `sid` cookie.
+  - `src/server/http/route.ts`: `handler()` adds the request id and `no-store` and maps errors; `readJson()` enforces Origin, JSON content type, the 64 KB limit and strict validation (API_DESIGN §2.2, §8.3).
+  - `src/server/rate-limit`: fixed-window counters in `rate_limits` with HMACed keys. Limits: login 10 per 15 min per email and 30 per 15 min per IP; signup 10 per hour per IP. A 429 carries `Retry-After`.
+  - `src/server/db/transaction.ts`: `withTransaction()`.
+- **Password hashing** uses Node's built-in `crypto.scrypt` (N=2^17, r=8, p=1, the OWASP minimum). This means no new dependency and no native build on Vercel. The parameters are stored in each hash, so they can be raised later.
+- **Environment:** `SESSION_SECRET` (at least 32 characters) is now required wherever auth runs. It is validated on first use, like the other integration variables.
+- **Migration** `migrations/0001_auth_indexes.ts` creates the unique email index, the session indexes and the TTL indexes.
+
+**Verification:**
+- lint, format, typecheck, unit tests (56) and build pass.
+- Integration tests (44) pass, including the new `tests/security/auth.int.test.ts`. It covers: only hashes stored, EMAIL_TAKEN in any letter case, short and common passwords, server-owned fields rejected, Origin 403, non-JSON 400, identical errors for an unknown email and a wrong password, logout invalidation, expired sessions, the sliding expiry, per-email and per-IP rate limits, and hashed rate-limit keys.
+- In cloud sessions, MongoDB comes from conda-forge because the usual download is blocked. See `MONGOMS_SYSTEM_BINARY` in the team notes.
+
+**Design alignment:** SYSTEM_DESIGN §8–§11 and §67; DATABASE_DESIGN §5.1, §5.2 and §5.16; API_DESIGN §2, §4, §7, §8 and §10. Deliberate differences:
+- Login writes the new session and `lastLoginAt` in one transaction.
+- Logout requires a JSON `{}` body like every other mutation.
+
+### Known gaps
+1. **Signup with a member invitation** (`memberInviteToken`) is not accepted yet. It lands with member invitations in slice 1b or 1c. **Open.**
+2. **Forgot and reset password** are not built. They need the Resend adapter and the transactional reserve. **Open.**
+3. **No migration runner yet.** `0001_auth_indexes.ts` exists, but nothing applies it or records it in `schema_migrations`. It must run before production signup. Development relies on `autoIndex`. **Open.**
+4. **Safari and `Secure` on http://localhost.** Safari may refuse `Secure` cookies over plain http on localhost. Check this during slice 1b. **Verify.**
+5. **`PATCH /api/me` and `POST /api/me/password`** are not built. **Open.**
+
+---
+
 ## Template for future entries
 
 ```

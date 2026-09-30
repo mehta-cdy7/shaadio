@@ -38,3 +38,30 @@ export function env(): CoreEnv {
   cached ??= parseCoreEnv(process.env);
   return cached;
 }
+
+const authEnvSchema = z.object({
+  // HMAC key for session, reset and invitation token hashes (DATABASE_DESIGN §5.2).
+  SESSION_SECRET: z.string().min(32, 'must be at least 32 characters'),
+});
+
+export type AuthEnv = z.infer<typeof authEnvSchema>;
+
+/** Parses the auth variables. Like parseCoreEnv, errors name variables and never echo values. */
+export function parseAuthEnv(source: Record<string, string | undefined>): AuthEnv {
+  const result = authEnvSchema.safeParse(source);
+  if (!result.success) {
+    const problems = result.error.issues
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+      .join('; ');
+    throw new InvalidEnvError(`Invalid server environment: ${problems}`);
+  }
+  return result.data;
+}
+
+let cachedAuth: AuthEnv | undefined;
+
+/** Validated on first use, so builds and CI jobs that never authenticate do not need the secret. */
+export function authEnv(): AuthEnv {
+  cachedAuth ??= parseAuthEnv(process.env);
+  return cachedAuth;
+}
