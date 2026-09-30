@@ -30,199 +30,412 @@
     },
     "hero": {
       "badge": "Free for families",
-      "title": "From roka to reception, all in one place.",
-      "body": "Plan every event with your family, send invitations your guests open on WhatsApp, and know exactly who's coming.",
+      "badgeDetail": "Multi-event platform",
+      "title": "From roka to reception, <em>all in one place.</em>",
+      "body": "Plan every event with your family, create beautiful digital invitations, and know exactly who's coming.",
       "primaryCta": "Start planning — it's free",
       "secondaryCta": "See how it works",
-      "ceremoniesLabel": "Made for every ceremony:",
-      "imageAlt": "A guest's invitation on a phone, showing three events and a confirmed RSVP for three guests."
+      "ceremoniesLabel": "Configured for the full ceremonial journey",
+      "mock": {
+        "label": "A sample invitation for Priyanka & Nik's wedding on 14 February 2027 in Dehradun, listing the Sangeet & Cocktail, the Wedding and the Reception with an RSVP button. 420 people are attending the reception, and there are 42 days to go.",
+        "monogram": "P & N",
+        "couple": "Priyanka & Nik",
+        "dateVenue": "14 February 2027 · Dehradun",
+        "events": {
+          "sangeet": {
+            "name": "Sangeet & Cocktail",
+            "date": "Feb 13",
+            "detail": "7:00 PM · The Glasshouse"
+          },
+          "wedding": {
+            "name": "Wedding",
+            "date": "Feb 14",
+            "detail": "11:30 AM · Central Courtyard"
+          },
+          "reception": {
+            "name": "Reception",
+            "date": "Feb 14",
+            "detail": "8:00 PM · Grand Lawn"
+          }
+        },
+        "rsvp": "RSVP",
+        "noLogin": "No app, no login, no password",
+        "attending": "Reception · 420 attending",
+        "countdown": "42 days to go"
+      }
     },
     "ceremonies": {
       "roka": "Roka",
-      "mehendi": "Mehendi",
       "haldi": "Haldi",
+      "mehendi": "Mehendi",
       "sangeet": "Sangeet",
       "wedding": "Wedding",
       "reception": "Reception"
     },
+    "status": {
+      "attending": "Attending",
+      "pending": "Pending",
+      "notAttending": "Not attending"
+    },
     "workspace": {
-      "eyebrow": "Family workspace",
-      "title": "One family workspace. Total peace of mind.",
-      "body": "From headcounts for every ceremony to every rupee spent, the whole family works from the same plan.",
-      "imageAlt": "The family workspace, showing confirmed guests by side, the share of guests who replied, recorded expenses, recent family activity and guest status for the Sangeet."
+      "eyebrow": "Workspace architecture",
+      "title": "A unified cockpit for both sides of the family",
+      "body": "Replace chaotic shared drives and lost chat threads with a purpose-built ceremonial workspace.",
+      "mock": {
+        "label": "The family workspace for Priyanka & Nik: 186 invitations for 612 people, 80% of families have replied, ₹24,50,000 in recorded expenses, recent changes by family members, and RSVPs for the Sangeet.",
+        "url": "shaadioo.com/app",
+        "title": "Priyanka & Nik · Family workspace",
+        "allEvents": "All events",
+        "invitations": {
+          "label": "Invitations",
+          "value": "186 families",
+          "detail": "612 people invited"
+        },
+        "rsvps": {
+          "label": "RSVPs",
+          "aside": "148 of 186",
+          "value": "80% replied",
+          "detail": "132 attending · 16 not attending · 38 pending"
+        },
+        "expenses": {
+          "label": "Expenses",
+          "value": "₹24,50,000",
+          "detail": "Venue, catering and decor so far"
+        },
+        "activity": {
+          "title": "Recent activity",
+          "note": "Activity log",
+          "items": {
+            "papa": {
+              "initials": "PA",
+              "who": "Papa",
+              "what": "imported 12 guests from a spreadsheet",
+              "meta": "1h ago · Guests"
+            },
+            "masi": {
+              "initials": "MS",
+              "who": "Masi",
+              "what": "recorded ₹6,50,000 for catering",
+              "meta": "2h ago · Expenses"
+            },
+            "priyanka": {
+              "initials": "PR",
+              "who": "Priyanka",
+              "what": "invited Rohan to help as a Manager",
+              "meta": "Yesterday · Members"
+            },
+            "nik": {
+              "initials": "NK",
+              "who": "Nik",
+              "what": "made a new invitation link for the Kapoors",
+              "meta": "Yesterday · Guests"
+            }
+          }
+        },
+        "guests": {
+          "title": "Sangeet guests",
+          "note": "280 attending",
+          "rows": {
+            "kapoor": {
+              "name": "Kapoor Family",
+              "detail": "4 of 4 people · Bride's side"
+            },
+            "sharma": {
+              "name": "Sharma Family",
+              "detail": "6 of 6 people · Groom's side"
+            },
+            "verma": {
+              "name": "Verma Family",
+              "detail": "Up to 2 people · Bride's side"
+            },
+            "mehta": {
+              "name": "Mehta Family",
+              "detail": "Up to 3 people · Groom's side"
+            }
+          }
+        }
+      }
     },
     "problem": {
-      "eyebrow": "The reality of wedding planning",
+      "eyebrow": "The core dilemma",
       "title": "Right now, your wedding lives in fifty places.",
+      "body": "When coordination is scattered across fractured platforms, family joy gets overshadowed by administrative stress.",
       "items": {
-        "whatsapp": "A family WhatsApp group with 400 unread messages",
-        "excel": "A guest list in someone's out-of-date Excel sheet",
-        "vendors": "Vendor phone numbers saved in five different phones",
-        "photos": "Photos scattered across every guest's camera roll"
+        "whatsapp": {
+          "title": "A family group with 400 unread messages",
+          "body": "Important updates and song choices drown between forwarded blessings and media downloads."
+        },
+        "excel": {
+          "title": "A guest list in someone's Excel sheet",
+          "body": "Three diverging spreadsheet versions stored on uncles' laptops, each with a different count."
+        },
+        "vendors": {
+          "title": "Vendor numbers saved in five phones",
+          "body": "No shared record of which caterer you chose or who paid the decorator."
+        },
+        "photos": {
+          "title": "Photos scattered across every phone",
+          "body": "Candid Haldi photos lost across dozens of individual chat threads."
+        }
       },
-      "closing": "Shaadioo brings it all into one quiet, shared plan."
+      "closing": "Shaadioo brings it all into one shared, dignified plan."
     },
     "chapters": {
       "plan": {
-        "eyebrow": "Chapter 01 · Together",
-        "title": "Plan together, without the chaos.",
-        "body": "Invite parents, siblings and friends to help. Assign tasks, and follow every event from roka to reception.",
+        "eyebrow": "01 · Delegation architecture",
+        "title": "Plan together",
+        "body": "Invite parents, siblings and cousins to help without the chaos. Assign every task to one person and track each ceremony's deadlines from roka to the final reception.",
         "points": {
-          "one": "Simple roles: Admins and Managers",
-          "two": "Every important change recorded in an activity log"
+          "one": "Two simple roles for family: Admin and Manager",
+          "two": "Shared task progress the whole family can see"
         },
-        "imageAlt": "A task list with two completed tasks and one in progress, each assigned to a family member."
+        "mock": {
+          "label": "The wedding countdown shows 42 days to go and 18 of 24 tasks completed: Rohan and Mummy have finished their tasks, and Bhai is booking the mehendi artist.",
+          "title": "Wedding countdown",
+          "countdown": "42 days to go",
+          "tabs": {
+            "all": "All tasks",
+            "mine": "My tasks",
+            "completed": "Completed"
+          },
+          "progressLabel": "Tasks",
+          "progress": "18 of 24 completed",
+          "tasks": {
+            "sound": {
+              "title": "Confirm Sangeet sound & light vendor",
+              "assignee": "Rohan"
+            },
+            "sweets": {
+              "title": "Approve sweet box samples",
+              "assignee": "Mummy"
+            },
+            "mehendi": {
+              "title": "Book the mehendi artist",
+              "assignee": "Bhai"
+            }
+          }
+        }
       },
       "invite": {
-        "eyebrow": "Chapter 02 · Invitations",
-        "title": "Invite beautifully. Zero app downloads.",
-        "body": "A personal invitation link for every family, shared on WhatsApp or by email. Guests reply in seconds: no app, no sign-up, no password.",
+        "eyebrow": "02 · Ceremonial invitations",
+        "title": "Invite beautifully",
+        "body": "Create a personal invitation for every family and share it on WhatsApp, by email or however you prefer. Guests RSVP in seconds with no app download and no password.",
         "points": {
-          "one": "One link per household, not per person",
-          "two": "Each family sees only the events they're invited to"
+          "one": "Each family sees only the events they're invited to",
+          "two": "Headcounts update as families reply"
         },
-        "imageAlt": "Two household invitations: the Kapoor family attending with four people, and the Singhal family who have opened their link."
+        "mock": {
+          "label": "One private link per family: the Kapoors, 4 people, attending all events; the Sharmas, 6 people, attending the Sangeet and the Wedding; the Mehtas, up to 3 people, yet to reply for the Reception.",
+          "eyebrow": "Guest invitations",
+          "title": "One private link per family",
+          "linkLabel": "The Kapoors' invitation link",
+          "link": "shaadioo.com/invite/k7Xq2mP9vR4tLw8nZc3yBA",
+          "rows": {
+            "kapoor": {
+              "name": "The Kapoors",
+              "detail": "4 people · All events"
+            },
+            "sharma": {
+              "name": "The Sharmas",
+              "detail": "6 people · Sangeet & Wedding"
+            },
+            "mehta": {
+              "name": "The Mehtas",
+              "detail": "Up to 3 people · Reception only"
+            }
+          }
+        }
       },
       "numbers": {
-        "eyebrow": "Chapter 03 · Headcount & expenses",
-        "title": "Know your exact numbers at all times.",
-        "body": "See the confirmed headcount for every ceremony, and every rupee spent along with who paid it.",
+        "eyebrow": "03 · Financial integrity",
+        "title": "Know your numbers",
+        "body": "See confirmed headcount for every ceremony, paired with every rupee spent and who paid it — formatted in lakhs and crores.",
         "points": {
-          "one": "Amounts in rupees, lakhs and crores",
+          "one": "Headcount for each ceremony, from every family's reply",
           "two": "Record who paid: Papa, Chacha or the groom's family"
         },
-        "imageAlt": "Recorded expenses per ceremony with the number of confirmed guests and who paid, totalling ₹24,50,000."
+        "mock": {
+          "label": "Expenses of ₹24,50,000 and the number of people attending each ceremony: 65 at the Roka, 280 at the Sangeet, 340 at the Wedding and 420 at the Reception. Venue ₹14,00,000 paid by Papa, catering ₹6,50,000 paid by Chacha, decoration ₹4,00,000 paid by the groom's family.",
+          "totalLabel": "Total expenses",
+          "total": "₹24,50,000",
+          "headcountLabel": "People attending",
+          "headcounts": {
+            "roka": "65",
+            "sangeet": "280",
+            "wedding": "340",
+            "reception": "420"
+          },
+          "expenses": {
+            "venue": {
+              "name": "Heritage resort",
+              "detail": "Venue · Paid by Papa",
+              "amount": "₹14,00,000"
+            },
+            "catering": {
+              "name": "Royal Caterers",
+              "detail": "Catering · Paid by Chacha",
+              "amount": "₹6,50,000"
+            },
+            "decor": {
+              "name": "Stage & floral decor",
+              "detail": "Decoration · Paid by the groom's family",
+              "amount": "₹4,00,000"
+            }
+          }
+        }
       },
       "memories": {
-        "eyebrow": "Chapter 04 · Memories",
-        "title": "Celebrate, and keep every memory.",
-        "body": "A simple wedding website, a YouTube livestream for family abroad, and a private photo gallery guests add to by scanning a QR code.",
+        "eyebrow": "04 · Memories",
+        "title": "Celebrate and keep the memories",
+        "body": "A themed wedding website, a YouTube livestream for family across the globe, and a private photo gallery guests add to by scanning a table card.",
         "points": {
-          "one": "Guests upload photos without an account",
-          "two": "Website and gallery hidden from search engines"
+          "one": "Guests add photos without an account",
+          "two": "Website and gallery kept out of search engines"
         },
-        "imageAlt": "Photo albums per ceremony, a YouTube livestream card and a table QR code for guest uploads."
+        "mock": {
+          "label": "The private wedding gallery: a YouTube livestream for family abroad, a QR code guests scan to add photos, and albums for the Haldi (124 photos), the Sangeet (412) and the Wedding (286).",
+          "eyebrow": "Photos & livestream",
+          "title": "Private wedding gallery",
+          "livestream": {
+            "title": "YouTube livestream",
+            "detail": "For family abroad"
+          },
+          "qr": {
+            "title": "Gallery QR code",
+            "detail": "Scan to add photos"
+          },
+          "albums": {
+            "haldi": "124 photos",
+            "sangeet": "412 photos",
+            "wedding": "286 photos"
+          },
+          "footnote": "Download photos any time · Kept for 12 months"
+        }
       }
     },
     "guests": {
-      "eyebrow": "Simplicity first",
+      "eyebrow": "Simplicity for guests",
       "title": "Your guests don't need an app.",
-      "body": "Built so that even Daadi can confirm in one tap.",
+      "body": "Frictionless for grandparents, aunts, cousins and overseas friends who value quick clarity over complex software.",
       "items": {
-        "whatsapp": {
-          "title": "Opens straight from WhatsApp",
-          "body": "No app store and no updates. A personal link opens in any mobile browser."
+        "link": {
+          "eyebrow": "01 · Direct access",
+          "title": "Open from any invitation link",
+          "body": "Guests tap their personal link to see their events, venues, directions and dress codes, and reply in seconds."
         },
-        "phone": {
-          "title": "Works on any phone",
-          "body": "Built for budget Android phones on a 4G connection at the venue."
+        "device": {
+          "eyebrow": "02 · Any device",
+          "title": "Works on any phone or screen",
+          "body": "Clear, readable pages on older smartphones, entry-level Android phones, tablets and desktops alike."
         },
         "password": {
+          "eyebrow": "03 · Zero barrier",
           "title": "No passwords, ever",
-          "body": "Each household gets its own private link. There's nothing to remember."
+          "body": "Zero logins, zero forgotten passwords and no app store prompts. Each family's private link is all they need."
         }
       }
     },
     "indian": {
-      "eyebrow": "Made for Indian weddings",
-      "title": "Made specifically for Indian weddings.",
-      "body": "Most wedding software assumes one dinner and individual RSVPs. Indian celebrations work differently.",
+      "eyebrow": "Purpose-built",
+      "title": "Made for Indian weddings",
+      "body": "Western planning tools assume a single afternoon event for individual guests. Indian celebrations are a multi-day, whole-family affair.",
       "items": {
         "events": {
-          "title": "Many events, one plan",
-          "body": "Invite close family to the Haldi and 400 people to the reception, from one guest list."
+          "title": "Many events, each with its own guest list",
+          "body": "Not everyone comes to the Haldi or the intimate early puja. Invite each family only to the events they're part of."
         },
         "sides": {
           "title": "Bride's side and groom's side",
           "body": "Tag every guest by side and filter your list in one tap."
         },
         "households": {
-          "title": "Whole households",
-          "body": "You invite the whole family. One link collects the answer for everyone in it."
+          "title": "Invite whole families, not just individuals",
+          "body": "Address the “Kapoor Parivar” as one invitation, with one headcount for the whole family."
         },
         "rupees": {
-          "title": "Rupees and lakhs",
-          "body": "Every amount is shown the way Indian families count: ₹12,45,000."
+          "title": "Amounts in rupees (₹), the way you count them",
+          "body": "Indian number formatting in lakhs and crores, and a clear record of who paid for what."
         }
       }
     },
     "howItWorks": {
-      "eyebrow": "How it works",
-      "title": "How Shaadioo works.",
-      "body": "Three steps from sign-up to your first RSVP.",
+      "eyebrow": "Effortless rollout",
+      "title": "Up and running in three steps",
+      "body": "Get your core dates online today without reading a single manual.",
       "steps": {
         "one": {
           "title": "Create your wedding",
-          "body": "Add the couple, your dates and every ceremony with its venue."
+          "body": "Set your dates and add your ceremonies, from the Roka to the Reception, with times and venues."
         },
         "two": {
           "title": "Bring in your family",
-          "body": "Invite parents, siblings and cousins to help. Everyone sees the same plan."
+          "body": "Invite siblings, parents and cousins as Admins or Managers. Everyone works from the same plan."
         },
         "three": {
           "title": "Share your invitations",
-          "body": "Share each family's invitation link on WhatsApp, and watch the headcount update as families reply."
+          "body": "Send each family its private link and watch RSVPs and headcounts come into your dashboard."
         }
       }
     },
     "privacy": {
-      "eyebrow": "Privacy",
+      "eyebrow": "Privacy first",
       "title": "Private by design.",
-      "body": "Indian weddings are deeply personal. We never sell or share your family's data.",
+      "body": "Your wedding is a sacred family milestone, not social media content. We never sell or share your family's data.",
       "items": {
         "links": {
-          "title": "Private invitation links",
-          "body": "Every household's link is unguessable, and you can replace it at any time."
+          "title": "Private links only",
+          "body": "Every invitation link is cryptographically unique to the family it was made for, and you can replace it at any time."
         },
         "unlisted": {
-          "title": "Hidden from search",
-          "body": "Your wedding website and gallery are kept out of Google and other search engines."
+          "title": "Unlisted everywhere",
+          "body": "Your wedding website and gallery are hidden from Google and other search engines."
         },
         "gallery": {
-          "title": "A private photo gallery",
-          "body": "Photos stay in your gallery, reached only through your private link or QR code."
+          "title": "Private photo gallery",
+          "body": "Only people with your gallery link or QR code can view or add photos."
         },
         "delete": {
-          "title": "Delete any time",
-          "body": "Delete your wedding and every guest's details are permanently removed."
+          "title": "Delete everything, any time",
+          "body": "Delete your wedding and every guest's name, phone number, email, RSVP and photo is permanently removed."
         }
       }
     },
     "faq": {
-      "eyebrow": "Questions",
-      "title": "Everything you need to know.",
+      "eyebrow": "Answers",
+      "title": "Frequently asked questions",
       "items": {
         "free": {
           "q": "Is Shaadioo free?",
-          "a": "Yes. Shaadioo is free for couples and families: create your events, invite your family, share invitations on WhatsApp and track RSVPs."
+          "a": "Yes. Shaadioo is free for couples and families, with every core feature included: multi-event planning, your family workspace and RSVP tracking."
         },
         "download": {
           "q": "Do guests need to download anything?",
-          "a": "No. Guests tap the link you share on WhatsApp or by email, and it opens in their phone's browser. They see their events and reply in one tap."
+          "a": "No app download at all. Guests open their personal link in any phone or computer browser to RSVP or add photos."
         },
         "parents": {
           "q": "Can my parents use it easily?",
-          "a": "Yes. It's designed for parents and elders: large text, clear cards, prominent numbers and one-tap WhatsApp sharing."
+          "a": "Yes. It's designed for parents and elders, with high contrast, readable text and no confusing menus. They can check the guest list and RSVPs without help."
         },
         "guestList": {
           "q": "Who can see our guest list?",
-          "a": "Only the family members you invite to help plan. Each guest sees only their own invitation and the events they're invited to."
+          "a": "Only the family members you invite to help plan, as Admins or Managers. Each guest sees only their own invitation and the events they're invited to."
         },
         "photos": {
           "q": "What happens to our photos after the wedding?",
-          "a": "Photos stay in your private gallery for 12 months after the wedding, and you can download them at any time. We keep web-quality copies, not the original full-resolution files."
+          "a": "Photos stay in your private gallery for 12 months after the wedding, and you can download them any time. We keep web-quality copies, not the original full-resolution files."
         }
       }
     },
     "finalCta": {
       "title": "Less chaos. More celebration.",
-      "body": "Bring your family together on Shaadioo. Free, with no credit card.",
+      "body": "Bring your family together on Shaadioo and plan every ceremony the way it was meant to be.",
       "primaryCta": "Start planning — it's free",
-      "secondaryCta": "See how it works"
+      "note": "No credit card required · Free for families"
     },
     "footer": {
-      "tagline": "Wedding planning and invitations for Indian families.",
-      "copyright": "© {year} Shaadioo"
+      "tagline": "Designed and built for modern Indian families.",
+      "navLabel": "Footer",
+      "copyright": "© {year} Shaadioo. All rights reserved."
     }
   }
 }

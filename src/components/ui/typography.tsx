@@ -1,11 +1,14 @@
 import type { ComponentProps, ElementType } from 'react';
 import { cn } from '@/lib/cn';
 
-/** Small uppercase overline above headings ("label-uppercase" in Stitch). */
+/** Small uppercase overline above headings, in text-safe brass. */
 export function Eyebrow({ className, ...props }: ComponentProps<'p'>) {
   return (
     <p
-      className={cn('font-sans text-label font-semibold text-secondary uppercase', className)}
+      className={cn(
+        'font-sans text-label-sm font-semibold tracking-widest text-secondary-ink uppercase',
+        className,
+      )}
       {...props}
     />
   );
@@ -13,11 +16,11 @@ export function Eyebrow({ className, ...props }: ComponentProps<'p'>) {
 
 type HeadingSize = 'display' | 'headline-lg' | 'headline-md' | 'headline-sm';
 
-// Mobile size first, desktop size from md up (Stitch defines both).
+// Mobile size first, desktop size from md up. Playfair reads best at regular weight when large.
 const headingSizes: Record<HeadingSize, string> = {
-  display: 'text-display-sm md:text-display font-semibold',
-  'headline-lg': 'text-headline-lg-sm md:text-headline-lg font-semibold',
-  'headline-md': 'text-headline-sm md:text-headline-md font-medium',
+  display: 'text-display-sm md:text-display font-normal',
+  'headline-lg': 'text-headline-lg-sm md:text-headline-lg font-normal',
+  'headline-md': 'text-headline-md font-medium',
   'headline-sm': 'text-headline-sm font-medium',
 };
 

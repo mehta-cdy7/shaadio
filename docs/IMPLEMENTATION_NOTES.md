@@ -157,10 +157,66 @@ The "Sample invitation" link now points to "How it works", because no sample exi
 
 ### Known gaps
 1. **No guest-facing designs yet** (invitation, gallery, website) and no mobile screens in Stitch. They are needed before slices 5 and 7. **Open.**
-2. **Mock-up images are raster.** Any change to them means re-rendering from Stitch. **Open.**
+2. **Mock-up images are raster.** Any change to them means re-rendering from Stitch. **Closed** (2026-09-29: the mock-ups are components now).
 3. **No colour-scheme toggle in the UI.** The attribute hook is in place. **Open.**
-4. **Hero image text mismatch.** The couple's names in the hero image ("Priyanka & Nick") do not match the monogram ("A & P"). Cosmetic; fix in Stitch. **Open.**
+4. **Hero image text mismatch.** The couple's names in the hero image ("Priyanka & Nick") do not match the monogram ("A & P"). Cosmetic; fix in Stitch. **Closed** (2026-09-29: the hero image was replaced by a component).
 5. **Focus on the primary band.** In dark mode the band and the focus ring were both brass, so keyboard focus was invisible on the final call to action. Fixed with a `--sh-on-primary-accent` token that `Section tone="primary"` uses for focus rings, also used for the link underline there; covered by an e2e test. **Closed.**
+
+---
+
+## 2026-09-29 — Landing page: new Stitch theme, coded mock-ups, copy within V1 scope
+
+Built:
+- **New theme** from the Stitch design system "Shaadioo" (Stitch project `17426117529538129036`), replacing "Royal Velvet Fig & Warm Alabaster". Changes to layer 1 of `src/styles/tokens.css`:
+  - primary `#4A2943` (was `#261424`), plus deep plum `#32142D` for the closing band and plum headings, and blush `#FFD7F2`;
+  - brass `#BCA177` stays as the decorative accent. Dark brass `#715B37` is new, for brass-coloured text, icons and bars: `#BCA177` on the canvas is 2.3:1, so the old eyebrows failed WCAG;
+  - sandalwood `#FDDEB0` for pending states; sage `#3F6B4E` (unchanged) for attending and done;
+  - muted text `#4E444A` and danger `#BA1A1A`, as Stitch renders them;
+  - Playfair Display replaces Bodoni Moda (`next/font`, self-hosted);
+  - the Stitch type scale (48/32/24/20 headings, 16/14/13 body, 12/11 labels), radii (12px controls, 16px cards, 54px arch top) and a plum-tinted shadow.
+
+  Where the Stitch design notes and the rendered screen disagree, the tokens follow the rendered screen.
+- **Surfaces** `canvas-muted`, `canvas-sunken` and `fill` are derived from the canvas and ink with `color-mix()`, tuned to the section colours Stitch renders.
+- **Dark mode** now derives from the deep plum, so it stays close to slice 0. The closing band uses the primary plum in dark mode, because the deep plum is only 1.16:1 against the dark canvas.
+- **Focus ring** is dark brass on light backgrounds (6.1:1). The closing band swaps in brass through `--sh-on-band-focus`, which replaces `--sh-on-primary-accent`.
+- **RSVP colours:** Attending is green (5.1:1), Pending is sandalwood, Not attending is neutral. Labels use the PRD's words (§9.7), not Stitch's "Confirmed" and "Declined". `Badge` gained `success`, `pending`, `soft` and `plain` tones and a brass `dot`.
+- **Mock-ups are components.** The six WebP screenshots (hero, workspace, four chapters) are replaced by server components in `src/app/(marketing)/_components/mocks/`:
+  - they follow the theme, including dark mode;
+  - all their text is in `messages/en.json`;
+  - they add no client JavaScript, and removing the images saved about 245 KB;
+  - each is a `role="img"` with one description, so screen readers skip the sample data.
+- **Layout** follows the new Stitch screen: arch-mark logo, jaali lattice behind the hero, a two-line heading with an italic plum line, arched feature cards, icon cards, card-style FAQ (first answer open), and a closing band with arch outlines.
+- **One sample wedding everywhere:** Priyanka & Nik, 14 February 2027, Dehradun, 42 days to go. 186 invitations for 612 people; 132 families attending, 420 people; ₹24,50,000 in expenses. The numbers agree across sections.
+
+**Copy corrected against the PRD again.** The new Stitch screen, and the text baked into the old WebP images, promised things V1 does not do. These were removed or reworded:
+- hotel rooms and room lists; airport cabs (§7)
+- budgets, targets, "remaining" (§7, §9.15)
+- "real-time sync", live headcounts, per-plate estimates (Rule 8, §7)
+- separate bride's-side and groom's-side workspaces and "role boundaries" (Rule 6)
+- settling up between families, advances, deposits, RTGS (§7)
+- "private HD livestream", video albums, full-resolution archives, "zero compression", keeping photos "forever" (§7, §9.22, §9.24)
+- per-event "Attending" buttons on the invitation (V1.1, §9.11); "Delivered via WhatsApp" and "Link opened", which are not tracked (§9.14)
+- table numbers, dietary choices, time zones
+- "free for up to 500 guests", "© 2025 Shaadioo Technologies Inc.", Terms and Contact links, and a profile icon in the signed-out header
+- a guessable invitation URL (`…?to=the-kapoors`), now a 22-character token like the real ones (§9.9, DATABASE_DESIGN token format)
+
+The activity feed shows only actions the activity log records (§9.26).
+
+**Guardrail:** `tests/content/landing-copy.test.ts` fails if any `landing` string mentions those topics again. Run against the original Stitch text, it flags all ten categories.
+
+**Verification:**
+- Lint, format, typecheck, test (49 passing, unit and integration) and build are all green; `/` is still static.
+- e2e: all 22 landing tests pass on mobile and desktop. New tests check that each mock-up is one described image, and that the closing band's focus ring has at least 3:1 contrast in light and dark. The smoke test for `/api/health` fails locally only because no MongoDB is running on `localhost:27017`.
+- Screenshots reviewed at 1280px and 390px, light and dark, against the Stitch screen. Desktop page height is 8583px (Stitch: 8646px).
+- Found and fixed during verification: on phones, single-column grids grew to their widest content, and the invite link pushed the page 62px sideways. Every landing grid now sets `grid-cols-1`.
+
+**Design alignment:** mock-up content follows PRD §6–§7, §9.3, §9.6–§9.11, §9.15 and §9.20–§9.26. SYSTEM_DESIGN §28 (themes override layer 1). CLAUDE.md UI rules: all text through next-intl, colours only from tokens.
+
+### Known gaps
+1. **The Stitch file still shows the out-of-scope copy.** Only the repository was fixed; editing the Stitch screen regenerates it with AI. **Open.**
+2. **Navigation keeps Features / How it works / Privacy / FAQ** instead of Stitch's "Dashboard" and "RSVP Experience": a "Dashboard" link on a signed-out page reads as a way into the app. **Open, design decision.**
+3. **Still no guest-facing or mobile screens in Stitch** (slice 0, gap 1). **Open.**
+4. **The hero's second button says "See how it works"** because there is no sample invitation page yet (Stitch: "See a sample invitation"). **Open.**
 
 ---
 

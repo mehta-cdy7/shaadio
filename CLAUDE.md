@@ -8,7 +8,7 @@ MongoDB Atlas + Mongoose; Zod; custom server-side sessions; R2, Resend, Google P
 - Authority: docs/PRD.md → SYSTEM_DESIGN.md → DATABASE_DESIGN.md → API_DESIGN.md.
   A conflict is a defect: stop and raise it, never resolve it locally in code.
 - Stack and exclusions are fixed (SYSTEM §4, §93). Don't add infrastructure or libraries without asking.
-- After each increment add a dated entry to docs/IMPLEMENTATION_NOTES.md (template at its end).
+- Each finished slice/PR: add a dated entry to docs/IMPLEMENTATION_NOTES.md and update STATUS.md.
 
 ## Commands (pnpm via `corepack enable`) — lint, typecheck, test, build must pass before done
 pnpm dev | lint | format | typecheck | test (unit + integration) | test:unit | test:int | e2e | build.
