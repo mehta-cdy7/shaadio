@@ -164,6 +164,22 @@ The "Sample invitation" link now points to "How it works", because no sample exi
 
 ---
 
+## 2026-09-30 — Tenant guard: weddingId must name one wedding
+
+The tenant guard (`src/server/db/tenant-guard.ts`) only checked that `weddingId` was present in the filter. A filter like `{ weddingId: { $ne: id } }`, `{ $exists: true }` or `{ $in: [a, b] }` passed the guard and matched other weddings' documents. The guard now accepts only an exact value: an ObjectId, its hex string, or `{ $eq: <that> }`. Anything else throws `UnscopedQueryError`. The same check applies to an aggregate's first `$match`. The check is the exported pure function `isSingleWeddingId`.
+
+**Verification:**
+- Unit tests for `isSingleWeddingId` (23 cases: accepted forms, and every operator, regex, array, null and malformed form rejected).
+- Integration tests: `find`, `updateMany` and `aggregate` with `$ne`, `$exists`, `$in`, `$nin`, `$gt` and `$not` throw and leave the other wedding untouched; `$eq` and hex strings still work.
+- lint, format, typecheck, unit tests and build pass locally. The integration tests could not run in the cloud session (the MongoDB binary download is blocked there); CI runs them.
+
+**Design alignment:** DATABASE_DESIGN §6.2 and §6.5. The §6.2 sketch checks `weddingId === undefined`; this implements its intent (a query scoped to one wedding) more strictly. The sketch itself is unchanged.
+
+### Known gaps
+1. **Replacements can move a document.** `replaceOne`/`findOneAndReplace` with a correct filter could write a different `weddingId` in the replacement document. No tenant model uses replace yet. **Open.**
+
+---
+
 ## Template for future entries
 
 ```

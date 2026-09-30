@@ -78,6 +78,31 @@ describe('tenantGuard', () => {
     await expect(Thing.find({ weddingId: null })).rejects.toBeInstanceOf(UnscopedQueryError);
   });
 
+  it.each([
+    ['$ne', { $ne: weddingA }],
+    ['$exists', { $exists: true }],
+    ['$in', { $in: [weddingA, weddingB] }],
+    ['$nin', { $nin: [weddingA] }],
+    ['$gt', { $gt: new Types.ObjectId('000000000000000000000000') }],
+    ['$not', { $not: { $eq: weddingA } }],
+  ])('weddingId with %s matches other weddings, so it throws', async (_label, weddingId) => {
+    await expect(Thing.find({ weddingId }).lean()).rejects.toBeInstanceOf(UnscopedQueryError);
+    await expect(Thing.updateMany({ weddingId }, { $set: { name: 'x' } })).rejects.toBeInstanceOf(
+      UnscopedQueryError,
+    );
+    await expect(Thing.aggregate([{ $match: { weddingId } }])).rejects.toBeInstanceOf(
+      UnscopedQueryError,
+    );
+    expect(await Thing.countDocuments({ weddingId: weddingB, name: 'a' })).toBe(1);
+  });
+
+  it('weddingId as $eq or a hex string is scoped', async () => {
+    expect(await Thing.find({ weddingId: { $eq: weddingA } }).lean()).toHaveLength(1);
+    expect(await Thing.find({ weddingId: weddingA.toHexString() }).lean()).toHaveLength(1);
+    const matched = await Thing.aggregate([{ $match: { weddingId: { $eq: weddingA } } }]);
+    expect(matched).toHaveLength(1);
+  });
+
   it('estimatedDocumentCount always throws', async () => {
     await expect(Thing.estimatedDocumentCount()).rejects.toBeInstanceOf(UnscopedQueryError);
   });
