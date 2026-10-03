@@ -11,7 +11,7 @@ MongoDB Atlas + Mongoose; Zod; custom server-side sessions; R2, Resend, Google P
 - Each finished slice/PR: add a dated entry to docs/IMPLEMENTATION_NOTES.md and update STATUS.md.
 
 ## Commands (pnpm via `corepack enable`) — lint, typecheck, test, build must pass before done
-pnpm dev | lint | format | typecheck | test (unit + integration) | test:unit | test:int | e2e | build.
+pnpm dev | lint | format | typecheck | test (unit + integration) | test:unit | test:int | e2e | build | db:migrate (per environment, by hand).
 
 ## Structure and boundaries (lint-enforced, covered by tests/lint)
 - src/app: routing only. Handlers: parse → auth → validate → call service → respond (SYSTEM §58).
