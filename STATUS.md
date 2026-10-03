@@ -1,6 +1,6 @@
 # Shaadioo — Project Status
 
-**Last updated:** 2026-09-30 · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
+**Last updated:** 2026-10-03 · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
 **Next slice:** 1 — Accounts (signup, login, logout, session)
 
 This is a one-screen snapshot. Update it in the same PR that finishes or changes a slice.
@@ -14,9 +14,12 @@ Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOT
 | Slice 0 — design foundation + landing page      | 2026-09-29 | Tokens (brand → semantic → Tailwind), dark mode, UI primitives, static `/`            |
 | Landing redo — new Stitch theme, coded mock-ups | in PR      | Plum `#4A2943` + brass, Playfair Display, mock-ups as components, copy guardrail test |
 | `/login`, `/signup` coming-soon pages           | 2026-09-29 | Placeholders until slice 1                                                            |
+| `/login` sign-in page (light + dark)            | in PR      | Stitch auth screens recoloured to landing tokens; errors shown by code                |
+| `/signup` page + `/onboarding` placeholder      | in PR      | Sign-out button; `/onboarding` redirects to `/login` without a session                |
 | Tenant guard: `weddingId` must name one wedding | 2026-09-30 | Blocks `$ne`/`$in`/`$exists` filters                                                  |
+| Migration runner + auth indexes in dev          | in PR      | `pnpm db:migrate`; fixed duplicate-email signups; signed-in redirect off `/login`     |
 
-Checks: lint, typecheck, 79 unit + integration tests, 26 e2e tests, build — all green.
+Checks: lint, typecheck, 131 unit + integration tests, 58 e2e tests, build — all green.
 
 ## Roadmap
 
@@ -25,7 +28,7 @@ Checks: lint, typecheck, 79 unit + integration tests, 26 e2e tests, build — al
 **M1 — Guest loop (15 Nov 2026)**
 
 - [x] 0 Design foundation + landing page
-- [ ] 1 Accounts — signup, login, logout, session, auth rate limits
+- [~] 1 Accounts — signup, login, logout, session, auth rate limits _(API, `/login`, `/signup`, sign-out done; forgot/reset password in slice 9)_
 - [ ] 2 Create wedding + app shell + dashboard (countdown)
 - [ ] 3 Events
 - [ ] 4 Guests
@@ -56,3 +59,5 @@ Checks: lint, typecheck, 79 unit + integration tests, 26 e2e tests, build — al
 - Doc inconsistencies from the setup review not yet fixed in the docs: backups/deploy timing (PRD §16 vs SYSTEM §99), stale vendor edge cases (PRD §14), discovery fields (PRD §9.17 vs API §19), gallery IP rate limit (API §7), sliding session cookie, `firstOpenedAt` vs link-preview bots.
 - Landing nav: keep Features / How it works / Privacy / FAQ, or follow Stitch ("Dashboard", "RSVP Experience").
 - Tenant guard: replace operations could write a different `weddingId` (no model uses replace yet).
+- Account deletion added to PRD §9.25 (2026-10-03): endpoint and cascade still need SYSTEM/DB/API design before M4.
+- Stitch auth screens: some still have a stray Bodoni Moda font reference; the code uses Playfair Display.

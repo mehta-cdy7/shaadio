@@ -221,3 +221,10 @@ export const TrashIcon = (p: IconProps) => (
     <path d="M10 11v6M14 11v6" />
   </Icon>
 );
+
+export const AlertIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 4.5L2.8 19.5h18.4z" />
+    <path d="M12 10v4M12 16.8v.2" />
+  </Icon>
+);

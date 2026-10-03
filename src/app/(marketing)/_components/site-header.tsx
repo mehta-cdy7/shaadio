@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { CalendarIcon } from '@/components/ui/icons';
-import { Logo } from './logo';
+import { Logo } from '@/components/ui/logo';
 
 const SECTIONS = ['features', 'howItWorks', 'privacy', 'faq'] as const;
 const ANCHORS: Record<(typeof SECTIONS)[number], string> = {

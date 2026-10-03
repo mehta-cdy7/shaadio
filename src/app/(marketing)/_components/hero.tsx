@@ -4,7 +4,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { ArrowRightIcon } from '@/components/ui/icons';
 import { Heading, Lead } from '@/components/ui/typography';
-import { CEREMONIES } from './ceremonies';
+import { CEREMONIES } from '@/lib/ceremonies';
 import { Lattice } from './lattice';
 import { InvitationMock } from './mocks/invitation-mock';
 

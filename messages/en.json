@@ -7,16 +7,98 @@
     "title": "This link isn't available.",
     "body": "Please check the link, or ask the family to share it again."
   },
-  "comingSoon": {
-    "eyebrow": "Coming soon",
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "genericWithReference": "Something went wrong. Please try again. If it keeps happening, send us this reference: {requestId}",
+    "NETWORK_ERROR": "We couldn't reach Shaadioo. Check your internet connection and try again.",
+    "INVALID_CREDENTIALS": "Email or password is incorrect.",
+    "RATE_LIMITED": "Too many attempts. Please try again in {minutes, plural, one {# minute} other {# minutes}}."
+  },
+  "auth": {
+    "footer": {
+      "label": "Footer",
+      "home": "Home",
+      "privacy": "Privacy"
+    },
+    "aside": {
+      "quote": "“From roka to reception, all in one place.”",
+      "eyebrow": "Collaborative Indian wedding planning",
+      "ceremoniesLabel": "Ceremonies you can plan"
+    },
     "signIn": {
-      "title": "Sign in"
+      "metaTitle": "Sign in",
+      "title": "Welcome back",
+      "lead": "Sign in to continue planning.",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "showPassword": "Show",
+      "hidePassword": "Hide",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "noAccount": "New to Shaadioo?",
+      "createAccount": "Create an account",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooLong": "Use at most {max} characters."
+    },
+    "benefits": {
+      "eyebrow": "Built for Indian weddings",
+      "title": "Peace of mind for the family",
+      "family": {
+        "title": "Plan together with your whole family",
+        "body": "Invite parents, siblings and cousins to help. Everyone signs in with their own account, so nobody shares a password."
+      },
+      "guests": {
+        "title": "Guests never need an app or a password",
+        "body": "One tap on a WhatsApp link to RSVP, simple enough for grandparents and busy cousins."
+      },
+      "privacy": {
+        "title": "Private by design",
+        "body": "Your pages are unlisted and kept out of search engines, and you can delete your wedding whenever you like."
+      }
     },
     "signUp": {
-      "title": "Start planning"
+      "metaTitle": "Create account",
+      "badge": "Free for families",
+      "title": "Start planning your wedding",
+      "lead": "It takes a minute. Next, you'll add your wedding details.",
+      "name": "Your name",
+      "namePlaceholder": "Priyanka Sharma",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Create a password",
+      "passwordHint": "At least {min} characters",
+      "showPassword": "Show",
+      "hidePassword": "Hide",
+      "submit": "Create account",
+      "submitting": "Creating your account…",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "nameRequired": "Enter your name.",
+      "nameTooLong": "Use at most {max} characters.",
+      "emailInvalid": "Enter a valid email address.",
+      "emailTaken": "An account with this email already exists.",
+      "signInInstead": "Sign in instead",
+      "passwordTooShort": "Use at least {min} characters.",
+      "passwordTooLong": "Use at most {max} characters.",
+      "passwordCommon": "This password is too common. Choose another."
+    }
+  },
+  "members": {
+    "onboarding": {
+      "metaTitle": "Welcome",
+      "eyebrow": "You're signed in",
+      "title": "Welcome, {name}",
+      "body": "Your account is ready. Next you'll add your wedding details; that step is coming soon.",
+      "signedInAs": "Signed in as {email}"
     },
-    "body": "We're putting the finishing touches on accounts. You'll be able to create your wedding here very soon.",
-    "backHome": "Back to home"
+    "signOut": {
+      "label": "Sign out",
+      "pending": "Signing out…"
+    }
   },
   "landing": {
     "nav": {

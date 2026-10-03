@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 export const PASSWORD_MIN = 10;
 export const PASSWORD_MAX = 128;
+export const NAME_MAX = 80;
 
 const email = z
   .string()
@@ -12,7 +13,7 @@ const email = z
   .pipe(z.email({ message: 'Enter a valid email address.' }).max(254));
 
 export const signupSchema = z.strictObject({
-  name: z.string().trim().min(1, 'Enter your name.').max(80),
+  name: z.string().trim().min(1, 'Enter your name.').max(NAME_MAX),
   email,
   password: z
     .string()

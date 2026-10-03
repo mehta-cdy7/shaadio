@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Container } from '@/components/ui/container';
-import { Logo } from './logo';
+import { Logo } from '@/components/ui/logo';
 
 const LINKS = [
   { key: 'features', href: '#features' },

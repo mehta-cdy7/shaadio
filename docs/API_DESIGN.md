@@ -1483,7 +1483,7 @@ Same format as SYSTEM §92.
 
 - Public or third-party API, API keys, webhooks.
 - Guest list export (CSV download) — not in the PRD; trivially added as `GET /api/guests/export`.
-- Email change and account deletion.
+- Email change. (Account deletion is now in the PRD, §9.25 Account; its endpoint is not designed yet — see STATUS.md open decisions.)
 - Real-time updates; clients refetch on focus and after their own mutations.
 - Per-event RSVP endpoints (V1.1: `PUT /api/public/invite/:token/rsvp` with a per-event body).
 - Idempotency keys on `POST` creates.

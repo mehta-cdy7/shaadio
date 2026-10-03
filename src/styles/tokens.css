@@ -25,6 +25,7 @@
   --sh-brand-secondary-soft: #fddeb0; /* Sandalwood: pending states, countdown pills */
   --sh-brand-on-secondary-soft: #271900;
   --sh-brand-canvas: #fbf8f5; /* Warm Alabaster */
+  --sh-brand-panel: #efe8dc; /* Raw Silk Sand: side panels, read-only fields */
   --sh-brand-ink: #181119; /* Fig-Ink */
   --sh-brand-muted: #4e444a; /* Mauve-Stone */
   --sh-brand-hairline: #e6ded4; /* Muted Parchment Wire */
@@ -44,6 +45,7 @@
   --sh-canvas-sunken: color-mix(in oklab, var(--sh-brand-ink) 4%, var(--sh-brand-canvas));
   --sh-surface: #ffffff; /* cards, panels */
   --sh-fill: color-mix(in oklab, var(--sh-brand-ink) 6%, var(--sh-brand-canvas)); /* chips, wells */
+  --sh-panel: var(--sh-brand-panel); /* auth side panel, locked inputs */
   --sh-ink: var(--sh-brand-ink); /* body text */
   --sh-ink-muted: var(--sh-brand-muted); /* secondary text */
   --sh-ink-accent: var(--sh-brand-primary-deep); /* plum titles and emphasis */
@@ -96,6 +98,7 @@
     --sh-canvas-sunken: color-mix(in oklab, var(--sh-brand-primary-deep) 48%, #161216);
     --sh-surface: color-mix(in oklab, var(--sh-brand-primary-deep) 55%, #1b171b);
     --sh-fill: color-mix(in oklab, var(--sh-brand-primary-deep) 60%, #221c22);
+    --sh-panel: color-mix(in oklab, var(--sh-brand-primary-deep) 40%, #120e12);
     --sh-ink: #f3edf1;
     --sh-ink-muted: #b5aab1;
     --sh-ink-accent: color-mix(in oklab, var(--sh-brand-primary) 30%, white);
@@ -136,6 +139,7 @@
   --sh-canvas-sunken: color-mix(in oklab, var(--sh-brand-primary-deep) 48%, #161216);
   --sh-surface: color-mix(in oklab, var(--sh-brand-primary-deep) 55%, #1b171b);
   --sh-fill: color-mix(in oklab, var(--sh-brand-primary-deep) 60%, #221c22);
+  --sh-panel: color-mix(in oklab, var(--sh-brand-primary-deep) 40%, #120e12);
   --sh-ink: #f3edf1;
   --sh-ink-muted: #b5aab1;
   --sh-ink-accent: color-mix(in oklab, var(--sh-brand-primary) 30%, white);
@@ -175,6 +179,7 @@
   --color-canvas-sunken: var(--sh-canvas-sunken);
   --color-surface: var(--sh-surface);
   --color-fill: var(--sh-fill);
+  --color-panel: var(--sh-panel);
   --color-ink: var(--sh-ink);
   --color-ink-muted: var(--sh-ink-muted);
   --color-ink-accent: var(--sh-ink-accent);

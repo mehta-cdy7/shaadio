@@ -16,6 +16,22 @@ describe('parseCoreEnv', () => {
     expect(() => parseCoreEnv({ ...valid, MONGODB_URI: 'postgres://x' })).toThrow(/MONGODB_URI/);
   });
 
+  it('rejects a URI without a database name', () => {
+    for (const uri of [
+      'mongodb+srv://user:pass@cluster.example.net',
+      'mongodb+srv://user:pass@cluster.example.net/',
+      'mongodb+srv://user:pass@cluster.example.net/?retryWrites=true',
+    ]) {
+      expect(() => parseCoreEnv({ ...valid, MONGODB_URI: uri })).toThrow(/must name the database/);
+    }
+    expect(
+      parseCoreEnv({
+        ...valid,
+        MONGODB_URI: 'mongodb://localhost:27017/shaadioo-dev?replicaSet=rs0',
+      }),
+    ).toMatchObject({ MONGODB_URI: expect.stringContaining('/shaadioo-dev') });
+  });
+
   it('names the variable but never echoes its value', () => {
     const secret = 'mongodb-but-wrong://user:hunter2@host';
     expect(() => parseCoreEnv({ ...valid, MONGODB_URI: secret })).toThrow(

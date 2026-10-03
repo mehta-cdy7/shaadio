@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { HistoryIcon, UsersIcon } from '@/components/ui/icons';
 import { cn } from '@/lib/cn';
-import { CEREMONIES } from '../ceremonies';
+import { CEREMONIES } from '@/lib/ceremonies';
 import { MockFigure, ProgressBar, RsvpBadge, type RsvpStatus } from './parts';
 
 // Only actions the activity log records (PRD §9.26).

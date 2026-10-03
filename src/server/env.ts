@@ -10,7 +10,9 @@ const coreEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   MONGODB_URI: z
     .string()
-    .regex(/^mongodb(\+srv)?:\/\//, 'must be a mongodb:// or mongodb+srv:// connection string'),
+    .regex(/^mongodb(\+srv)?:\/\//, 'must be a mongodb:// or mongodb+srv:// connection string')
+    // Without a path the driver silently uses the "test" database (shaadioo-dev, -prod: SYSTEM §78).
+    .regex(/^mongodb(\+srv)?:\/\/[^/]+\/[^/?]+/, 'must name the database, e.g. …/shaadioo-dev'),
   APP_ORIGIN: z.url(),
 });
 
@@ -35,6 +37,8 @@ export function parseCoreEnv(source: Record<string, string | undefined>): CoreEn
 let cached: CoreEnv | undefined;
 
 export function env(): CoreEnv {
+  // In development `next dev` reloads .env.local without restarting, so re-read it each time.
+  if (process.env.NODE_ENV === 'development') return parseCoreEnv(process.env);
   cached ??= parseCoreEnv(process.env);
   return cached;
 }

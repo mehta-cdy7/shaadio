@@ -36,8 +36,9 @@ function strings(value: unknown, path: string): Array<[path: string, text: strin
   return [];
 }
 
-describe('landing copy stays within V1 scope', () => {
-  const copy = strings(messages.landing, 'landing');
+describe('marketing copy stays within V1 scope', () => {
+  // The auth side panels repeat landing-page promises, so they get the same checks.
+  const copy = [...strings(messages.landing, 'landing'), ...strings(messages.auth, 'auth')];
 
   it('has copy to check', () => {
     expect(copy.length).toBeGreaterThan(100);

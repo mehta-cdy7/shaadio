@@ -1,12 +1,21 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { ComingSoon } from '../_components/coming-soon';
+import { AuthShell } from '../_components/auth-shell';
+import { redirectIfSignedIn } from '../_lib/redirect-if-signed-in';
+import { FamilyBenefits } from '../_components/family-benefits';
+import { SignupForm } from '../_components/signup-form';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('comingSoon.signUp');
-  return { title: t('title'), robots: { index: false, follow: false } };
+  const t = await getTranslations('auth.signUp');
+  return { title: t('metaTitle'), robots: { index: false, follow: false } };
 }
 
-export default function SignupPage() {
-  return <ComingSoon page="signUp" />;
+export default async function SignupPage() {
+  await redirectIfSignedIn();
+
+  return (
+    <AuthShell aside={<FamilyBenefits />}>
+      <SignupForm />
+    </AuthShell>
+  );
 }

@@ -264,8 +264,84 @@ Email/password accounts with server-side sessions. The sign-in and sign-up pages
 1. **Signup with a member invitation** (`memberInviteToken`) is not accepted yet. It lands with member invitations in slice 1b or 1c. **Open.**
 2. **Forgot and reset password** are not built. They need the Resend adapter and the transactional reserve. **Open.**
 3. **No migration runner yet.** `0001_auth_indexes.ts` exists, but nothing applies it or records it in `schema_migrations`. It must run before production signup. Development relies on `autoIndex`. **Open.**
-4. **Safari and `Secure` on http://localhost.** Safari may refuse `Secure` cookies over plain http on localhost. Check this during slice 1b. **Verify.**
+4. **Safari and `Secure` on http://localhost.** Confirmed: sign-up succeeded but the browser dropped the cookie, so `/onboarding` redirected to `/login`. Fixed on 2026-10-03: `next dev` on an `http:` `APP_ORIGIN` omits `Secure`. Every other environment, including `next start` in CI and production, still sends it (API_DESIGN §2.1). Checked in Playwright WebKit. **Closed.**
 5. **`PATCH /api/me` and `POST /api/me/password`** are not built. **Open.**
+
+## 2026-10-03 — Slice 1b (part 1): sign-in page, auth designs in light and dark, account deletion in PRD
+
+`/login` replaces the coming-soon placeholder. The page follows the Stitch "Sign In" screen, recoloured to the landing page's tokens in both colour schemes.
+
+- **Stitch:** the three auth screens (Sign In, Create Account, Join by Invitation) used their own palette (navy ink `#2C3A47`, champagne gold `#D4AF37`) and Bodoni Moda. They were restyled to the landing tokens (plum `#4A2943`, brass `#BCA177`, Fig-Ink, Raw Silk Sand side panel). Dark versions were added using the coded landing dark mode: plum-black canvas, brass primary button with plum text. The coded landing (`tokens.css`) is the reference for both schemes, not the Stitch dark landing, which drifted to `#D4AF37`. Stitch still has a stray Bodoni Moda reference in some screens' configs. The code uses Playfair Display everywhere.
+- **Tokens:** a new `panel` role (`#EFE8DC` light, lifted plum dark) for the auth side panel and read-only inputs.
+- **Shared UI:** `components/ui/` adds `Alert`, `Field` + `inputClasses`, `PasswordInput` (Show/Hide) and `AlertIcon`. `Logo` moved there from the landing page, and `CEREMONIES` moved to `lib/ceremonies.ts`, so auth pages can use them.
+- **Errors (CLAUDE.md "show errors by code"):** `lib/api.ts` `postJson()` never throws. It returns `{ ok: false, code, details, requestId }` and drops the server's `message`. `useApiErrorMessage()` maps each code to `messages/en.json` `errors.*`. Every failure shows something:
+  - `INVALID_CREDENTIALS` → "Email or password is incorrect."
+  - `RATE_LIMITED` → "Try again in N minutes" (from `retryAfterSeconds`).
+  - `NETWORK_ERROR` (no response) → "check your connection".
+  - Any other code → a generic message plus the `requestId` to quote.
+  
+  Field checks run on the client with the shared `loginSchema` before any request.
+- **After sign-in** the page goes to `/app` if the user has a wedding, otherwise to `/onboarding` (`afterSignInPath`). Both pages arrive in slice 2.
+- **PRD:** account deletion added (§9.25 Account, §13, §14, M4). API §32 and DB §20 now point to it.
+
+**Verification:**
+- lint, format, typecheck, unit + integration tests (116) and build pass.
+- New `tests/e2e/login.spec.ts` stubs `/api/auth/login` to check the field checks, wrong credentials, rate limit, an unexpected error with its reference, network failure and Show/Hide. All 38 login + landing e2e tests pass on mobile and desktop.
+- Screenshots reviewed at 1280px and 390px in light and dark.
+
+**Design alignment:** PRD §9.1; API_DESIGN §4 and §10 (login); SYSTEM_DESIGN §7.1. Deliberate differences from Stitch:
+- No "Forgot password?" link until slice 9 builds that page.
+- The footer links Home and `/#privacy`, because no Terms page exists.
+
+### Known gaps
+1. **`/app` and `/onboarding` do not exist yet**, so a successful sign-in lands on the 404 page until slice 2. **Closed** for `/onboarding` by the placeholder below; `/app` remains for slice 2.
+2. **A signed-in user can still open `/login`.** Redirect them once `/app` exists. **Open.**
+3. **"Forgot password?" link** is hidden until slice 9. **Open.**
+4. **Local dev DB:** the earlier 500s came from `SESSION_SECRET` missing in `.env.local`, not from the database. With it set, sign-in works end to end against the Atlas dev cluster: a wrong password shows the incorrect-credentials banner, and a correct one sets the `sid` cookie and goes to `/onboarding`. The local URI also had no database name, so the driver silently used `test`. It now ends in `/shaadioo-dev`, and `env.ts` rejects a `MONGODB_URI` without a database name. **Closed.**
+5. **Account deletion design:** the endpoint and cascade are not in SYSTEM, DB or API design yet. They are needed before M4. **Open.**
+
+## 2026-10-03 — Slice 1b (part 2): sign-up page, signed-in placeholder, sign-out
+
+- **`/signup`** replaces the coming-soon page. It follows the Stitch "Create Account" screen (landing tokens, light and dark), with the "Peace of mind for the family" panel.
+  - Client checks use the shared `signupSchema`; `NAME_MAX` is now exported next to `PASSWORD_MIN`/`MAX`.
+  - Server errors are shown by code:
+    - `EMAIL_TAKEN` → under the email field, with a "Sign in instead" link.
+    - `VALIDATION_ERROR` with `fields.password` → "This password is too common". That rule exists only on the server.
+    - Anything else → the shared banner.
+  - The coming-soon component and its copy are removed.
+- **`/onboarding`** is a placeholder for slice 2's "create or join a wedding". It is a server component that resolves the session through `(members)/_lib/current-user.ts`, the same `resolveSession` the route handlers use. Without a session it redirects to `/login`. It shows the user's name and email, with a **Sign out** button that calls `POST /api/auth/logout` and returns to `/login`.
+- **Copy guardrail** (`tests/content/landing-copy.test.ts`) now also checks the `auth` messages, because the side panels repeat landing-page promises.
+- **Session cookie in local dev:** `Secure` is left off only for `next dev` on a plain-http origin, so Safari and `127.0.0.1` can sign in. This deliberately differs from API_DESIGN §2.1, for development only.
+- **Env and connection:** `MONGODB_URI` must name its database. Without one, the driver silently used `test`. In development, `env()` re-reads `process.env`, and `connectDb()` reconnects when the URI changes. Before this, `next dev` kept the connection cached on `globalThis` with the old URI, so new users still went to `test` after `.env.local` was fixed. Production behaviour is unchanged.
+
+**Verification:**
+- lint, format, typecheck, unit + integration tests (117) and build pass.
+- 52 e2e tests pass (landing, login, signup) on mobile and desktop. The new `signup.spec.ts` stubs the API for field checks, EMAIL_TAKEN, the common password, the rate limit and success.
+- Manually against the Atlas dev cluster: sign-up → `/onboarding` shows the name → Sign out clears the `sid` cookie → `/onboarding` redirects to `/login` → sign-in returns to `/onboarding`.
+
+### Known gaps
+1. **Signed-in users can still open `/login` and `/signup`.** Redirect them once slice 2 knows where to send them. **Closed** 2026-10-03 (next entry).
+2. **Server components cannot re-send the sliding session cookie.** The next API call refreshes it. **Verify** once `/app` pages make few API calls.
+
+## 2026-10-03 — Migration runner, auth indexes in dev, sign-in polish
+
+A manual browser test of the auth flow found that **a second sign-up with the same email succeeded**. The Atlas dev database had no indexes on `users` or `sessions` (only `_id`), so the unique email index that signup relies on for `EMAIL_TAKEN` did not exist. Login's `findOne` then picks an arbitrary one of the duplicates, and expired sessions were never TTL-deleted. Likely cause: Mongoose `autoIndex` builds a model's indexes once per process, and the dev reconnect-on-URI-change (previous entry) left the newly selected database without them. Production never relies on `autoIndex` (§17.2), so it needs the migration runner anyway.
+
+- **Runner** (`migrations/runner.ts`, DATABASE_DESIGN §17.1): applies registered migrations in order and records each in `schema_migrations` only after `up` succeeds, so a failed one is retried. Migrations are listed by hand in `MIGRATIONS`; `tests/db/migrations.test.ts` fails if a numbered file is not registered.
+- **`pnpm db:migrate`** (`scripts/migrate.ts`): plain Node with type stripping (Node 22.18+/24, no new dependency), reading `.env.local` if present. It cannot import `src/server` because of `server-only`. It refuses a database that looks like production (`NODE_ENV=production` or a name containing `prod`) unless `--production` is passed. `tsconfig.json` gains `allowImportingTsExtensions` for the `.ts` import specifiers Node needs.
+- **Dev database:** deleted the four duplicate QA test users from the manual test (and their sessions), then ran `0001_auth_indexes`. `users.email` is unique; `sessions` has `tokenHash` unique, `userId`, and the `expiresAt` TTL; `rate_limits` has its TTL.
+- **Signed-in users** opening `/login` or `/signup` are redirected to `afterSignInPath` (`(auth)/_lib/redirect-if-signed-in.ts`). Not applied in the `(auth)` layout, because `/join/[token]` and `/reset-password` make sense while signed in. `currentUser` moved to `src/app/_lib/current-user.ts` so both route groups share it.
+- **Focus:** after a failed client check or a server field error (`EMAIL_TAKEN`, common password), focus moves to the first invalid field (`useFocusFirstInvalid`). After `INVALID_CREDENTIALS`, the email is kept and the password is cleared and focused.
+
+**Verification:**
+- lint, format, typecheck, unit + integration tests (131) and build pass. New: runner integration tests (indexes created, re-run is a no-op, duplicate email rejected, a failed migration is not recorded and is retried), registry test, redirect unit test.
+- 58 e2e tests pass on mobile and desktop, three repeats for login/signup. The "goes to onboarding" signup test was flaky: the stub sets no cookie, so `/onboarding` bounces to `/login` before the URL could be read. It now waits for the `/onboarding` request.
+- Manually against the Atlas dev cluster (Playwright Chromium): duplicate signup → 409 with focus on email; signed-in `/login` and `/signup` → `/onboarding`; wrong password clears and focuses the field; sign-in works.
+
+### Known gaps
+1. **CI e2e uses a standalone `mongo:8` and no `SESSION_SECRET`,** so no e2e test can create a real session (transactions need a replica set). Real-session flows are covered by integration tests and manual runs only. **Open.**
+2. **Integration tests still get indexes from `autoIndex`,** not from the migrations. Running migrations in the test global setup would match production. **Open.**
+3. **Run `pnpm db:migrate` against each new environment** (Vercel previews' database, production at go-live, slice 8) before deploying code that depends on it. **Open.**
 
 ---
 

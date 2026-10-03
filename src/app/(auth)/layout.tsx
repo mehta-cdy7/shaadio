@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 /**
  * Sign-in surfaces: /login, /signup, /forgot-password, /reset-password, /join/[token].
- * No pages yet — they arrive with the auth increment.
+ * /login and /signup are live; the others arrive with their slices.
  */
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return children;

@@ -853,6 +853,17 @@ See 9.26.
 ## Danger Zone (Admin only)
 **Delete wedding:** permanently deletes the wedding and all its data, including guest names, phone numbers, emails, RSVPs, and photos. Requires typing the wedding name to confirm.
 
+## Account (every member)
+Edit your name and change your password.
+
+**Delete my account:** any signed-in user can permanently delete their own account. Requires the current password and typing `DELETE` to confirm.
+
+- The user's sessions, password reset tokens and personal details (name, email, password hash) are deleted. The email can be used to sign up again.
+- If the user is a member of a wedding, they leave it first, with the same effects as an Admin removing them: access ends immediately and their assigned tasks become unassigned.
+- If they are the **only member** of the wedding, the wedding is deleted with the account (same as Delete wedding).
+- If they are the **last Admin** and other members remain → blocked; they must make someone else Admin, or delete the wedding, first.
+- Records they made inside the wedding (guests, expenses, activity log entries) stay with the wedding; their name on those records is shown as "Former member".
+
 ---
 
 # 9.26 Activity Log
@@ -1016,6 +1027,9 @@ The Google Places API key and email provider credentials are server-side only.
 ### Guest Personal Data
 Shaadioo stores names, phone numbers, and emails of guests who never signed up. Collect only the listed fields, never share them with third parties, and permanently delete them when the wedding is deleted.
 
+### Account Deletion
+Members can delete their own account at any time (9.25 Account). Together with Delete wedding, this means a family can remove everything it has stored in Shaadioo.
+
 ---
 
 # 14. Error and Edge Cases
@@ -1027,6 +1041,8 @@ Shaadioo stores names, phone numbers, and emails of guests who never signed up. 
 - Invitation expires (after 7 days) → Admin resends.
 - Admin removes a Manager → Manager loses access immediately; assigned tasks become unassigned.
 - Admin attempts to remove or demote the final Admin → blocked.
+- Last Admin tries to delete their account while other members remain → blocked; they must promote someone or delete the wedding first.
+- Only member deletes their account → the wedding is deleted too.
 
 ### Guests
 - Guest opens invalid or regenerated link → friendly "invitation not found" page.
@@ -1137,7 +1153,7 @@ Target dates assume a mid-December pilot wedding; adjust once the date is fixed.
 **Target: 31 March 2027**
 
 - Remaining two website themes
-- Settings completion and Danger Zone
+- Settings completion and Danger Zone, including Delete my account
 - Security review
 - Performance pass on guest pages
 - Analytics for pilot metrics

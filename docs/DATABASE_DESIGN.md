@@ -1474,7 +1474,7 @@ Same format as the ADRs in SYSTEM §92.
 
 # 20. Not in V1
 
-- **User account deletion.** The PRD does not include it. It will be needed before a public launch under India's data protection law; the wedding-deletion path already covers guest data.
+- **User account deletion.** Added to the PRD on 2026-10-03 (§9.25 Account, M4). The cascade (sessions, reset tokens, membership, sole-member wedding, "Former member" display) is not designed here yet; design it before M4 starts.
 - **Multiple weddings per user.** An index change (§5.5) plus a "current wedding" in the session.
 - **Full-text search.** Guest search is a case-insensitive prefix match over ≤ 1,000 scoped documents; Atlas Search is not needed.
 - **Per-event RSVP.** V1.1, via §17.4.

@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Container } from '@/components/ui/container';
 import { ChecklistIcon, RupeeIcon, TagIcon, UsersIcon } from '@/components/ui/icons';
 import { Section } from '@/components/ui/section';
-import { CEREMONIES } from './ceremonies';
+import { CEREMONIES } from '@/lib/ceremonies';
 import { IconTile } from './icon-tile';
 import { SectionIntro } from './section-intro';
 
