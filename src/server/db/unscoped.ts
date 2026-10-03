@@ -1,4 +1,6 @@
 import 'server-only';
+import type { Types } from 'mongoose';
+import { connectDb } from './connection';
 
 /**
  * Unscoped data access: the ONLY module allowed to bypass the tenant guard (DATABASE_DESIGN §6.3,
@@ -19,6 +21,30 @@ import 'server-only';
  *   9. Migrations                     run by an operator from migrations/, never by the app
  *
  * Adding a tenth lookup needs explicit approval and a matching entry in DATABASE_DESIGN §6.3.
- * Nothing is implemented yet: each lookup lands with the feature that needs it.
+ * Each lookup lands with the feature that needs it.
  */
-export {};
+
+export type MembershipRef = {
+  weddingId: Types.ObjectId;
+  role: 'ADMIN' | 'MANAGER';
+  label?: string;
+};
+
+/**
+ * Lookup 1: the caller's membership, found by `userId` alone (unique: one wedding per user). The
+ * caller continues scoped with the returned `weddingId` and must still check the wedding is ACTIVE.
+ */
+export async function findMembershipByUserId(
+  userId: Types.ObjectId,
+): Promise<MembershipRef | undefined> {
+  const mongoose = await connectDb();
+  const doc = await mongoose.connection
+    .db!.collection('wedding_memberships')
+    .findOne({ userId }, { projection: { _id: 0, weddingId: 1, role: 1, label: 1 } });
+  if (!doc) return undefined;
+  return {
+    weddingId: doc.weddingId as Types.ObjectId,
+    role: doc.role as MembershipRef['role'],
+    ...(typeof doc.label === 'string' ? { label: doc.label } : {}),
+  };
+}

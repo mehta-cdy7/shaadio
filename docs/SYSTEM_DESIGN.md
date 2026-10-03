@@ -662,8 +662,10 @@ Because the website lists all events, event-level invitations control RSVP and h
 # 27. Wedding Slug Generation
 
 ```text
-normalize(brideName)-normalize(groomName)-<random suffix>
+normalize(firstName)-normalize(secondName)-<random suffix>
 ```
+
+The two names are taken in the wedding's `nameOrder` at creation (bride first by default, PRD §9.2).
 
 Example:
 

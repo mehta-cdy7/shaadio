@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { describedBy, Field, inputClasses } from '@/components/ui/field';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useApiErrorMessage } from '@/components/ui/use-api-error';
-import { useFocusFirstInvalid } from '@/components/ui/use-focus-first-invalid';
+import { useFieldErrors } from '@/components/ui/use-field-errors';
 import { postJson } from '@/lib/api';
 import {
   NAME_MAX,
@@ -31,9 +31,8 @@ export function SignupForm() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [formError, setFormError] = useState<string>();
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const formRef = useRef<HTMLFormElement>(null);
-  useFocusFirstInvalid(formRef, fieldErrors);
+  const { fieldErrors, setFieldErrors, clearEdited } = useFieldErrors<FieldErrors>(formRef);
 
   // Shown for EMAIL_TAKEN: the most likely fix is signing in, so offer it right there.
   const emailTaken = (
@@ -118,7 +117,13 @@ export function SignupForm() {
         <p className="text-body-lg text-ink-muted">{t('lead')}</p>
       </div>
 
-      <form ref={formRef} noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
+      <form
+        ref={formRef}
+        noValidate
+        onSubmit={onSubmit}
+        onInput={clearEdited}
+        className="flex flex-col gap-5"
+      >
         <Field id="name" label={t('name')} error={fieldErrors.name}>
           <input
             id="name"

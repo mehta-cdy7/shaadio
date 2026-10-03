@@ -25,7 +25,7 @@ const MINUTE = 60;
 const HOUR = 60 * MINUTE;
 
 /** Result of signup and login: the response body plus the token for the cookie. */
-export type AuthResult = { me: MeResponse; token: string };
+export type AuthResult = { me: MeResponse; token: string; userId: Types.ObjectId };
 
 export async function signup(input: SignupInput, ip: string): Promise<AuthResult> {
   await consume({ scope: 'signup', key: ip, limit: 10, windowSeconds: HOUR });
@@ -50,7 +50,7 @@ export async function signup(input: SignupInput, ip: string): Promise<AuthResult
       await Session.create([sessionFields(created!._id, token, now)], { session });
       return created!;
     });
-    return { me: { user: toUserResponse(user) }, token };
+    return { me: { user: toUserResponse(user) }, token, userId: user._id };
   } catch (error) {
     // The unique email index decides, so two concurrent signups cannot both succeed.
     if ((error as { code?: number }).code === 11000) {
@@ -80,7 +80,7 @@ export async function login(input: LoginInput, ip: string): Promise<AuthResult> 
     await Session.create([sessionFields(user._id, token, now)], { session });
     await User.updateOne({ _id: user._id }, { $set: { lastLoginAt: now } }, { session });
   });
-  return { me: { user: toUserResponse(user) }, token };
+  return { me: { user: toUserResponse(user) }, token, userId: user._id };
 }
 
 export async function logout(token: string | undefined): Promise<void> {

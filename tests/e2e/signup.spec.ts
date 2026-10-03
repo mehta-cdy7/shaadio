@@ -54,6 +54,19 @@ test.describe('sign-up page', () => {
     expect(called).toBe(false);
   });
 
+  test("clears a field's error as soon as it is edited, without moving focus", async ({ page }) => {
+    await page.getByRole('button', { name: 'Create account' }).click();
+    await expect(page.getByText('Enter your name.')).toBeVisible();
+    await expect(page.getByLabel('Your name')).toBeFocused();
+
+    await page.getByLabel('Email').fill('priya@example.com');
+    await expect(page.getByText('Enter a valid email address.')).toBeHidden();
+    await expect(page.getByLabel('Email')).not.toHaveAttribute('aria-invalid', 'true');
+    await expect(page.getByLabel('Email')).toBeFocused();
+    // Fields not yet edited keep their errors.
+    await expect(page.getByText('Enter your name.')).toBeVisible();
+  });
+
   test('offers sign-in when the email is already registered', async ({ page }) => {
     await stubSignup(page, 409, {
       error: { code: 'EMAIL_TAKEN', message: 'server text', requestId: 'r1' },

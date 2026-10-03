@@ -2,11 +2,16 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 import { AlertIcon } from './icons';
 
-/** Text input styles. `aria-invalid` switches the border to the danger colour. */
-export const inputClasses =
-  'h-12 w-full rounded-control border border-line bg-surface px-3.5 font-sans text-body-lg text-ink ' +
+const controlClasses =
+  'w-full rounded-control border border-line bg-surface px-3.5 font-sans text-body-lg text-ink ' +
   'placeholder:text-ink-muted/70 transition-colors focus-visible:border-transparent focus-visible:outline-2 ' +
   'focus-visible:outline-focus aria-invalid:border-danger read-only:bg-panel read-only:text-ink-muted';
+
+/** Text input styles. `aria-invalid` switches the border to the danger colour. */
+export const inputClasses = `h-12 ${controlClasses}`;
+
+/** Multi-line text styles, matching inputs. */
+export const textareaClasses = `min-h-28 resize-y py-3 ${controlClasses}`;
 
 /**
  * Label, control, hint and error for one form field. The control must carry `id={id}` and

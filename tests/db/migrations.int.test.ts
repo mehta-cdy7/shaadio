@@ -5,7 +5,7 @@ import { MIGRATIONS_COLLECTION, runMigrations } from '../../migrations/runner';
 import { connectDb } from '@/server/db/connection';
 
 /**
- * The migration runner and 0001 (DATABASE_DESIGN §5, §17.1). Each test gets its own empty
+ * The migration runner, 0001 and 0002 (DATABASE_DESIGN §5, §17.1). Each test gets its own empty
  * database, so Mongoose autoIndex on the shared test database cannot create the indexes for it.
  */
 const dbs: mongo.Db[] = [];
@@ -33,7 +33,7 @@ afterEach(async () => {
 describe('runMigrations', () => {
   it('creates the auth indexes and records the migration', async () => {
     const db = await freshDb();
-    expect(await runMigrations(db)).toEqual(['0001_auth_indexes']);
+    expect(await runMigrations(db)).toEqual(['0001_auth_indexes', '0002_wedding_indexes']);
 
     expect(await indexKeys(db, 'users')).toContainEqual({ key: { email: 1 }, unique: true });
     const sessions = await indexKeys(db, 'sessions');
@@ -43,7 +43,20 @@ describe('runMigrations', () => {
     expect(await indexKeys(db, 'rate_limits')).toContainEqual({ key: { expiresAt: 1 }, ttl: 0 });
 
     const records = await db.collection(MIGRATIONS_COLLECTION).find().toArray();
-    expect(records.map((r) => r._id)).toEqual(['0001_auth_indexes']);
+    expect(records.map((r) => r._id)).toEqual(['0001_auth_indexes', '0002_wedding_indexes']);
+  });
+
+  it('creates the wedding and membership indexes', async () => {
+    const db = await freshDb();
+    await runMigrations(db);
+    const weddings = await indexKeys(db, 'weddings');
+    expect(weddings).toContainEqual({ key: { 'website.slug': 1 }, unique: true });
+    expect(weddings).toContainEqual({ key: { 'gallery.token': 1 }, unique: true });
+    expect(weddings).toContainEqual({ key: { status: 1 } });
+    expect(weddings).toContainEqual({ key: { weddingDate: 1 } });
+    const memberships = await indexKeys(db, 'wedding_memberships');
+    expect(memberships).toContainEqual({ key: { userId: 1 }, unique: true });
+    expect(memberships).toContainEqual({ key: { weddingId: 1, role: 1 } });
   });
 
   it('skips migrations already applied', async () => {
@@ -72,6 +85,6 @@ describe('runMigrations', () => {
     expect(await db.collection(MIGRATIONS_COLLECTION).countDocuments()).toBe(0);
 
     await db.collection('users').deleteOne({ name: 'B' });
-    expect(await runMigrations(db)).toEqual(['0001_auth_indexes']);
+    expect(await runMigrations(db)).toEqual(['0001_auth_indexes', '0002_wedding_indexes']);
   });
 });
