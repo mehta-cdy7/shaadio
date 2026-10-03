@@ -89,15 +89,158 @@
   },
   "members": {
     "onboarding": {
-      "metaTitle": "Welcome",
-      "eyebrow": "You're signed in",
-      "title": "Welcome, {name}",
-      "body": "Your account is ready. Next you'll add your wedding details; that step is coming soon.",
-      "signedInAs": "Signed in as {email}"
+      "metaTitle": "Create your wedding",
+      "step": "Step 2 of 2",
+      "stepLabel": "Wedding setup",
+      "title": "Tell us about your wedding",
+      "lead": "You can change any of this later.",
+      "signedInAs": "Signed in as {email}",
+      "required": "required",
+      "optional": "Optional",
+      "brideName": "Bride's name",
+      "groomName": "Groom's name",
+      "nameOrder": "How should your names appear?",
+      "nameOrderHint": "Shown on your invitations, website and dashboard. You can change it later.",
+      "weddingDate": "Wedding date",
+      "weddingDateHint": "The main wedding day. Add other ceremonies as events later.",
+      "city": "Wedding city",
+      "cityPlaceholder": "e.g. Dehradun",
+      "state": "State",
+      "statePlaceholder": "e.g. Uttarakhand",
+      "venue": "Venue or address",
+      "venuePlaceholder": "e.g. Forest Resort & Spa, Rajpur Road",
+      "weddingTitle": "Wedding title",
+      "weddingTitlePlaceholder": "e.g. {bride} & {groom}'s Wedding",
+      "description": "A short note",
+      "descriptionPlaceholder": "A welcome note for your family, or anything they should know",
+      "submit": "Create wedding",
+      "submitting": "Creating your wedding…",
+      "invited": "Invited by family?",
+      "invitedBody": "Open the invitation link from your email instead.",
+      "brideRequired": "Enter the bride's name.",
+      "groomRequired": "Enter the groom's name.",
+      "dateRequired": "Choose the wedding date.",
+      "dateInPast": "Choose today or a later date.",
+      "cityRequired": "Enter the city.",
+      "tooLong": "Use at most {max} characters.",
+      "preview": {
+        "label": "Live preview",
+        "eyebrow": "Wedding celebration",
+        "caption": "This is how your wedding will appear to your family.",
+        "bride": "Bride",
+        "groom": "Groom",
+        "date": "Wedding date",
+        "city": "City"
+      }
     },
     "signOut": {
       "label": "Sign out",
       "pending": "Signing out…"
+    },
+    "countdown": {
+      "pill": "{days, plural, =0 {Today is the wedding day} one {# day to go} other {# days to go}}",
+      "unit": "{days, plural, one {day to go} other {days to go}}",
+      "today": "Today is the wedding day",
+      "past": "{days, plural, one {# day} other {# days}} since the wedding"
+    },
+    "shell": {
+      "skipToContent": "Skip to content",
+      "navLabel": "Main",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "nav": {
+        "dashboard": "Dashboard",
+        "events": "Events",
+        "guests": "Guests",
+        "invitations": "Invitations & RSVPs",
+        "tasks": "Tasks",
+        "expenses": "Expenses",
+        "vendors": "Vendors",
+        "website": "Website",
+        "photos": "Photos",
+        "livestream": "Livestream",
+        "settings": "Settings"
+      },
+      "role": {
+        "ADMIN": "Admin",
+        "MANAGER": "Manager"
+      }
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "body": "{section} is still being built. It will appear here as soon as it's ready.",
+      "back": "Back to dashboard"
+    },
+    "dashboard": {
+      "metaTitle": "Dashboard",
+      "title": "Dashboard",
+      "greeting": {
+        "morning": "Good morning, {name}",
+        "afternoon": "Good afternoon, {name}",
+        "evening": "Good evening, {name}"
+      },
+      "countdownEyebrow": "Wedding countdown",
+      "weddingOf": "The wedding of",
+      "getStarted": {
+        "title": "Get started",
+        "lead": "Three steps to set up your wedding.",
+        "events": {
+          "title": "Add your ceremonies",
+          "body": "Roka, haldi, mehendi, sangeet, wedding, reception",
+          "cta": "Add event"
+        },
+        "guests": {
+          "title": "Add your guest list",
+          "body": "Add each family once, then share their invitation on WhatsApp",
+          "cta": "Add guests"
+        },
+        "members": {
+          "title": "Invite family to help plan",
+          "body": "Parents, siblings and cousins get their own sign-in, so nobody shares a password",
+          "cta": "Invite member"
+        }
+      },
+      "cards": {
+        "label": "Summary",
+        "events": "Events",
+        "eventsNext": "Next: {name}",
+        "eventsNone": "No events yet",
+        "tasks": "Tasks",
+        "tasksProgress": "{percent}% completed",
+        "tasksNone": "No tasks yet",
+        "invitations": "Invitations",
+        "peopleInvited": "{people, plural, one {# person} other {# people}} invited",
+        "rsvps": "RSVPs",
+        "responded": "responded",
+        "attending": "Attending",
+        "notAttending": "Not attending",
+        "pending": "Pending",
+        "expenses": "Expenses",
+        "expensesNote": "Total recorded",
+        "vendors": "Vendors",
+        "vendorsNote": "{count, plural, =0 {None saved yet} one {# saved} other {# saved}}"
+      },
+      "upcomingEvents": {
+        "title": "Upcoming events",
+        "viewAll": "View all events",
+        "confirmed": "{people, plural, one {# confirmed} other {# confirmed}}",
+        "emptyTitle": "No events yet",
+        "emptyBody": "Add your first ceremony to plan its date, time and venue.",
+        "emptyCta": "Add your first event"
+      },
+      "upcomingTasks": {
+        "title": "Upcoming tasks",
+        "viewAll": "View all tasks",
+        "dueToday": "Due today",
+        "dueTomorrow": "Due tomorrow",
+        "dueIn": "Due in {days} days",
+        "overdue": "Overdue by {days, plural, one {# day} other {# days}}",
+        "noDueDate": "No due date",
+        "unassigned": "Unassigned",
+        "emptyTitle": "No tasks yet",
+        "emptyBody": "Create tasks and assign them to family members.",
+        "emptyCta": "Create a task"
+      }
     }
   },
   "landing": {

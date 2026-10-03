@@ -151,5 +151,7 @@ export default defineConfig([
     'playwright-report/**',
     'test-results/**',
     'next-env.d.ts',
+    // Other Claude Code sessions' git worktrees: separate checkouts, linted there.
+    '.claude/**',
   ]),
 ]);

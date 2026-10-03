@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { describedBy, Field, inputClasses } from '@/components/ui/field';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useApiErrorMessage } from '@/components/ui/use-api-error';
-import { useFocusFirstInvalid } from '@/components/ui/use-focus-first-invalid';
+import { useFieldErrors } from '@/components/ui/use-field-errors';
 import { postJson } from '@/lib/api';
 import { loginSchema, PASSWORD_MAX, type MeResponse } from '@/modules/auth/schemas';
 import { afterSignInPath } from './after-sign-in';
@@ -23,9 +23,8 @@ export function LoginForm() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [formError, setFormError] = useState<string>();
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const formRef = useRef<HTMLFormElement>(null);
-  useFocusFirstInvalid(formRef, fieldErrors);
+  const { fieldErrors, setFieldErrors, clearEdited } = useFieldErrors<FieldErrors>(formRef);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,7 +85,13 @@ export function LoginForm() {
         <p className="text-body-lg text-ink-muted">{t('lead')}</p>
       </div>
 
-      <form ref={formRef} noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
+      <form
+        ref={formRef}
+        noValidate
+        onSubmit={onSubmit}
+        onInput={clearEdited}
+        className="flex flex-col gap-5"
+      >
         <Field id="email" label={t('email')} error={fieldErrors.email}>
           <input
             id="email"

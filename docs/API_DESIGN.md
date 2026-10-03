@@ -499,6 +499,7 @@ type Wedding = {
   id: string;
   brideName: string;
   groomName: string;
+  nameOrder: 'BRIDE_FIRST' | 'GROOM_FIRST';   // how the couple's names are shown together
   title?: string;
   description?: string;
   weddingDate: string;                 // "YYYY-MM-DD"
@@ -523,6 +524,7 @@ Signed-in user without a wedding.
 {
   brideName: string; groomName: string; weddingDate: string;
   location: Wedding['location'];
+  nameOrder?: 'BRIDE_FIRST' | 'GROOM_FIRST';   // default BRIDE_FIRST
   title?: string; description?: string;
   timezone?: string;                   // default "Asia/Kolkata"; not editable later in V1
 }
@@ -530,13 +532,17 @@ Signed-in user without a wedding.
 
 **201** `Wedding`. The caller becomes the first Admin; the website slug and gallery token are generated. `409 ALREADY_MEMBER` if the caller already has a wedding.
 
+`weddingDate` must be today or later in the wedding's timezone (PRD §9.2); otherwise `400 VALIDATION_ERROR` with `details.fields.weddingDate`.
+
 ## `GET /api/wedding`
 
 **200** `Wedding`.
 
 ## `PATCH /api/wedding`
 
-Any of: `brideName`, `groomName`, `title`, `description`, `weddingDate`, `location`, `rsvpDeadline`. **200** `Wedding`.
+Any of: `brideName`, `groomName`, `nameOrder`, `title`, `description`, `weddingDate`, `location`, `rsvpDeadline`. **200** `Wedding`.
+
+- A new `weddingDate` must be today or later, as on create.
 
 - The website slug does **not** change when names or date change (SYSTEM §27).
 - `timezone` is not editable: changing it would silently move every event's time.
@@ -547,7 +553,7 @@ Any of: `brideName`, `groomName`, `title`, `description`, `weddingDate`, `locati
 Admin.
 
 ```ts
-{ confirmName?: string }   // required unless the wedding isEmpty; must equal "<brideName> & <groomName>"
+{ confirmName?: string }   // required unless the wedding isEmpty; must equal the names in nameOrder, e.g. "<brideName> & <groomName>"
 ```
 
 **202** `{ status: 'DELETING' }`. Access ends immediately for every member, guest link and the website; the data is removed as described in `DATABASE_DESIGN.md` §14.8. The caller stays signed in, now without a wedding.

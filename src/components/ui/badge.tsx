@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/cn';
 
-type Tone = 'neutral' | 'accent' | 'plain' | 'soft' | 'success' | 'pending';
+type Tone = 'neutral' | 'accent' | 'plain' | 'soft' | 'success' | 'pending' | 'danger';
 type Size = 'sm' | 'md';
 
 const tones: Record<Tone, string> = {
@@ -14,6 +14,8 @@ const tones: Record<Tone, string> = {
   // RSVP and task states: attending/done, waiting for a reply.
   success: 'bg-success-subtle text-success',
   pending: 'bg-pending text-on-pending',
+  // Overdue tasks.
+  danger: 'bg-danger-subtle text-danger',
 };
 
 const sizes: Record<Size, string> = {

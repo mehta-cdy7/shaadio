@@ -216,6 +216,9 @@
   --text-display: 3rem;
   --text-display--line-height: 1.08;
   --text-display--letter-spacing: -0.02em;
+  --text-countdown: 4.5rem; /* the dashboard's days-to-go number */
+  --text-countdown--line-height: 1;
+  --text-countdown--letter-spacing: -0.03em;
   --text-display-sm: 2.125rem;
   --text-display-sm--line-height: 2.625rem;
   --text-display-sm--letter-spacing: -0.015em;

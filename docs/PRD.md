@@ -348,7 +348,10 @@ Guests are excluded from authentication.
 After signing up **without** an invitation, a user who has no wedding is prompted to create one.
 
 Required: bride name, groom name, wedding date, wedding city/location.
-Optional: wedding title, description, cover image.
+Optional: wedding title, description, cover image, name order.
+
+- **Wedding date** must be today or later (in the wedding's timezone). Creating a wedding for a past date is not allowed.
+- **Name order:** the couple chooses whether their names appear bride first ("Princi & Akshay") or groom first ("Akshay & Princi"). The default is bride first. The choice applies everywhere the couple's names are shown together and can be changed later in Wedding Details.
 
 Example:
 

@@ -345,6 +345,56 @@ A manual browser test of the auth flow found that **a second sign-up with the sa
 
 ---
 
+## 2026-10-04 — Slice 2: create wedding, app shell, dashboard
+
+From the Stitch screens "Create your wedding" (desktop + mobile) and "Wedding Dashboard" (new, in progress, mobile), recoloured to the landing tokens, and wired to real data.
+
+**Product decisions (2026-10-04), written into the docs:**
+- **Name order** is the couple's choice, bride first by default: new `weddings.nameOrder` (`BRIDE_FIRST` | `GROOM_FIRST`) in PRD §9.2, DATABASE_DESIGN §5.4 and API §11. It sets the order everywhere both names appear, the website slug (SYSTEM §27) and the delete confirmation text. `lib/couple.ts` `coupleNames()` is the only place that orders names.
+- **Wedding date must be today or later** in the wedding's timezone (PRD §9.2, API §11), on create and on any later date change. Today is allowed, for families who sign up on the day.
+
+**Data and API:**
+- `modules/weddings`: `wedding.model.ts` (§5.4: embedded website, gallery, counters, uploadStats; gallery token `select: false`; not tenant-guarded, always addressed by `_id` + `status: 'ACTIVE'`), `slug.ts`, `wedding.service.ts`, `mapper.ts` (fields picked one by one so the gallery token, counters and status never leak), `schemas.ts`.
+- `modules/members`: `membership.model.ts` (§5.5, tenant-guarded, unique `userId`) and `addMember()`.
+- `POST /api/wedding` (withUser): one transaction inserts the wedding and the first Admin membership (§8). The unique `userId` index decides ALREADY_MEMBER, so concurrent creates leave one wedding. Slug: names in display order + 6-char `[a-z0-9]` suffix from `crypto.randomInt`, retried on collision. Gallery token: 128-bit base64url.
+- `GET /api/wedding` (withMember). `withMember` (API §3.2) lives in `modules/weddings`: membership via `unscoped.ts` lookup 1 (`findMembershipByUserId`), then the ACTIVE wedding; none → 403 NO_WEDDING; Admin-only routes → FORBIDDEN.
+- `GET /api/me` and `POST /api/auth/login` now include `membership` and `wedding` (with `nameOrder`), so sign-in lands on `/app` when there is a wedding.
+- `modules/dashboard` `getDashboard(ctx)`: real days-to-go; every other number is 0 until its module exists (no `GET /api/dashboard` route yet, the page calls the service, API-08). `isWeddingEmpty()` is always true for the same reason.
+- Migration `0002_wedding_indexes` (weddings slug/token unique, status, weddingDate; memberships userId unique, weddingId+role). **Applied to the Atlas dev database.**
+
+**Pages:**
+- `/onboarding`: the create form (bride, groom, name order, date, city required; venue, title, short note optional) with a live preview that follows the name order and shows days to go. Client checks use the shared schema; a server date error (clocks disagree) shows on the date field. Signed out → `/login`; already in a wedding → `/app`.
+- `/app` layout: signed out → `/login`, no wedding → `/onboarding`. Shell (`src/components/app-shell`): sidebar with the couple's names and date, all PRD §10 sections (unbuilt ones 404), settings, member name, role and sign-out; on phones a top bar and a `<dialog>` menu. Nav items are looked up in the client component by group name, because icon components cannot cross from a server component.
+- Dashboard: countdown band (today and past states), "Get started" while there are no events or guests, six summary cards, upcoming events and tasks with empty states. Components are already built for filled data (seen with sample data during design).
+- `app/_lib/current-member.ts`: the server-component version of `withMember`, cached per request.
+- Shared: `lib/dates.ts` (`todayIn`, `hourIn`, `daysBetween`, `addDays`, `isCalendarDate`, day-first `en-IN` dates, 12-hour times; all UTC-safe), `lib/money.ts`, `textareaClasses`, a `danger` badge tone, `--text-countdown`, 12 icons, `SignOutButton` variants. ESLint and Prettier ignore `.claude/` (other sessions' worktrees broke `pnpm lint`).
+
+**Review fixes (same day, from testing):**
+- **Errors clear on edit:** `useFieldErrors` (replaces `useFocusFirstInvalid`) is shared by login, signup and create wedding. Editing a field removes its error immediately; focus moves to the first invalid field only after a submit, so typing never jumps the cursor.
+- **Unbuilt sections:** `app/[...section]/page.tsx` shows "Coming soon" inside the shell for any nav section (and its sub-paths, e.g. `/app/settings/members`); other paths still 404. Real pages take precedence as each slice lands.
+- **Date picker** has `min` = today in `Asia/Kolkata`; the schema stays the real guard.
+- **City and state** are separate fields (state optional, `location.state`); the city placeholder is just "e.g. Dehradun". `formattedAddress` = venue, city, state.
+- **Sidebar couple card** wraps long names instead of cutting each one off; the full names are in `title`.
+
+**Verification:**
+- lint, format, typecheck, 165 unit + integration tests, build, 60 e2e tests pass (new: errors clear on edit).
+- New `tests/security/wedding.int.test.ts` (own database): 401 without a session; creates wedding + ADMIN membership; no gallery token, slug, counters or status in the response; name order sets slug and response; ALREADY_MEMBER on a second create; two concurrent creates leave one wedding; past date, unknown and server-owned fields → 400 and nothing written; today accepted; NO_WEDDING without membership; each member sees only their own wedding; DELETING counts as no wedding; `/api/me` and login include the wedding; memberships are tenant-guarded. Migration tests cover 0002.
+- Manually on `pnpm dev` + Atlas dev (Playwright, throwaway `design-preview-*@example.com` accounts): signup → `/onboarding`; `/app` without a wedding → `/onboarding`; past date error; groom-first create → `/app` shows "Akshay & Princi" and 133 days; `/onboarding` with a wedding → `/app`; sign out and sign in → `/app`; phone layout and menu; dark mode.
+- Manual run in Google Chrome after the review fixes (2026-10-04, throwaway `wed-qa+*@example.com` accounts): field errors clear on edit (signup and onboarding); date picker `min` is today; city and state stored separately; long names wrap in the sidebar and countdown card; `/app/events` shows "Coming soon" inside the shell, unknown `/app/*` paths 404; HTML in names renders as text; double-click sends one POST. **DELETING guard:** with a test wedding set to `DELETING` in the dev database, sign-in lands on `/onboarding` and submitting shows the generic error with a reference and re-enables the button (POST 409, then `/api/me` without a wedding), no loop. A second tab submitting after the first created the wedding still goes to `/app`.
+- **Flaky rate-limit tests fixed:** `tests/security/auth.int.test.ts` "login is rate limited per email" failed about one run in five. The limiter counts in fixed windows aligned to the clock (15 minutes, 1 hour), so a test running across a boundary split its 11 attempts between two counters. The login and signup limit tests now pin `Date` one minute into a fresh hour (`vi.useFakeTimers({ toFake: ['Date'], shouldAdvanceTime: true })`).
+
+**Design alignment:** left out Stitch copy and features the PRD does not have: the ceremonies line on the preview, "Planning in progress" / "Wedding space initialized" pills, "Bespeak", the footer tagline, "all confirmed" vendors, completed tasks in the upcoming list, the avatar button. Cover image (optional) waits for R2 (M2).
+
+### Known gaps
+1. **No e2e for onboarding or `/app`:** they need a real session, which CI e2e cannot create (gap 1 of the 2026-10-03 entry). Covered by the security integration tests and the manual run. **Open.**
+2. **Slug transliteration:** names in Devanagari or Gurmukhi fall back to `wedding-xxxxxx`; SYSTEM §27 asks to transliterate. **Open.**
+3. **Places autocomplete** for the city (lat/lng, place id) comes later; city and venue are free text. **Open.**
+4. **`GET /api/dashboard` route** not added yet; the page uses the service directly. Add it with its first client consumer. **Open.**
+5. **Run `pnpm db:migrate`** on every other environment before this ships (0002 holds the one-wedding rule). **Open.**
+6. **A user whose wedding is DELETING** still has a membership until §14.8 step 3 runs (after R2, so up to a day if the request fails and the daily job resumes). Creating a new wedding then returns ALREADY_MEMBER, which the form used to treat as success, and `/app` sent the user straight back: a silent loop. **Guarded** 2026-10-04: on ALREADY_MEMBER the form asks `GET /api/me` (new `getJson` in `lib/api.ts`) and goes to `/app` only if a wedding is returned; otherwise it shows the generic error with the request id. **Real fix in slice 13:** delete the memberships in step 1, in the same transaction that sets `DELETING` (update DATABASE_DESIGN §14.8 first). Cannot happen yet: nothing sets `DELETING`. **Open.**
+
+---
+
 ## Template for future entries
 
 ```

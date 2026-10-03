@@ -19,15 +19,22 @@ export type ApiResult<T> = { ok: true; data: T } | ApiFailure;
 
 type ErrorEnvelope = { error?: { code?: unknown; details?: unknown; requestId?: unknown } };
 
-export async function postJson<T>(url: string, body: unknown): Promise<ApiResult<T>> {
+export function postJson<T>(url: string, body: unknown): Promise<ApiResult<T>> {
+  return request<T>(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+export function getJson<T>(url: string): Promise<ApiResult<T>> {
+  return request<T>(url, { method: 'GET' });
+}
+
+async function request<T>(url: string, init: RequestInit): Promise<ApiResult<T>> {
   let res: Response;
   try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      credentials: 'same-origin',
-    });
+    res = await fetch(url, { ...init, credentials: 'same-origin' });
   } catch {
     return { ok: false, code: NETWORK_ERROR };
   }

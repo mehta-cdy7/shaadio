@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { NETWORK_ERROR, postJson, retryAfterMinutes } from './api';
+import { getJson, NETWORK_ERROR, postJson, retryAfterMinutes } from './api';
 
 function stubFetch(impl: () => Promise<Response>) {
   vi.stubGlobal('fetch', vi.fn(impl));
@@ -76,5 +76,19 @@ describe('retryAfterMinutes', () => {
     expect(retryAfterMinutes({ retryAfterSeconds: 290 })).toBe(5);
     expect(retryAfterMinutes({ retryAfterSeconds: 1 })).toBe(1);
     expect(retryAfterMinutes(undefined)).toBe(1);
+  });
+});
+
+describe('getJson', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('sends a same-origin GET without a body and parses like postJson', async () => {
+    const fetchMock = vi.fn(async () => Response.json({ user: { id: '1' } }));
+    vi.stubGlobal('fetch', fetchMock);
+    expect(await getJson('/api/me')).toEqual({ ok: true, data: { user: { id: '1' } } });
+    expect(fetchMock).toHaveBeenCalledWith('/api/me', {
+      method: 'GET',
+      credentials: 'same-origin',
+    });
   });
 });

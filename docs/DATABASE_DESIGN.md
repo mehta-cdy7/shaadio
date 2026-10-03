@@ -295,6 +295,7 @@ The tenant root. Its 1:1 settings are embedded.
 | `status` | enum | ✓ | `ACTIVE` \| `DELETING` |
 | `brideName` | string | ✓ | ≤ 80 |
 | `groomName` | string | ✓ | ≤ 80 |
+| `nameOrder` | enum | ✓ | `BRIDE_FIRST` \| `GROOM_FIRST`, default `BRIDE_FIRST` (PRD §9.2) |
 | `title` | string | | ≤ 120 |
 | `description` | string | | ≤ 2,000 |
 | `weddingDate` | `"YYYY-MM-DD"` | ✓ | §1.4 |

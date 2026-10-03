@@ -36,5 +36,11 @@ export type UserResponse = { id: string; name: string; email: string };
 export type MeResponse = {
   user: UserResponse;
   membership?: { role: 'ADMIN' | 'MANAGER'; label?: string };
-  wedding?: { id: string; brideName: string; groomName: string; weddingDate: string };
+  wedding?: {
+    id: string;
+    brideName: string;
+    groomName: string;
+    nameOrder: 'BRIDE_FIRST' | 'GROOM_FIRST';
+    weddingDate: string;
+  };
 };
