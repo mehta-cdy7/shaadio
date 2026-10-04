@@ -95,12 +95,18 @@
       "title": "Tell us about your wedding",
       "lead": "You can change any of this later.",
       "signedInAs": "Signed in as {email}",
+      "submit": "Create wedding",
+      "submitting": "Creating your wedding…",
+      "invited": "Invited by family?",
+      "invitedBody": "Open the invitation link from your email instead."
+    },
+    "weddingForm": {
       "required": "required",
       "optional": "Optional",
       "brideName": "Bride's name",
       "groomName": "Groom's name",
       "nameOrder": "How should your names appear?",
-      "nameOrderHint": "Shown on your invitations, website and dashboard. You can change it later.",
+      "nameOrderHint": "Shown on your invitations, website and dashboard.",
       "weddingDate": "Wedding date",
       "weddingDateHint": "The main wedding day. Add other ceremonies as events later.",
       "city": "Wedding city",
@@ -113,10 +119,6 @@
       "weddingTitlePlaceholder": "e.g. {bride} & {groom}'s Wedding",
       "description": "A short note",
       "descriptionPlaceholder": "A welcome note for your family, or anything they should know",
-      "submit": "Create wedding",
-      "submitting": "Creating your wedding…",
-      "invited": "Invited by family?",
-      "invitedBody": "Open the invitation link from your email instead.",
       "brideRequired": "Enter the bride's name.",
       "groomRequired": "Enter the groom's name.",
       "dateRequired": "Choose the wedding date.",
@@ -170,6 +172,27 @@
       "title": "Coming soon",
       "body": "{section} is still being built. It will appear here as soon as it's ready.",
       "back": "Back to dashboard"
+    },
+    "settings": {
+      "metaTitle": "Settings",
+      "title": "Settings",
+      "tabsLabel": "Settings sections",
+      "tabs": {
+        "details": "Wedding details",
+        "members": "Members",
+        "activity": "Activity log",
+        "danger": "Danger zone"
+      },
+      "details": {
+        "title": "Wedding details",
+        "lead": "Changes appear everywhere your wedding is shown.",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "discard": "Discard changes",
+        "saved": "Saved",
+        "slugNote": "Your website address stays the same when you change names or the date, so links you've already shared keep working.",
+        "unsavedWarning": "You have unsaved changes. Leave this page without saving them?"
+      }
     },
     "dashboard": {
       "metaTitle": "Dashboard",

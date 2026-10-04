@@ -3,7 +3,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { POST as loginRoute } from '@/app/api/auth/login/route';
 import { POST as signupRoute } from '@/app/api/auth/signup/route';
 import { GET as meRoute } from '@/app/api/me/route';
-import { GET as getWeddingRoute, POST as createWeddingRoute } from '@/app/api/wedding/route';
+import {
+  GET as getWeddingRoute,
+  PATCH as patchWeddingRoute,
+  POST as createWeddingRoute,
+} from '@/app/api/wedding/route';
 import { addDays, todayIn } from '@/lib/dates';
 import { connectDb } from '@/server/db/connection';
 import { UnscopedQueryError } from '@/server/db/tenant-guard';
@@ -27,6 +31,18 @@ function post(path: string, body: unknown, cookie?: string): Request {
       origin: ORIGIN,
       'content-type': 'application/json',
       'x-real-ip': `10.1.0.${++ipCounter % 250}`,
+      ...(cookie ? { cookie } : {}),
+    },
+  });
+}
+
+function patch(body: unknown, cookie?: string): Request {
+  return new Request(`${ORIGIN}/api/wedding`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+    headers: {
+      origin: ORIGIN,
+      'content-type': 'application/json',
       ...(cookie ? { cookie } : {}),
     },
   });
@@ -226,5 +242,153 @@ describe('wedding security', () => {
     await expect(Membership.aggregate([{ $match: { role: 'ADMIN' } }])).rejects.toBeInstanceOf(
       UnscopedQueryError,
     );
+  });
+
+  describe('PATCH /api/wedding', () => {
+    async function adminWithWedding() {
+      const cookie = await signUp();
+      expect((await createWedding(cookie)).status).toBe(201);
+      return cookie;
+    }
+
+    it('requires a session and a wedding', async () => {
+      expect((await patchWeddingRoute(patch({ title: 'x' }))).status).toBe(401);
+      const res = await patchWeddingRoute(patch({ title: 'x' }, await signUp()));
+      expect((await res.json()).error.code).toBe('NO_WEDDING');
+    });
+
+    it('updates only the caller’s wedding and keeps the slug', async () => {
+      const asha = await adminWithWedding();
+      const ravi = await adminWithWedding();
+      const db = mongoose.connection.db!;
+      const before = await db.collection('weddings').find().sort({ _id: 1 }).toArray();
+
+      const res = await patchWeddingRoute(
+        patch({ brideName: 'Meera', groomName: 'Arjun', nameOrder: 'GROOM_FIRST' }, asha),
+      );
+      expect(res.status).toBe(200);
+      expect(await res.json()).toMatchObject({
+        brideName: 'Meera',
+        groomName: 'Arjun',
+        nameOrder: 'GROOM_FIRST',
+      });
+
+      const after = await db.collection('weddings').find().sort({ _id: 1 }).toArray();
+      expect(after[0]!.website.slug).toBe(before[0]!.website.slug);
+      expect(after[1]).toEqual(before[1]);
+      const raviWedding = await (await getWeddingRoute(get('/api/wedding', ravi))).json();
+      expect(raviWedding.brideName).toBe('Princi');
+    });
+
+    it('lets a Manager edit too (API §9)', async () => {
+      const admin = await adminWithWedding();
+      const manager = await signUp('Manager');
+      const db = mongoose.connection.db!;
+      const wedding = await db.collection('weddings').findOne({});
+      const managerUser = await db.collection('users').findOne({ name: 'Manager' });
+      await db.collection('wedding_memberships').insertOne({
+        weddingId: wedding!._id,
+        userId: managerUser!._id,
+        role: 'MANAGER',
+        joinedAt: new Date(),
+      });
+      expect((await patchWeddingRoute(patch({ title: 'From the manager' }, manager))).status).toBe(
+        200,
+      );
+      const read = await (await getWeddingRoute(get('/api/wedding', admin))).json();
+      expect(read.title).toBe('From the manager');
+    });
+
+    it('null clears an optional field, which is then absent', async () => {
+      const cookie = await adminWithWedding();
+      await patchWeddingRoute(patch({ title: 'Shaadi', description: 'Note' }, cookie));
+      const res = await patchWeddingRoute(patch({ title: null }, cookie));
+      const body = await res.json();
+      expect(body).not.toHaveProperty('title');
+      expect(body.description).toBe('Note');
+      const stored = await mongoose.connection.db!.collection('weddings').findOne({});
+      expect(stored).not.toHaveProperty('title');
+    });
+
+    it('replacing the location drops the old place details but keeps the country', async () => {
+      const cookie = await adminWithWedding();
+      const db = mongoose.connection.db!;
+      await db
+        .collection('weddings')
+        .updateMany(
+          {},
+          { $set: { 'location.lat': 30.3, 'location.lng': 78.0, 'location.googlePlaceId': 'p1' } },
+        );
+      const body = await (
+        await patchWeddingRoute(
+          patch({ location: { formattedAddress: 'Jaipur', city: 'Jaipur' } }, cookie),
+        )
+      ).json();
+      expect(body.location).toEqual({
+        formattedAddress: 'Jaipur',
+        city: 'Jaipur',
+        country: 'India',
+      });
+    });
+
+    it('a save without location leaves the stored location untouched', async () => {
+      const cookie = await adminWithWedding();
+      const db = mongoose.connection.db!;
+      await db
+        .collection('weddings')
+        .updateMany(
+          {},
+          { $set: { 'location.lat': 30.3, 'location.lng': 78.0, 'location.googlePlaceId': 'p1' } },
+        );
+      const before = (await db.collection('weddings').findOne({}))!.location;
+      expect(before.country).toBe('India');
+      await patchWeddingRoute(patch({ title: 'Only the title' }, cookie));
+      expect((await db.collection('weddings').findOne({}))!.location).toEqual(before);
+    });
+
+    it('a new date must be today or later; other fields stay editable after the day', async () => {
+      const cookie = await adminWithWedding();
+      const yesterday = addDays(todayIn('Asia/Kolkata'), -1);
+      const past = await patchWeddingRoute(patch({ weddingDate: yesterday }, cookie));
+      expect(past.status).toBe(400);
+      expect((await past.json()).error.details.fields).toHaveProperty('weddingDate');
+
+      // A wedding whose day has passed: resending its own date with another change still works.
+      const db = mongoose.connection.db!;
+      await db.collection('weddings').updateMany({}, { $set: { weddingDate: yesterday } });
+      const res = await patchWeddingRoute(
+        patch({ weddingDate: yesterday, title: 'Memories' }, cookie),
+      );
+      expect(res.status).toBe(200);
+      expect((await res.json()).title).toBe('Memories');
+    });
+
+    it('rejects server-owned and non-editable fields without writing', async () => {
+      const cookie = await adminWithWedding();
+      const db = mongoose.connection.db!;
+      const before = await db.collection('weddings').findOne({});
+      for (const body of [
+        { timezone: 'Asia/Dubai' },
+        { status: 'DELETING' },
+        { website: { slug: 'mine' } },
+        { gallery: { token: 'mine' } },
+        { counters: { adminCount: 0 } },
+        { brideName: null },
+        { weddingId: new Types.ObjectId().toHexString() },
+      ]) {
+        expect((await patchWeddingRoute(patch(body, cookie))).status).toBe(400);
+      }
+      expect(await db.collection('weddings').findOne({})).toEqual(before);
+    });
+
+    it('requires the app origin (CSRF, API §2.2)', async () => {
+      const cookie = await adminWithWedding();
+      const req = new Request(`${ORIGIN}/api/wedding`, {
+        method: 'PATCH',
+        body: JSON.stringify({ title: 'x' }),
+        headers: { origin: 'https://evil.example', 'content-type': 'application/json', cookie },
+      });
+      expect((await patchWeddingRoute(req)).status).toBe(403);
+    });
   });
 });

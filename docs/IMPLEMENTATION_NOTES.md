@@ -395,6 +395,31 @@ From the Stitch screens "Create your wedding" (desktop + mobile) and "Wedding Da
 
 ---
 
+## 2026-10-04 — Settings → Wedding details (edit the wedding)
+
+From the Stitch screen "Wedding Details Settings" (`f5d4f6926afd4572a21b9f46fd6baf7f`, desktop), recoloured to the tokens; phone and dark layouts follow the existing design system. Done before slice 3 because the create form promises "You can change any of this later".
+
+- **`PATCH /api/wedding`** (withMember, any member: API §9 marks it `M`). `updateWeddingSchema` is strict: omitted fields are unchanged, `null` (or blank) clears `title`, `description`, `rsvpDeadline`, and `timezone`, status, website, gallery and counters are rejected as unknown fields. One targeted `findOneAndUpdate` with `$set`/`$unset` (never null stored). A sent `location` replaces the place: state, lat/lng and place id are dropped when not sent, but `country` is kept unless sent. The settings form sends only changed fields (`weddingChanges`), and the location only when venue, city or state changed, so a title-only save never touches the stored location (review fix: every save used to resend it and erase the `India` default). The slug never changes (SYSTEM §27). A new `weddingDate` must be today or later in the wedding's stored timezone; resending the saved date is allowed, so other fields stay editable after the wedding day. No activity entry: wedding edits are not in the §5.15 action list.
+- **Shared form:** `(members)/_components/wedding-form.tsx` holds the fields, the client check (`useCheckWeddingForm`, same rules as the server via `weddingFieldsSchema` + `isPastWeddingDate`) and the preview panel; `/onboarding` was rebuilt on it (now controlled inputs). Messages moved to `members.weddingForm`.
+- **Venue:** stored only inside `formattedAddress` ("venue, city, state"); `splitVenue()` recovers it for editing, and an address that does not end in city/state is shown whole.
+- **`/app/settings`:** title + tabs (Wedding details · Members · Activity log · Danger zone; the last three Admin-only and hidden from Managers). Wedding details card with Save (enabled only when something changed), Discard, a "Saved" status until the next edit, the website-address note, and the sticky live preview from `lg`. Saving refreshes the server components, so the sidebar, header and dashboard show the new names, order and date. `/app/settings/[...rest]` shows "Coming soon" for the other tabs (404 for Managers and unknown paths); `ComingSoon` is now shared with `/app/[...section]`.
+- `lib/api.ts` gains `patchJson`.
+- **Unsaved changes** (review fix): `useUnsavedChangesWarning` (`components/ui`) asks "Leave this page without saving them?" while the form has edits. In-app links are checked in a document-level capture listener, so every link (sidebar, logo, tabs) is covered without wiring Next's per-link `onNavigate`; reload and closing the tab use the browser's `beforeunload` prompt. New-tab clicks and same-page links are ignored.
+- **Phone tab strip** (review fix): the settings tabs scroll sideways with a fade on whichever edge hides tabs, and the current tab is scrolled into view (Danger zone was showing as "Dan…").
+- Left out of the Stitch screen: the top bar (location, search, notifications, avatar) and the ceremonies line on the preview (not in the PRD). Not on the form yet: RSVP deadline (slice 5), cover image (M2).
+
+**Verification:**
+- lint, format, typecheck, 182 unit + integration tests, build, 60 e2e pass.
+- `tests/security/wedding.int.test.ts` adds 9 PATCH tests: 401 / NO_WEDDING; edits only the caller's wedding and keeps the slug; a Manager can edit; `null` clears and the field is absent in storage; a replaced location drops old place details but keeps the country; a save without location leaves it untouched; past date rejected but an unchanged past date with another edit accepted; server-owned and non-editable fields → 400 with nothing written; foreign Origin → 403. Unit tests for the PATCH schema, `joinAddress`/`splitVenue`, `weddingChanges` and `patchJson`.
+- Manually with Playwright against `pnpm dev` on a local in-memory replica set (the Atlas dev cluster refused the connection: IP not on the access list): prefill incl. venue split; Save disabled until an edit; rename + groom-first + clear title + new venue → "Saved", sidebar shows "Akshay ♥ Meera"; reload keeps it; past date error; Discard restores; `/app/settings/members` "Coming soon"; unknown settings path 404; dark and Pixel 7 layouts.
+
+### Known gaps
+1. **No e2e** for settings (needs a real session, as for slice 2). **Open.**
+2. **Atlas dev access list:** the IP was briefly not allowed during this work. **Closed** (reachable again the same day).
+3. **Browser back/forward** inside the app is not intercepted by the unsaved-changes warning: the App Router has no supported way to block it. **Open.**
+
+---
+
 ## Template for future entries
 
 ```

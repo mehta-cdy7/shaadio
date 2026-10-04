@@ -1,14 +1,21 @@
 import 'server-only';
 import { randomBytes } from 'node:crypto';
 import type { Types } from 'mongoose';
+import type { z } from 'zod';
 import { coupleNames } from '@/lib/couple';
+import { todayIn } from '@/lib/dates';
 import { addMember } from '@/modules/members';
 import { connectDb } from '@/server/db/connection';
 import { withTransaction } from '@/server/db/transaction';
 import { findMembershipByUserId, type MembershipRef } from '@/server/db/unscoped';
 import { AppError } from '@/server/http/errors';
 import { toWeddingResponse } from './mapper';
-import { DEFAULT_TIMEZONE, type CreateWeddingInput, type WeddingResponse } from './schemas';
+import {
+  DEFAULT_TIMEZONE,
+  type CreateWeddingInput,
+  type updateWeddingSchema,
+  type WeddingResponse,
+} from './schemas';
 import { newWebsiteSlug } from './slug';
 import { Wedding, type WeddingDoc } from './wedding.model';
 
@@ -106,6 +113,75 @@ export async function resolveMember(userId: Types.ObjectId): Promise<MemberConte
 export async function getWedding(ctx: { weddingId: Types.ObjectId }): Promise<WeddingResponse> {
   await connectDb();
   const wedding = await Wedding.findOne({ _id: ctx.weddingId, status: 'ACTIVE' }).lean();
+  if (!wedding) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
+  return toWeddingResponse(wedding, await isWeddingEmpty());
+}
+
+type UpdateWedding = z.output<typeof updateWeddingSchema>;
+
+/**
+ * Optional location fields tied to the place itself: set when given, otherwise removed, because
+ * they described the old place. `country` is not one of them: it is kept unless sent.
+ */
+const PLACE_FIELDS = ['state', 'lat', 'lng', 'googlePlaceId'] as const;
+
+/**
+ * `PATCH /api/wedding` (API_DESIGN §11) for any member. One targeted update: given fields are
+ * `$set`, cleared ones `$unset` (never stored as null). A sent `location` replaces the place
+ * (state, coordinates, place id) but keeps the country unless one is sent. The website slug and
+ * timezone never change.
+ * A new date must be today or later in the wedding's own timezone; other fields stay editable
+ * after the wedding day.
+ */
+export async function updateWedding(
+  ctx: { weddingId: Types.ObjectId },
+  input: UpdateWedding,
+): Promise<WeddingResponse> {
+  await connectDb();
+  const filter = { _id: ctx.weddingId, status: 'ACTIVE' as const };
+
+  if (input.weddingDate !== undefined) {
+    const current = await Wedding.findOne(filter, { timezone: 1, weddingDate: 1 }).lean();
+    if (!current) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
+    if (
+      input.weddingDate !== current.weddingDate &&
+      input.weddingDate < todayIn(current.timezone)
+    ) {
+      throw new AppError('VALIDATION_ERROR', 'Some fields are invalid.', {
+        fields: { weddingDate: 'Choose today or a later date.' },
+      });
+    }
+  }
+
+  const set: Record<string, unknown> = {};
+  const unset: Record<string, ''> = {};
+  for (const key of ['brideName', 'groomName', 'nameOrder', 'weddingDate'] as const) {
+    if (input[key] !== undefined) set[key] = input[key];
+  }
+  for (const key of ['title', 'description', 'rsvpDeadline'] as const) {
+    if (input[key] === null) unset[key] = '';
+    else if (input[key] !== undefined) set[key] = input[key];
+  }
+  if (input.location) {
+    set['location.formattedAddress'] = input.location.formattedAddress;
+    set['location.city'] = input.location.city;
+    for (const key of PLACE_FIELDS) {
+      if (input.location[key] === undefined) unset[`location.${key}`] = '';
+      else set[`location.${key}`] = input.location[key];
+    }
+    if (input.location.country !== undefined) set['location.country'] = input.location.country;
+  }
+
+  const update = {
+    ...(Object.keys(set).length ? { $set: set } : {}),
+    ...(Object.keys(unset).length ? { $unset: unset } : {}),
+  };
+  const wedding = Object.keys(update).length
+    ? await Wedding.findOneAndUpdate(filter, update, {
+        returnDocument: 'after',
+        runValidators: true,
+      }).lean()
+    : await Wedding.findOne(filter).lean();
   if (!wedding) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
   return toWeddingResponse(wedding, await isWeddingEmpty());
 }

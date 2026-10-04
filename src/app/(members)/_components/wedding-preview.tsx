@@ -23,7 +23,7 @@ export type PreviewValues = {
  * wedding"). Empty fields show muted placeholders so the card keeps its shape.
  */
 export function WeddingPreview({ values }: { values: PreviewValues }) {
-  const t = useTranslations('members.onboarding.preview');
+  const t = useTranslations('members.weddingForm.preview');
   const tc = useTranslations('members.countdown');
 
   const [first, second] = coupleNames({

@@ -19,8 +19,9 @@ Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOT
 | Slice 1a — auth API (signup/login/logout/me)    | 2026-10-01 | Server-side sessions, scrypt, auth rate limits, Origin/JSON checks                           |
 | Migration runner + auth indexes in dev          | 2026-10-03 | `pnpm db:migrate`; fixed duplicate-email signups; signed-in redirect off `/login`            |
 | Slice 2 — create wedding, app shell, dashboard  | 2026-10-04 | Name order choice, date today or later, `POST/GET /api/wedding`, `/app` gate; migration 0002 |
+| Settings → Wedding details (edit the wedding)   | 2026-10-04 | `PATCH /api/wedding`, shared create/edit form, settings tabs; other tabs "Coming soon"       |
 
-Checks: lint, typecheck, 165 unit + integration tests, 60 e2e tests, build — all green. Slice 2 re-tested manually in Chrome after review fixes (2026-10-04).
+Checks: lint, typecheck, 182 unit + integration tests, 60 e2e tests, build — all green. Slice 2 re-tested manually in Chrome after review fixes (2026-10-04).
 
 ## Roadmap
 

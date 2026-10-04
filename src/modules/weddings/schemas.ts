@@ -49,33 +49,79 @@ export const locationSchema = z.strictObject({
 /** Code for the "today or later" rule, so the form can show its own message for it. */
 export const PAST_DATE = 'PAST_DATE';
 
-export const createWeddingSchema = z
-  .strictObject({
-    brideName: z.string().trim().min(1, "Enter the bride's name.").max(COUPLE_NAME_MAX),
-    groomName: z.string().trim().min(1, "Enter the groom's name.").max(COUPLE_NAME_MAX),
-    nameOrder: z.enum(NAME_ORDERS).default('BRIDE_FIRST'),
-    weddingDate: calendarDate,
-    location: locationSchema,
-    title: optionalText(TITLE_MAX),
-    description: optionalText(DESCRIPTION_MAX),
-    timezone: z.string().min(1).max(64).refine(isTimeZone, 'Unknown timezone.').optional(),
-  })
-  .superRefine((input, ctx) => {
-    // Today or later in the wedding's own timezone (PRD §9.2). Checked in the browser and again on
-    // the server, which uses its own clock.
-    if (!isCalendarDate(input.weddingDate) || (input.timezone && !isTimeZone(input.timezone))) {
-      return;
-    }
-    if (input.weddingDate < todayIn(input.timezone ?? DEFAULT_TIMEZONE)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['weddingDate'],
-        message: 'Choose today or a later date.',
-        params: { reason: PAST_DATE },
-      });
-    }
-  });
+/** The wedding's own fields, without the date rule (the edit form reuses them as they are). */
+export const weddingFieldsSchema = z.strictObject({
+  brideName: z.string().trim().min(1, "Enter the bride's name.").max(COUPLE_NAME_MAX),
+  groomName: z.string().trim().min(1, "Enter the groom's name.").max(COUPLE_NAME_MAX),
+  nameOrder: z.enum(NAME_ORDERS).default('BRIDE_FIRST'),
+  weddingDate: calendarDate,
+  location: locationSchema,
+  title: optionalText(TITLE_MAX),
+  description: optionalText(DESCRIPTION_MAX),
+  timezone: z.string().min(1).max(64).refine(isTimeZone, 'Unknown timezone.').optional(),
+});
+
+/** Today or later in the wedding's own timezone (PRD §9.2). */
+export function isPastWeddingDate(weddingDate: string, timezone = DEFAULT_TIMEZONE): boolean {
+  return isCalendarDate(weddingDate) && weddingDate < todayIn(timezone);
+}
+
+export const createWeddingSchema = weddingFieldsSchema.superRefine((input, ctx) => {
+  // Checked in the browser and again on the server, which uses its own clock.
+  if (input.timezone && !isTimeZone(input.timezone)) return;
+  if (isPastWeddingDate(input.weddingDate, input.timezone)) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['weddingDate'],
+      message: 'Choose today or a later date.',
+      params: { reason: PAST_DATE },
+    });
+  }
+});
 export type CreateWeddingInput = z.input<typeof createWeddingSchema>;
+
+/** Clearable text for PATCH: `null` or blank clears it (stored as absent), a string sets it. */
+const clearableText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .nullable()
+    .transform((value) => value || null);
+
+/**
+ * `PATCH /api/wedding` (API_DESIGN §11, API-04): every field optional; omitted means unchanged and
+ * `null` clears an optional field. `location` is replaced as a whole. The "today or later" rule
+ * for a new `weddingDate` needs the wedding's stored timezone, so the service checks it.
+ * `timezone` is not editable, so it is rejected like any unknown field.
+ */
+export const updateWeddingSchema = z.strictObject({
+  brideName: z.string().trim().min(1, "Enter the bride's name.").max(COUPLE_NAME_MAX).optional(),
+  groomName: z.string().trim().min(1, "Enter the groom's name.").max(COUPLE_NAME_MAX).optional(),
+  nameOrder: z.enum(NAME_ORDERS).optional(),
+  weddingDate: calendarDate.optional(),
+  location: locationSchema.optional(),
+  title: clearableText(TITLE_MAX).optional(),
+  description: clearableText(DESCRIPTION_MAX).optional(),
+  rsvpDeadline: calendarDate.nullable().optional(),
+});
+export type UpdateWeddingInput = z.input<typeof updateWeddingSchema>;
+
+/** The form's venue, city and state as one address line: "venue, city, state". */
+export function joinAddress(venue: string, city: string, state: string): string {
+  return [venue, city, state].filter(Boolean).join(', ');
+}
+
+/**
+ * The venue part of a stored address, for editing: what is left before ", city, state". An
+ * address that does not end that way (e.g. one chosen through Places later) is shown whole.
+ */
+export function splitVenue(location: Pick<WeddingLocation, 'formattedAddress' | 'city' | 'state'>) {
+  const place = joinAddress('', location.city, location.state ?? '');
+  const address = location.formattedAddress;
+  if (address === place) return '';
+  return address.endsWith(`, ${place}`) ? address.slice(0, -place.length - 2) : address;
+}
 
 export type WeddingLocation = {
   formattedAddress: string;
