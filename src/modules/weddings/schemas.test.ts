@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { addDays, todayIn } from '@/lib/dates';
-import { CITY_MAX, createWeddingSchema, PAST_DATE, STATE_MAX, VENUE_MAX } from './schemas';
+import {
+  CITY_MAX,
+  createWeddingSchema,
+  joinAddress,
+  PAST_DATE,
+  splitVenue,
+  STATE_MAX,
+  updateWeddingSchema,
+  VENUE_MAX,
+} from './schemas';
 
 const valid = {
   brideName: ' Princi ',
@@ -69,5 +78,50 @@ describe('createWeddingSchema', () => {
 
   it('rejects unknown fields (API_DESIGN §1.4)', () => {
     expect(createWeddingSchema.safeParse({ ...valid, weddingId: 'x' }).success).toBe(false);
+  });
+});
+
+describe('updateWeddingSchema', () => {
+  it('leaves omitted fields out and turns blank or null text into a clear', () => {
+    expect(updateWeddingSchema.parse({})).toEqual({});
+    expect(updateWeddingSchema.parse({ title: '  ', description: null })).toEqual({
+      title: null,
+      description: null,
+    });
+    expect(updateWeddingSchema.parse({ title: ' Shaadi ' })).toEqual({ title: 'Shaadi' });
+  });
+
+  it('rejects clearing required fields and editing server-owned ones', () => {
+    for (const body of [
+      { brideName: null },
+      { brideName: ' ' },
+      { weddingDate: null },
+      { timezone: 'Asia/Dubai' },
+      { website: { slug: 'x' } },
+      { status: 'DELETING' },
+    ]) {
+      expect(updateWeddingSchema.safeParse(body).success).toBe(false);
+    }
+  });
+});
+
+describe('address helpers', () => {
+  it('splits the venue back out of the joined address', () => {
+    const cases = [
+      ['Forest Resort, Rajpur Road', 'Dehradun', 'Uttarakhand'],
+      ['', 'Dehradun', 'Uttarakhand'],
+      ['Forest Resort', 'Dehradun', ''],
+      ['', 'Dehradun', ''],
+    ] as const;
+    for (const [venue, city, state] of cases) {
+      const formattedAddress = joinAddress(venue, city, state);
+      expect(splitVenue({ formattedAddress, city, state })).toBe(venue);
+    }
+  });
+
+  it('shows an address that does not end in city and state whole', () => {
+    expect(splitVenue({ formattedAddress: 'Rajpur Road, 248001', city: 'Dehradun' })).toBe(
+      'Rajpur Road, 248001',
+    );
   });
 });

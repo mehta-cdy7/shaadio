@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getJson, NETWORK_ERROR, postJson, retryAfterMinutes } from './api';
+import { getJson, NETWORK_ERROR, patchJson, postJson, retryAfterMinutes } from './api';
 
 function stubFetch(impl: () => Promise<Response>) {
   vi.stubGlobal('fetch', vi.fn(impl));
@@ -88,6 +88,25 @@ describe('getJson', () => {
     expect(await getJson('/api/me')).toEqual({ ok: true, data: { user: { id: '1' } } });
     expect(fetchMock).toHaveBeenCalledWith('/api/me', {
       method: 'GET',
+      credentials: 'same-origin',
+    });
+  });
+});
+
+describe('patchJson', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('sends a same-origin JSON PATCH', async () => {
+    const fetchMock = vi.fn(async () => Response.json({ id: 'w' }));
+    vi.stubGlobal('fetch', fetchMock);
+    expect(await patchJson('/api/wedding', { title: null })).toEqual({
+      ok: true,
+      data: { id: 'w' },
+    });
+    expect(fetchMock).toHaveBeenCalledWith('/api/wedding', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"title":null}',
       credentials: 'same-origin',
     });
   });

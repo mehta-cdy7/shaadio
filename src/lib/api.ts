@@ -27,6 +27,14 @@ export function postJson<T>(url: string, body: unknown): Promise<ApiResult<T>> {
   });
 }
 
+export function patchJson<T>(url: string, body: unknown): Promise<ApiResult<T>> {
+  return request<T>(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
 export function getJson<T>(url: string): Promise<ApiResult<T>> {
   return request<T>(url, { method: 'GET' });
 }
