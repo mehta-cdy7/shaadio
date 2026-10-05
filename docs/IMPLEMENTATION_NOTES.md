@@ -456,9 +456,41 @@ From the Stitch screens "Events List" (`e2cd067725414916b9cbdcc97a0c669d`), "Add
 - Manually on `pnpm dev` + Atlas dev (throwaway `design-preview-*` accounts): empty state; Haldi chip fills the name; date and `javascript:` map-link errors, cleared on edit; save → list; list with past (Done), next, wedding-day pills and an overnight sangeet; edit via menu; delete via dialog (204, list refreshes); unknown id 404; dashboard shows the count; dark and Pixel 7.
 
 ### Known gaps
-1. **Guests cascade, headcount and delete-preview counts** land with slice 4. **Open.**
+1. **Guests cascade, headcount and delete-preview counts** land with slice 4. **Closed** (2026-10-05).
 2. **No e2e** for these pages (need a real session). **Open.**
 3. **Review fixes not checked in a browser:** the Atlas dev cluster refused connections (IP access list) while they were made; they are covered by unit and integration tests. Check the end-time behaviour, the date `max` and the at-limit notice by hand. **Verify.**
+
+---
+
+## 2026-10-05 — Slice 4: Guests
+
+Guest management (PRD §9.7–9.9, API_DESIGN §14, DATABASE_DESIGN §5.8, §10, §13, §14). Built from the Stitch screens "Guests List", "Guests (Empty State)", "Add Guest" and "Guest Detail & Delete Confirmation".
+
+- **Module `modules/guests`:** `guest.model.ts` (tenant-guarded; `inviteLink.token` is `select: false`; every write `$inc`s `version`), `schemas.ts` (create/update/member-RSVP/list-query schemas shared by routes, pages and forms), `mapper.ts` (`invitedEvents` → `invitedEventIds`, `inviteLink.firstOpenedAt` → `linkOpenedAt`; only `toGuestDetail` adds `inviteUrl`), `guest.service.ts`.
+- **Endpoints:** `GET/POST /api/guests`, `GET/PATCH/DELETE /api/guests/:id`, `PATCH /api/guests/:id/rsvp`, `POST /api/guests/:id/regenerate-link`. The two member-side items that the roadmap had under slice 5b (member RSVP edit, regenerate link) are here because they are guest endpoints with nothing guest-facing.
+- **List:** cursor pagination by name, case-insensitive (collation `en`/2 on the query and the `{ weddingId, name }` index; DB §5.8 updated), `_id` tiebreak. The cursor carries a hash of the filters, so a cursor from another filter combination is `400` (API §5.2). Search is a case-insensitive name prefix (regex-escaped) or, with 3+ digits, digits contained in the phone. Filters: side, event, RSVP, sent, opened, no events. The page reads the same parameters from its URL (`guestListQueryInput`), so filters survive reload and back.
+- **Writes:** create checks the soft 1,000 limit and every `invitedEventIds` entry (`assertEventsExist` in the events module, 404 with `details.field`), generates a 128-bit token (`newLinkToken`), and writes `guest.created` in the same transaction. PATCH is last-write-wins with `$set`/`$unset`; lowering `maxPeople` below the confirmed count fails in the update filter (`BELOW_CONFIRMED`); `guest.updated` logs `changes`. Member RSVP carries `expectedVersion` and the capacity in the filter (`VERSION_CONFLICT` with `details.current`, `CAPACITY_EXCEEDED`); `PENDING` clears `respondedAt/Via`. Regenerate replaces the token and clears `firstOpenedAt` and `delivery`. Delete is a transaction with `guest.deleted` (email-job cancel joins with slice 11).
+- **Phones:** `lib/phone.ts` `normalizePhone` (any common Indian format, `00`/`+` international; 10 digits default to +91) and `formatPhone` (`+91 98112 34567`).
+- **Events now read guests:** real `headcount` (DB §13.2) on list, detail and dashboard; delete preview counts and names (§14.1); the delete transaction `$pull`s the event from guests and logs `{ affectedGuests, leftWithNoEvents }`. RSVPs are left alone.
+- **Module dependency:** guests → events (`assertEventsExist`) and events → guests (headcount, preview, cascade) import each other through their `index.ts`. Both only call each other inside functions, so the cycle is safe at load time; tasks, expenses and photos will need the same pair with events.
+- **Wedding and dashboard:** `isWeddingEmpty` also checks `hasGuests`; the dashboard guest numbers come from `guestSummary` (DB §13.1: guests with no events are left out and counted apart).
+- **Pages:** `/app/guests` (stats strip, "not invited to any event" flag, URL-driven filters with removable chips, table from tablet width and cards on phones, "Load more"), `/app/guests/new` and `/[id]/edit` (shared `GuestForm` with live invitation preview, side with Clear, +91 phone adornment, 1–20 stepper, event checklist with Select all, current RSVP shown beside the events when editing), `/app/guests/[id]` (details, invited events, RSVP card with inline editor, invitation link card with copy and regenerate confirm, delete dialog).
+- **Left out of Stitch (not in V1 or later slices):** Import CSV (slice 12), Resend/WhatsApp itinerary and "Send Email Confirmation" (slices 6, 11), "Export RSVP card", a guest ID like `SH-8291`, a separate dietary field (notes cover it), the open count ("4 times": only the first open is stored).
+- Icons: Search, Refresh, Eye, Pencil, Minus. `server/http/route.ts` `parseWith` (the Zod → 400 mapping, now shared by `readJson` and query parsing).
+- Product rule written into PRD §9.8: when the wedding has events, the add-guest form needs at least one.
+
+**Data:** migration `0004_guest_indexes` (unique token; `{weddingId, name}` with collation; `{weddingId, invitedEvents.eventId}`; `{weddingId, phone}`). **Applied to the Atlas dev database.**
+
+**Verification:**
+- lint, format, typecheck, 251 unit + integration tests, build pass.
+- `tests/security/guests.int.test.ts` (own database, 20 tests): 401 / NO_WEDDING; create normalises phone and email, dedupes events, returns a 22-character token and logs `guest.created`; token `select: false` and absent from lists; server-owned fields, bad phone/email, `maxPeople` 0/21 → 400; another wedding's event → 404 `invitedEventIds` on create and PATCH; another wedding's guest → 404 on read, PATCH, RSVP, regenerate and delete, and unchanged; malformed id 404; case-insensitive paging without skips or repeats; foreign and forged cursors 400; every filter including regex characters in search; PATCH null clears with logged `changes`; `BELOW_CONFIRMED`; RSVP capacity, version conflict and PENDING reset; regenerate clears sent/opened; delete + second delete 404; foreign Origin 403 on every mutation; 1,000 limit; tenant guard on find and aggregate; headcount, delete preview and cascade with `leftWithNoEvents`; dashboard numbers excluding a guest left with no events; `isEmpty` false with a guest. Migration test covers 0004. Unit tests for `normalizePhone`/`formatPhone` and the form bodies.
+- Headless Chromium (Playwright) against `pnpm dev` + Atlas dev with a throwaway `guest-check-*` account: empty state, list with stats and the no-events flag, filter by side, add form errors and filled preview, save → detail, RSVP edit → saved, delete dialog, edit with current RSVP, phone layout (390 px), events page headcounts. Fixed from it: the people stepper stretched full width; phone cards showed "—" for no side; the edit form showed the raw E.164 phone. The Chrome extension was not connected, so nothing was checked by hand in a real browser.
+
+### Known gaps
+1. **No e2e** for these pages (need a real session). **Open.**
+2. **Guest-facing invitation page** (`/invite/[token]`) does not exist yet: links 404 until slice 5. **Open.**
+3. **Email-job cancel on guest delete** joins the delete transaction with slice 11. **Open.**
+4. **Repeatable filters** (`side`, `rsvpStatus`) are supported by the API, but the page's menus pick one value each. **Open (by choice).**
 
 ---
 

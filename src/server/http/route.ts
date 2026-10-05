@@ -64,7 +64,15 @@ export async function readJson<S extends z.ZodType>(req: Request, schema: S): Pr
     throw new AppError('VALIDATION_ERROR', 'The request body is not valid JSON.');
   }
 
-  const result = schema.safeParse(body);
+  return parseWith(schema, body);
+}
+
+/**
+ * Validates a value (a JSON body, or query parameters) with a strict Zod schema. Failures are
+ * `400 VALIDATION_ERROR` with the first message per field in `details.fields` (API_DESIGN §4).
+ */
+export function parseWith<S extends z.ZodType>(schema: S, value: unknown): z.infer<S> {
+  const result = schema.safeParse(value);
   if (!result.success) {
     const fields: Record<string, string> = {};
     for (const issue of result.error.issues) {

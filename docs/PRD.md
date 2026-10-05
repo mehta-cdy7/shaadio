@@ -523,6 +523,8 @@ The invitation page displays only the events the guest is invited to.
 
 Note: the public wedding website lists all events (9.18). Event-level invitations therefore control **RSVP and headcounts**, not event privacy.
 
+When the wedding has events, the add-guest form requires at least one invited event. A guest can still end up invited to none (an event deleted, a CSV row without events); such guests are flagged in the list and left out of every guest number until they are invited again.
+
 ---
 
 # 9.9 Invitation Links

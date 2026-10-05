@@ -2,6 +2,7 @@ import type { mongo } from 'mongoose';
 import * as authIndexes from './0001_auth_indexes.ts';
 import * as weddingIndexes from './0002_wedding_indexes.ts';
 import * as eventIndexes from './0003_event_and_activity_indexes.ts';
+import * as guestIndexes from './0004_guest_indexes.ts';
 
 /**
  * Applies unapplied migrations in order and records each in `schema_migrations` (DATABASE_DESIGN
@@ -17,6 +18,7 @@ export const MIGRATIONS: readonly Migration[] = [
   { id: '0001_auth_indexes', up: authIndexes.up },
   { id: '0002_wedding_indexes', up: weddingIndexes.up },
   { id: '0003_event_and_activity_indexes', up: eventIndexes.up },
+  { id: '0004_guest_indexes', up: guestIndexes.up },
 ];
 
 export const MIGRATIONS_COLLECTION = 'schema_migrations';

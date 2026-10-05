@@ -5,6 +5,7 @@ import type { z } from 'zod';
 import { coupleNames } from '@/lib/couple';
 import { todayIn } from '@/lib/dates';
 import { hasEvents } from '@/modules/events';
+import { hasGuests } from '@/modules/guests';
 import { addMember } from '@/modules/members';
 import { connectDb } from '@/server/db/connection';
 import { withTransaction } from '@/server/db/transaction';
@@ -39,10 +40,12 @@ export type MemberContext = MembershipRef & {
  * Whether the wedding has no events, guests, tasks, expenses, vendors or photos (API_DESIGN §11).
  * Wedding deletion (slice 13) relies on it: only an empty wedding may be deleted without typing the
  * couple's names (PRD §9.2). **Every module that adds one of those collections must add its check
- * here when it lands**, through its own module API and scoped by the wedding id. Today: events.
+ * here when it lands**, through its own module API and scoped by the wedding id. Today: events and
+ * guests.
  */
 async function isWeddingEmpty(weddingId: Types.ObjectId): Promise<boolean> {
-  return !(await hasEvents({ weddingId }));
+  const [events, guests] = await Promise.all([hasEvents({ weddingId }), hasGuests({ weddingId })]);
+  return !events && !guests;
 }
 
 /**
