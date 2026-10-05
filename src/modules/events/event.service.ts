@@ -289,3 +289,35 @@ export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
     });
   });
 }
+
+export type InvitationEvent = Pick<
+  EventResponse,
+  'name' | 'type' | 'date' | 'startTime' | 'endTime' | 'venue' | 'dressCode'
+>;
+
+/**
+ * The events on a guest's invitation (API_DESIGN §24), in date order: a minimal projection with no
+ * ids or headcounts. Ids that are not this wedding's events are simply not found.
+ */
+export async function invitationEvents(
+  scope: { weddingId: Types.ObjectId },
+  ids: Types.ObjectId[],
+): Promise<InvitationEvent[]> {
+  if (!ids.length) return [];
+  await connectDb();
+  const events = await Event.find({ weddingId: scope.weddingId, _id: { $in: ids } })
+    .sort({ date: 1, startTime: 1, _id: 1 })
+    .lean();
+  return events.map((doc) => {
+    const { name, type, date, startTime, endTime, venue, dressCode } = toEventResponse(doc);
+    return {
+      name,
+      type,
+      date,
+      ...(startTime ? { startTime } : {}),
+      ...(endTime ? { endTime } : {}),
+      ...(venue ? { venue } : {}),
+      ...(dressCode ? { dressCode } : {}),
+    };
+  });
+}

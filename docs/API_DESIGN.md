@@ -297,7 +297,7 @@ Implemented with the `rate_limits` collection (`DATABASE_DESIGN.md` §5.16). Exc
 | Login | IP | 30 / 15 min |
 | Signup | IP | 10 / hour |
 | Forgot password | email | 3 / hour |
-| Public invitation GET | IP | 120 / min |
+| Public invitation GET and `opened` | IP | 120 / min |
 | RSVP submit | invitation | 20 / 15 min |
 | RSVP submit | global | 300 / min |
 | Public gallery GET | IP | 300 / min |
@@ -412,6 +412,7 @@ Request logs record method, route **pattern** (`/api/public/invite/[token]`), st
 | POST | `/api/covers/complete` | M | 23 |
 | DELETE | `/api/covers` | M | 23 |
 | GET | `/api/public/invite/:token` | — | 24 |
+| POST | `/api/public/invite/:token/opened` | — | 24 |
 | POST | `/api/public/invite/:token/rsvp` | — | 24 |
 | GET | `/api/public/gallery/:token` | — | 25 |
 | GET | `/api/public/gallery/:token/photos` | — | 25 |
@@ -543,6 +544,7 @@ Signed-in user without a wedding.
 Any of: `brideName`, `groomName`, `nameOrder`, `title`, `description`, `weddingDate`, `location`, `rsvpDeadline`. **200** `Wedding`.
 
 - A new `weddingDate` must be today or later, as on create.
+- `rsvpDeadline` (PRD §9.11): a new value must be today or later and on or before the wedding date; `null` removes it. A `weddingDate` earlier than the stored deadline is refused. Both are `400 VALIDATION_ERROR` with `fields.rsvpDeadline` or `fields.weddingDate`.
 
 - The website slug does **not** change when names or date change (SYSTEM §27).
 - `timezone` is not editable: changing it would silently move every event's time.
@@ -1249,14 +1251,15 @@ No session. Access is possession of the invitation token.
 
 ## `GET /api/public/invite/:token`
 
-Used by the invitation page to refresh when the guest returns to the tab. The first render of `/invite/:token` is server-rendered and sets `linkOpenedAt` on the first visit only.
+Used by the invitation page to refresh when the guest returns to the tab. Neither this endpoint nor the server render of `/invite/:token` sets `linkOpenedAt`: link-preview bots (WhatsApp, iMessage) fetch the page without running scripts.
 
 **200**
 
 ```ts
 {
   wedding: {
-    brideName: string; groomName: string; weddingDate: string;
+    brideName: string; groomName: string; nameOrder: 'BRIDE_FIRST' | 'GROOM_FIRST';
+    weddingDate: string;
     theme: 'CLASSIC' | 'MINIMAL' | 'MODERN';
     welcomeMessage?: string; coverImageUrl?: string;
   };
@@ -1274,6 +1277,10 @@ Used by the invitation page to refresh when the guest returns to the tab. The fi
 ```
 
 This is a **minimal projection**. It contains no ids, no other guests, no phone or email (not even the guest's own), no counts, and no gallery link. An empty `events` array is the "no events on your invitation right now" state (`DATABASE_DESIGN.md` §14.1).
+
+## `POST /api/public/invite/:token/opened`
+
+Sent once by the invitation page's script after it loads in a real browser. Sets `linkOpenedAt` on the first call only (conditional update, DATABASE_DESIGN §5.8); later calls change nothing. Body `{}`. **204**. Same-origin and JSON like every mutation; shares the public invitation GET rate limit (§7). Errors: `NOT_FOUND`, `RATE_LIMITED`.
 
 ## `POST /api/public/invite/:token/rsvp`
 

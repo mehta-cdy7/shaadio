@@ -145,16 +145,43 @@ export async function updateWedding(
   await connectDb();
   const filter = { _id: ctx.weddingId, status: 'ACTIVE' as const };
 
-  if (input.weddingDate !== undefined) {
-    const current = await Wedding.findOne(filter, { timezone: 1, weddingDate: 1 }).lean();
+  const invalid = (field: 'weddingDate' | 'rsvpDeadline', message: string) =>
+    new AppError('VALIDATION_ERROR', 'Some fields are invalid.', { fields: { [field]: message } });
+  const deadlineAfterWedding = () =>
+    invalid('rsvpDeadline', 'Choose a date on or before the wedding date.');
+  const weddingBeforeDeadline = () =>
+    invalid('weddingDate', 'The RSVP deadline is later. Move or remove it first.');
+
+  if (input.weddingDate !== undefined || typeof input.rsvpDeadline === 'string') {
+    const current = await Wedding.findOne(filter, {
+      timezone: 1,
+      weddingDate: 1,
+      rsvpDeadline: 1,
+    }).lean();
     if (!current) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
+    const today = todayIn(current.timezone);
     if (
+      input.weddingDate !== undefined &&
       input.weddingDate !== current.weddingDate &&
-      input.weddingDate < todayIn(current.timezone)
+      input.weddingDate < today
     ) {
-      throw new AppError('VALIDATION_ERROR', 'Some fields are invalid.', {
-        fields: { weddingDate: 'Choose today or a later date.' },
-      });
+      throw invalid('weddingDate', 'Choose today or a later date.');
+    }
+    // PRD §9.11: a deadline set now is today or later, and never after the wedding.
+    if (
+      typeof input.rsvpDeadline === 'string' &&
+      input.rsvpDeadline !== current.rsvpDeadline &&
+      input.rsvpDeadline < today
+    ) {
+      throw invalid('rsvpDeadline', 'Choose today or a later date.');
+    }
+    const weddingDate = input.weddingDate ?? current.weddingDate;
+    const deadline =
+      input.rsvpDeadline === undefined ? current.rsvpDeadline : (input.rsvpDeadline ?? undefined);
+    if (deadline && deadline > weddingDate) {
+      throw typeof input.rsvpDeadline === 'string'
+        ? deadlineAfterWedding()
+        : weddingBeforeDeadline();
     }
   }
 
@@ -181,12 +208,59 @@ export async function updateWedding(
     ...(Object.keys(set).length ? { $set: set } : {}),
     ...(Object.keys(unset).length ? { $unset: unset } : {}),
   };
+  // The order rule is also in the update filter, so a concurrent edit of the other date cannot
+  // slip past the check above (DATABASE_DESIGN §8).
+  const guarded: Record<string, unknown> = { ...filter };
+  if (typeof input.rsvpDeadline === 'string' && input.weddingDate === undefined) {
+    guarded.weddingDate = { $gte: input.rsvpDeadline };
+  }
+  if (input.weddingDate !== undefined && input.rsvpDeadline === undefined) {
+    guarded.$or = [
+      { rsvpDeadline: { $exists: false } },
+      { rsvpDeadline: { $lte: input.weddingDate } },
+    ];
+  }
   const wedding = Object.keys(update).length
-    ? await Wedding.findOneAndUpdate(filter, update, {
+    ? await Wedding.findOneAndUpdate(guarded, update, {
         returnDocument: 'after',
         runValidators: true,
       }).lean()
     : await Wedding.findOne(filter).lean();
-  if (!wedding) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
+  if (!wedding) {
+    if (Object.keys(guarded).length > 2 && (await Wedding.exists(filter))) {
+      throw input.weddingDate === undefined ? deadlineAfterWedding() : weddingBeforeDeadline();
+    }
+    throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
+  }
   return toWeddingResponse(wedding, await isWeddingEmpty(wedding._id));
+}
+
+export type InvitationWedding = Pick<
+  WeddingDoc,
+  'brideName' | 'groomName' | 'nameOrder' | 'weddingDate' | 'timezone' | 'rsvpDeadline'
+> & { website: Pick<WeddingDoc['website'], 'theme' | 'welcomeMessage'> };
+
+/**
+ * The wedding behind a resolved invitation token (DATABASE_DESIGN §6.3 #3), only while ACTIVE.
+ * A DELETING wedding is the same "not available" as a bad token.
+ */
+export async function findInvitationWedding(
+  weddingId: Types.ObjectId,
+): Promise<InvitationWedding | undefined> {
+  await connectDb();
+  const wedding = await Wedding.findOne(
+    { _id: weddingId, status: 'ACTIVE' },
+    {
+      _id: 0,
+      brideName: 1,
+      groomName: 1,
+      nameOrder: 1,
+      weddingDate: 1,
+      timezone: 1,
+      rsvpDeadline: 1,
+      'website.theme': 1,
+      'website.welcomeMessage': 1,
+    },
+  ).lean();
+  return wedding ?? undefined;
 }

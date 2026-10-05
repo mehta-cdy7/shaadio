@@ -553,3 +553,96 @@ export async function removeEventFromGuests(
   );
   return { affectedGuests: modifiedCount, leftWithNoEvents };
 }
+
+// --- For the invitation page ---------------------------------------------------------------------
+
+export type InvitationGuest = {
+  name: string;
+  maxPeople: number;
+  invitedEventIds: Types.ObjectId[];
+  rsvp: { status: GuestDoc['rsvp']['status']; attendingCount: number };
+};
+
+/**
+ * The guest behind a resolved invitation token (DATABASE_DESIGN §6.3 #3). The token is part of the
+ * filter, so a link regenerated since the lookup is not found.
+ */
+export async function findInvitationGuest(
+  scope: Scope,
+  id: Types.ObjectId,
+  token: string,
+): Promise<InvitationGuest | undefined> {
+  await connectDb();
+  const guest = await Guest.findOne(
+    { _id: id, weddingId: scope.weddingId, 'inviteLink.token': token },
+    { name: 1, maxPeople: 1, invitedEvents: 1, rsvp: 1 },
+  ).lean();
+  if (!guest) return undefined;
+  return {
+    name: guest.name,
+    maxPeople: guest.maxPeople,
+    invitedEventIds: guest.invitedEvents.map((item) => item.eventId),
+    rsvp: { status: guest.rsvp.status, attendingCount: guest.rsvp.attendingCount },
+  };
+}
+
+/** First visit only: one conditional write per link, ever (DATABASE_DESIGN §5.8). */
+export async function markInvitationOpened(
+  scope: Scope,
+  id: Types.ObjectId,
+  token: string,
+): Promise<void> {
+  await connectDb();
+  await Guest.updateOne(
+    {
+      _id: id,
+      weddingId: scope.weddingId,
+      'inviteLink.token': token,
+      'inviteLink.firstOpenedAt': { $exists: false },
+    },
+    { $set: { 'inviteLink.firstOpenedAt': new Date() }, $inc: { version: 1 } },
+  );
+}
+
+export type LinkRsvp =
+  { status: 'ATTENDING'; attendingCount: number } | { status: 'NOT_ATTENDING' };
+
+/**
+ * The guest answers from their link (DATABASE_DESIGN §10): capacity and the token are in the update
+ * filter, so neither a lowered `maxPeople` nor a regenerated link can be slipped past. One write,
+ * no activity entry: the log records members' actions.
+ */
+export async function submitLinkRsvp(
+  scope: Scope,
+  id: Types.ObjectId,
+  token: string,
+  input: LinkRsvp,
+): Promise<{ status: GuestDoc['rsvp']['status']; attendingCount: number }> {
+  const count = input.status === 'ATTENDING' ? input.attendingCount : 0;
+  await connectDb();
+  const res = await Guest.updateOne(
+    {
+      _id: id,
+      weddingId: scope.weddingId,
+      'inviteLink.token': token,
+      ...(count ? { maxPeople: { $gte: count } } : {}),
+    },
+    {
+      $set: {
+        'rsvp.status': input.status,
+        'rsvp.attendingCount': count,
+        'rsvp.respondedAt': new Date(),
+        'rsvp.respondedVia': 'GUEST_LINK',
+      },
+      $inc: { version: 1 },
+    },
+  );
+  if (res.matchedCount === 0) {
+    const guest = await findInvitationGuest(scope, id, token);
+    if (!guest) throw notFound();
+    throw new AppError('CAPACITY_EXCEEDED', 'More people than this invitation allows.', {
+      maxPeople: guest.maxPeople,
+    });
+  }
+  return { status: input.status, attendingCount: count };
+}

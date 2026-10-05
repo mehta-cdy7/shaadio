@@ -579,6 +579,7 @@ If yes: **How many people will attend?** From 1 up to the maximum set by the org
 - **Known consequence:** adding per-event RSVP answers in V1.1 will require a data migration of existing RSVPs. This was accepted deliberately in favour of a simpler V1 model.
 - The RSVP can be edited later through the same link.
 - **RSVP deadline (optional, wedding-level):** after the deadline, the invitation page shows the guest's last response as read-only with a message to contact the family. Members can still edit RSVPs manually.
+  - **Rule:** the deadline must be on or before the wedding date. When it is set or changed, it must be today or later (in the wedding's timezone). The deadline day itself is still open. Moving the wedding date earlier than an existing deadline is refused until the deadline is moved or removed.
 
 ---
 

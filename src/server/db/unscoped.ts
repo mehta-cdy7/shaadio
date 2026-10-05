@@ -48,3 +48,20 @@ export async function findMembershipByUserId(
     ...(typeof doc.label === 'string' ? { label: doc.label } : {}),
   };
 }
+
+/**
+ * Lookup 3: the guest an invitation link belongs to, found by `inviteLink.token` alone (unique).
+ * Returns only the ids; the caller continues scoped with `weddingId` and must still check the
+ * wedding is ACTIVE. A token that is not a 22-character base64url string is not looked up.
+ */
+export async function findGuestByInviteToken(
+  token: string,
+): Promise<{ guestId: Types.ObjectId; weddingId: Types.ObjectId } | undefined> {
+  if (!/^[A-Za-z0-9_-]{22}$/.test(token)) return undefined;
+  const mongoose = await connectDb();
+  const doc = await mongoose.connection
+    .db!.collection('guests')
+    .findOne({ 'inviteLink.token': token }, { projection: { _id: 1, weddingId: 1 } });
+  if (!doc) return undefined;
+  return { guestId: doc._id as Types.ObjectId, weddingId: doc.weddingId as Types.ObjectId };
+}

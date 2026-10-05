@@ -515,3 +515,19 @@ Numbered, each marked Open / Verify / Closed.
 
 - Merged `feat/guests` into `dev` (--no-ff). Fix from testing: the guest table's row menu was clipped by the card's `overflow-hidden`; the card no longer clips and the header rounds its own corners.
 - `/invite/[token]` still 404s by design until slice 5.
+
+## 2026-10-05 — Slice 5: Invitation page + RSVP (guest side)
+
+- **Lookup 3** (`findGuestByInviteToken` in `server/db/unscoped.ts`): guests by `inviteLink.token`, ids only. Tokens that aren't 22-char base64url skip the DB. After it, everything is scoped by the guest's `weddingId`; the wedding must be `ACTIVE`.
+- **New module `invitations`**: composes `weddings.findInvitationWedding`, `guests.findInvitationGuest / markInvitationOpened / submitLinkRsvp`, `events.invitationEvents`. The token is in every guest filter, so a link regenerated mid-request is not found.
+- **API**: `GET /api/public/invite/:token` (IP 120/min) and `POST …/rsvp` (per-invitation 20/15 min, global 300/min). `X-Robots-Tag` and `Referrer-Policy: no-referrer` via `server/http/public.ts`. Bad, regenerated, deleted-guest and DELETING-wedding links get the identical 404.
+- **Doc fix**: API §24 `wedding` now includes `nameOrder`, needed for the couple-name rule (PRD §9.2).
+- **Guest RSVP is not activity-logged**: `actor` requires a member `userId`. Single `updateOne` with capacity + token in the filter (DB §10).
+- **Page** `/invite/[token]`: server component plus one client island (`RsvpForm`). `React.cache` shares one load between metadata and page. Rendering never marks the link opened (see below). The form re-reads the GET endpoint when the tab becomes visible. The page applies the GET IP limit too; over the limit it shows not-found.
+- **Settings**: new "RSVP deadline" card (`PATCH /api/wedding { rsvpDeadline }`, null clears). Deadline day itself is still open.
+- **Stitch** screens `9b501c87…` (RSVP), `9f162923…` (confirmed), `bdf71d3c…` (deadline passed). Left out invented content: Barat/Pheras sub-times, family signature line, "rosters finalized with the venue" copy, footer.
+- **Review follow-ups (same day, docs first):**
+  - *Deadline rule* (PRD §9.11, API §11, DB `weddings.rsvpDeadline`): today or later when set, on or before the wedding date; a wedding date earlier than the deadline is refused. Checked in `updateWedding` and again in the update filter (the other date can change concurrently). Client checks in the deadline card (`min`/`max` too) and the details form.
+  - *`Cache-Control: no-store`* on `/invite/:token` via `next.config.ts` `headers()` (with `X-Robots-Tag`, `Referrer-Policy`). Next's dynamic-page default was `no-cache, must-revalidate`. Verified on `next start`.
+  - *Opened by a real browser only* (API §24, DB §5.8): new `POST /api/public/invite/:token/opened` (empty JSON, same-origin, shares the GET IP limit, 204). `OpenedBeacon` client component sends it after hydration. Preview bots don't run scripts, so they no longer mark links opened.
+- **Open**: `welcomeMessage` has no editor until the website slice, so it is usually absent. `NextIntlClientProvider` ships all messages to guest pages (budget-phone weight; revisit).

@@ -84,7 +84,7 @@ export function GuestTable({
       {/* Tablet and up: a table. */}
       <table className="hidden w-full text-left md:table">
         <caption className="sr-only">{t('table.label')}</caption>
-        <thead className="bg-canvas-muted [&_th:first-child]:rounded-tl-card [&_th:last-child]:rounded-tr-card text-label-sm font-semibold tracking-widest text-ink-muted uppercase">
+        <thead className="bg-canvas-muted text-label-sm font-semibold tracking-widest text-ink-muted uppercase [&_th:first-child]:rounded-tl-card [&_th:last-child]:rounded-tr-card">
           <tr>
             <th scope="col" className="px-5 py-4">
               {t('table.guest')}
