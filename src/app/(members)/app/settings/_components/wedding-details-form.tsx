@@ -67,6 +67,11 @@ export function WeddingDetailsForm({ wedding }: { wedding: WeddingResponse }) {
       setFieldErrors(checked.errors);
       return;
     }
+    // PRD §9.11: the wedding cannot move before the RSVP deadline.
+    if (wedding.rsvpDeadline && values.weddingDate < wedding.rsvpDeadline) {
+      setFieldErrors({ weddingDate: t('beforeDeadline') });
+      return;
+    }
 
     const body = weddingChanges(saved, values, checked.data);
 

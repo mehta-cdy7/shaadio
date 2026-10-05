@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { currentMember } from '@/app/_lib/current-member';
 import { getWedding } from '@/modules/weddings';
+import { RsvpDeadlineCard } from './_components/rsvp-deadline-card';
 import { WeddingDetailsForm } from './_components/wedding-details-form';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,5 +17,12 @@ export default async function WeddingDetailsPage() {
   if (!current?.member) redirect('/onboarding');
   // Same service as GET /api/wedding (API-08), scoped by the membership only.
   const wedding = await getWedding({ weddingId: current.member.weddingId });
-  return <WeddingDetailsForm wedding={wedding} />;
+  return (
+    <div className="flex flex-col gap-8">
+      <WeddingDetailsForm wedding={wedding} />
+      <div className="lg:max-w-[calc(100%-24rem)]">
+        <RsvpDeadlineCard wedding={wedding} />
+      </div>
+    </div>
+  );
 }

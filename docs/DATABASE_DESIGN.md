@@ -302,7 +302,7 @@ The tenant root. Its 1:1 settings are embedded.
 | `timezone` | string | ✓ | IANA name, default `Asia/Kolkata` |
 | `location` | object | ✓ | See below |
 | `coverImageKey` | string | | R2 key |
-| `rsvpDeadline` | `"YYYY-MM-DD"` | | Inclusive; RSVP locks when `todayIn(timezone) > rsvpDeadline` |
+| `rsvpDeadline` | `"YYYY-MM-DD"` | | Inclusive; RSVP locks when `todayIn(timezone) > rsvpDeadline`. ≤ `weddingDate`; today or later when set (PRD §9.11) |
 | `website` | object | ✓ | See below |
 | `gallery` | object | ✓ | See below |
 | `livestream` | object | | See below |
@@ -526,7 +526,7 @@ Filters on `side`, `rsvp.status` and `delivery.sentAt` use the `weddingId` prefi
 
 - The RSVP answer applies to every invited event. Per-event headcount is derived (§13.2).
 - `rsvp.respondedVia` is what the PRD §15 pilot metric ("% of guests who RSVP through the link") is computed from.
-- `inviteLink.firstOpenedAt` is set with a conditional update (`{ 'inviteLink.firstOpenedAt': { $exists: false } }`), so it costs one write per guest ever. It gives the family an "opened but not replied" list, which is more useful than a plain "pending" list.
+- `inviteLink.firstOpenedAt` is set with a conditional update (`{ 'inviteLink.firstOpenedAt': { $exists: false } }`), so it costs one write per guest ever. It is written by `POST /api/public/invite/:token/opened`, which the page's script sends, never by the server render: link-preview bots fetch pages without running scripts. It gives the family an "opened but not replied" list, which is more useful than a plain "pending" list.
 - Regenerating the link replaces `token` and `issuedAt` and clears `firstOpenedAt`; the old link stops working immediately.
 - Maximum 1,000 guests per wedding (soft, §15).
 

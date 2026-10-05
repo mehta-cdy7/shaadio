@@ -6,8 +6,14 @@ import { AppError } from '@/server/http/errors';
 import type { RequestMeta } from '@/server/http/route';
 import { resolveMember } from './wedding.service';
 
-export { createWedding, getWedding, resolveMember, updateWedding } from './wedding.service';
-export type { MemberContext } from './wedding.service';
+export {
+  createWedding,
+  findInvitationWedding,
+  getWedding,
+  resolveMember,
+  updateWedding,
+} from './wedding.service';
+export type { InvitationWedding, MemberContext } from './wedding.service';
 
 export type MemberCtx = UserCtx & {
   weddingId: Types.ObjectId;

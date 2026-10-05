@@ -191,7 +191,23 @@
         "discard": "Discard changes",
         "saved": "Saved",
         "slugNote": "Your website address stays the same when you change names or the date, so links you've already shared keep working.",
-        "unsavedWarning": "You have unsaved changes. Leave this page without saving them?"
+        "unsavedWarning": "You have unsaved changes. Leave this page without saving them?",
+        "beforeDeadline": "The RSVP deadline is later than this date. Move or remove the deadline first."
+      },
+      "deadline": {
+        "title": "RSVP deadline",
+        "lead": "Optional. After this date, guests see their answer but can no longer change it. You can still update RSVPs here.",
+        "label": "Reply by",
+        "hint": "Guests can reply until the end of this day. It must be on or before the wedding date.",
+        "lockedHint": "This date has passed: guests can no longer change their answer.",
+        "invalid": "Choose a valid date.",
+        "clear": "Remove deadline",
+        "save": "Save deadline",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "unsavedWarning": "You have an unsaved RSVP deadline. Leave anyway?",
+        "inPast": "Choose today or a later date.",
+        "afterWedding": "Choose a date on or before the wedding date."
       }
     },
     "dashboard": {
@@ -989,6 +1005,48 @@
       "tagline": "Designed and built for modern Indian families.",
       "navLabel": "Footer",
       "copyright": "© {year} Shaadioo. All rights reserved."
+    }
+  },
+  "invite": {
+    "metaTitle": "{couple} — Wedding invitation",
+    "eyebrow": "You’re invited",
+    "dear": "Dear {name},",
+    "lead": "would love for you to celebrate their wedding with them.",
+    "eventsTitle": "Your events",
+    "eventsCount": "{count, plural, one {# celebration} other {# celebrations}}",
+    "noEvents": "There are no events on your invitation right now. The family may add them soon.",
+    "timeTba": "Time to be announced",
+    "venueTba": "Venue to be announced",
+    "openInMaps": "Open in Maps",
+    "dressCode": "Dress code: {dressCode}",
+    "rsvp": {
+      "eyebrow": "Response requested",
+      "question": "Will you be attending?",
+      "yes": "Yes, we’ll be there",
+      "no": "Sorry, can’t make it",
+      "count": "How many people will attend?",
+      "countHint": "Up to {max, plural, one {# person} other {# people}}",
+      "fewer": "One fewer person",
+      "more": "One more person",
+      "appliesToAll": "Your answer applies to all events above. You can change it later from this link.",
+      "submit": "Send RSVP",
+      "sending": "Sending…",
+      "replyBy": "Please reply by {date}",
+      "thanks": "Thank you!",
+      "notedAttending": "We’ve noted {count, plural, one {# person} other {# people}} attending.",
+      "notedNotAttending": "We’ve noted that you can’t make it.",
+      "savedForAll": "Your response has been saved for all your events.",
+      "change": "Change my answer",
+      "canUpdateUntil": "You can update your response until {date} using this link.",
+      "canUpdate": "You can update your response any time using this link.",
+      "lockedTitle": "Your response",
+      "lockedAttending": "Attending · {count, plural, one {# person} other {# people}}",
+      "lockedNotAttending": "Not attending",
+      "lockedPending": "No response",
+      "lockedMessage": "The RSVP deadline has passed. Please contact the family to make changes.",
+      "capacity": "This invitation is for up to {max, plural, one {# person} other {# people}}.",
+      "noEventsError": "There are no events on your invitation right now, so there is nothing to reply to yet.",
+      "unavailable": "This link is no longer available. Please ask the family to share it again."
     }
   }
 }
