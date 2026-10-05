@@ -510,3 +510,8 @@ any place it deliberately differs.
 ### Known gaps
 Numbered, each marked Open / Verify / Closed.
 ```
+
+## 2026-10-05 — Slice 4 merged
+
+- Merged `feat/guests` into `dev` (--no-ff). Fix from testing: the guest table's row menu was clipped by the card's `overflow-hidden`; the card no longer clips and the header rounds its own corners.
+- `/invite/[token]` still 404s by design until slice 5.

@@ -21,7 +21,7 @@ Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOT
 | Slice 2 — create wedding, app shell, dashboard  | 2026-10-04 | Name order choice, date today or later, `POST/GET /api/wedding`, `/app` gate; migration 0002 |
 | Settings → Wedding details (edit the wedding)   | 2026-10-04 | `PATCH /api/wedding`, shared create/edit form, settings tabs; other tabs "Coming soon"       |
 | Slice 3 — Events                                | 2026-10-05 | List, add/edit with preview, delete with preview dialog; activity log module; migration 0003 |
-| Slice 4 — Guests                                | in PR      | List + filters + stats, add/edit with preview, detail, member RSVP, new link; migration 0004 |
+| Slice 4 — Guests                                | 2026-10-05 | List + filters + stats, add/edit with preview, detail, member RSVP, new link; migration 0004 |
 
 Checks: lint, typecheck, 251 unit + integration tests, 60 e2e tests, build — all green. Slice 2 re-tested manually in Chrome after review fixes (2026-10-04).
 
@@ -35,7 +35,7 @@ Checks: lint, typecheck, 251 unit + integration tests, 60 e2e tests, build — a
 - [~] 1 Accounts — signup, login, logout, session, auth rate limits _(API, `/login`, `/signup`, sign-out done. Left: `PATCH /api/me` + change password, invite signup → slice 10, forgot/reset → slice 9)_
 - [x] 2 Create wedding + app shell + dashboard (countdown) _(dashboard numbers other than days-to-go fill in as modules land)_
 - [x] 3 Events _(headcounts, delete preview and cascade now read guests)_
-- [~] 4 Guests _(in PR; also took 5b: member RSVP edit and regenerate link)_
+- [x] 4 Guests _(also took 5b: member RSVP edit and regenerate link)_
 - [ ] 5 Invitation page + RSVP _(guest side and RSVP deadline; member edit and new link landed in slice 4)_
 - [ ] 6 WhatsApp share + mark sent
 - [ ] 7 Wedding website `/w/[slug]` (classic theme)
