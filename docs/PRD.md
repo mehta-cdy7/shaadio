@@ -444,6 +444,11 @@ Roka, Engagement, Mehendi, Haldi, Sangeet, Cocktail, Wedding, Reception.
 
 Users can also create a **Custom Event**. All events are editable and deletable.
 
+## Event Rules
+
+- **Date:** any date up to one year after the wedding date. Earlier dates are allowed, including past ones (a roka that already happened). Checked when an event is created or its date changes; changing the wedding date later never invalidates existing events.
+- **Times:** both optional. An end time needs a start time and must differ from it; an end time earlier than the start means the event ends the next day.
+
 ---
 
 # 9.6 Task Management

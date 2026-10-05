@@ -17,7 +17,7 @@ export async function UpcomingEvents({ events }: { events: DashboardEvent[] }) {
           icon={CalendarIcon}
           title={t('emptyTitle')}
           body={t('emptyBody')}
-          cta={{ href: '/app/events', label: t('emptyCta') }}
+          cta={{ href: '/app/events/new', label: t('emptyCta') }}
         />
       </Panel>
     );

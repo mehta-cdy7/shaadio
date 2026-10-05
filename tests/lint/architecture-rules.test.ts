@@ -15,7 +15,8 @@ async function ruleIds(code: string, filePath: string): Promise<string[]> {
   return (result?.messages ?? []).map((m) => m.ruleId ?? 'fatal');
 }
 
-describe('architecture lint rules', () => {
+// Loading the ESLint config takes several seconds, more when the whole suite runs in parallel.
+describe('architecture lint rules', { timeout: 30_000 }, () => {
   it('bans native .collection access outside unscoped.ts', async () => {
     const code = 'declare const Guest: any;\nexport const c = Guest.collection;\n';
     expect(await ruleIds(code, 'src/server/storage/x.ts')).toContain('no-restricted-syntax');

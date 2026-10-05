@@ -671,6 +671,8 @@ type Event = {
 
 `{ name, type, date, startTime?, endTime?, venue?, description?, dressCode? }` → **201** `Event`. `409 LIMIT_REACHED` at 30.
 
+Validation (PRD §9.5), on create and on any `PATCH` that touches these fields, checked against the stored values: `date` at most one year after the wedding date (earlier and past dates allowed); `endTime` requires `startTime` and must differ from it. Failures are `400 VALIDATION_ERROR` with `details.fields.date` or `details.fields.endTime`.
+
 ## `GET /api/events/:id` · `PATCH /api/events/:id`
 
 **200** `Event`.

@@ -1,7 +1,7 @@
 # Shaadioo — Project Status
 
-**Last updated:** 2026-10-04 · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
-**Next slice:** 3 — Events
+**Last updated:** 2026-10-05 · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
+**Next slice:** 4 — Guests
 
 This is a one-screen snapshot. Update it in the same PR that finishes or changes a slice.
 Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOTES.md); scope in [docs/PRD.md](docs/PRD.md).
@@ -20,8 +20,9 @@ Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOT
 | Migration runner + auth indexes in dev          | 2026-10-03 | `pnpm db:migrate`; fixed duplicate-email signups; signed-in redirect off `/login`            |
 | Slice 2 — create wedding, app shell, dashboard  | 2026-10-04 | Name order choice, date today or later, `POST/GET /api/wedding`, `/app` gate; migration 0002 |
 | Settings → Wedding details (edit the wedding)   | 2026-10-04 | `PATCH /api/wedding`, shared create/edit form, settings tabs; other tabs "Coming soon"       |
+| Slice 3 — Events                                | 2026-10-05 | List, add/edit with preview, delete with preview dialog; activity log module; migration 0003 |
 
-Checks: lint, typecheck, 182 unit + integration tests, 60 e2e tests, build — all green. Slice 2 re-tested manually in Chrome after review fixes (2026-10-04).
+Checks: lint, typecheck, 206 unit + integration tests, 60 e2e tests, build — all green. Slice 2 re-tested manually in Chrome after review fixes (2026-10-04).
 
 ## Roadmap
 
@@ -32,8 +33,8 @@ Checks: lint, typecheck, 182 unit + integration tests, 60 e2e tests, build — a
 - [x] 0 Design foundation + landing page
 - [~] 1 Accounts — signup, login, logout, session, auth rate limits _(API, `/login`, `/signup`, sign-out done. Left: `PATCH /api/me` + change password, invite signup → slice 10, forgot/reset → slice 9)_
 - [x] 2 Create wedding + app shell + dashboard (countdown) _(dashboard numbers other than days-to-go fill in as modules land)_
-- [ ] 3 Events
-- [ ] 4 Guests
+- [x] 3 Events _(guest headcounts and delete cascade join with slice 4)_
+- [ ] 4 Guests _(must: add guests to `isWeddingEmpty`, the event headcount, delete-preview counts and the event-delete cascade)_
 - [ ] 5 Invitation page + RSVP (5a guest side, 5b member edit, new link, deadline)
 - [ ] 6 WhatsApp share + mark sent
 - [ ] 7 Wedding website `/w/[slug]` (classic theme)

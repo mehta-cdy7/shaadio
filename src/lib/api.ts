@@ -35,6 +35,11 @@ export function patchJson<T>(url: string, body: unknown): Promise<ApiResult<T>> 
   });
 }
 
+/** DELETE without a body; the server still checks the Origin (API_DESIGN §2.2). */
+export function deleteJson<T = void>(url: string): Promise<ApiResult<T>> {
+  return request<T>(url, { method: 'DELETE' });
+}
+
 export function getJson<T>(url: string): Promise<ApiResult<T>> {
   return request<T>(url, { method: 'GET' });
 }

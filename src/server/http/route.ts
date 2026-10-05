@@ -46,9 +46,7 @@ export function handler(
  * JSON. Then the body is size-capped, parsed and validated with a strict Zod schema.
  */
 export async function readJson<S extends z.ZodType>(req: Request, schema: S): Promise<z.infer<S>> {
-  if (req.headers.get('origin') !== env().APP_ORIGIN) {
-    throw new AppError('FORBIDDEN', 'This request is not allowed.');
-  }
+  assertSameOrigin(req);
   const contentType = req.headers.get('content-type') ?? '';
   if (contentType.split(';')[0]!.trim().toLowerCase() !== 'application/json') {
     throw new AppError('VALIDATION_ERROR', 'Requests must be JSON.');
@@ -85,4 +83,11 @@ function tooLarge(): AppError {
 /** Client IP from Vercel's header (API_DESIGN §7). */
 export function clientIp(req: Request): string {
   return req.headers.get('x-real-ip') ?? 'unknown';
+}
+
+/** CSRF layer 2 (API_DESIGN §2.2): a mutation must come from the app's own origin. */
+export function assertSameOrigin(req: Request): void {
+  if (req.headers.get('origin') !== env().APP_ORIGIN) {
+    throw new AppError('FORBIDDEN', 'This request is not allowed.');
+  }
 }

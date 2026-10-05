@@ -12,6 +12,8 @@ export type { MemberContext } from './wedding.service';
 export type MemberCtx = UserCtx & {
   weddingId: Types.ObjectId;
   role: 'ADMIN' | 'MANAGER';
+  /** Read with the membership, for rules that depend on the wedding (e.g. event dates). */
+  wedding: { weddingDate: string; timezone: string };
 };
 
 /**
@@ -28,7 +30,13 @@ export function withMember(
     if (options.role === 'ADMIN' && member.role !== 'ADMIN') {
       throw new AppError('FORBIDDEN', 'Only an Admin can do this.');
     }
-    return fn(req, { ...ctx, weddingId: member.weddingId, role: member.role });
+    const { weddingDate, timezone } = member.wedding;
+    return fn(req, {
+      ...ctx,
+      weddingId: member.weddingId,
+      role: member.role,
+      wedding: { weddingDate, timezone },
+    });
   });
 }
 

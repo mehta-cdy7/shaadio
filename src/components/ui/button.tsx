@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/cn';
 
-type Variant = 'primary' | 'outline' | 'ghost' | 'inverse';
+type Variant = 'primary' | 'outline' | 'ghost' | 'inverse' | 'danger';
 type Size = 'md' | 'lg';
 
 const base =
@@ -17,6 +17,8 @@ const variants: Record<Variant, string> = {
   ghost: 'bg-transparent text-ink-accent underline-offset-4 decoration-secondary hover:underline',
   // For use on the closing band: a light button on the dark band.
   inverse: 'bg-on-band text-band shadow-card hover:bg-on-band/90',
+  // Destructive confirmations (delete).
+  danger: 'bg-danger text-canvas shadow-card hover:bg-danger/90',
 };
 
 // md shrinks on phones so the header fits a 360px screen.
