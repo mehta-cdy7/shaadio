@@ -2,11 +2,12 @@ import 'server-only';
 import type { Types } from 'mongoose';
 import type { z } from 'zod';
 import { recordActivity } from '@/modules/activity';
+import { eventHeadcounts, eventInvitees, removeEventFromGuests } from '@/modules/guests';
 import { connectDb } from '@/server/db/connection';
 import { toObjectId } from '@/server/db/ids';
 import { withTransaction } from '@/server/db/transaction';
 import { AppError } from '@/server/http/errors';
-import { Event } from './event.model';
+import { Event, type EventDoc } from './event.model';
 import { toEventResponse } from './mapper';
 import {
   END_WITHOUT_START,
@@ -73,13 +74,49 @@ function venueOrUndefined(venue: Venue | null | undefined): Venue | undefined {
   return parts.length ? (Object.fromEntries(parts) as Venue) : undefined;
 }
 
+/** Each event with its confirmed headcount (DATABASE_DESIGN §13.2). */
+async function withHeadcounts(
+  ctx: { weddingId: Types.ObjectId },
+  events: EventDoc[],
+): Promise<EventResponse[]> {
+  if (!events.length) return [];
+  const counts = await eventHeadcounts(ctx);
+  return events.map((event) => toEventResponse(event, counts.get(event._id.toHexString())));
+}
+
 /** All events, sorted by date then start time (API_DESIGN §13). */
 export async function listEvents(ctx: { weddingId: Types.ObjectId }): Promise<EventResponse[]> {
   await connectDb();
   const events = await Event.find({ weddingId: ctx.weddingId })
     .sort({ date: 1, startTime: 1, _id: 1 })
     .lean();
-  return events.map(toEventResponse);
+  return withHeadcounts(ctx, events);
+}
+
+/**
+ * Cross-reference check on write (DATABASE_DESIGN §6.4): every id must be an event of this
+ * wedding. Returns them as ObjectIds; otherwise 404 naming the request `field` (API_DESIGN §14).
+ */
+export async function assertEventsExist(
+  ctx: { weddingId: Types.ObjectId },
+  ids: string[],
+  field: string,
+): Promise<Types.ObjectId[]> {
+  const unique = [...new Set(ids.map((id) => id.toLowerCase()))];
+  const missing = () => new AppError('NOT_FOUND', 'Event not found.', { field });
+  const objectIds = unique.map((id) => {
+    const objectId = toObjectId(id);
+    if (!objectId) throw missing();
+    return objectId;
+  });
+  if (!objectIds.length) return [];
+  await connectDb();
+  const found = await Event.countDocuments({
+    _id: { $in: objectIds },
+    weddingId: ctx.weddingId,
+  });
+  if (found !== objectIds.length) throw missing();
+  return objectIds;
 }
 
 /** Whether the wedding has any event (for the wedding's `isEmpty`, API_DESIGN §11). */
@@ -107,14 +144,15 @@ export async function eventSummary(
       .limit(limit)
       .lean(),
   ]);
-  return { count, upcoming: upcoming.map(toEventResponse) };
+  return { count, upcoming: await withHeadcounts(ctx, upcoming) };
 }
 
 export async function getEvent(ctx: { weddingId: Types.ObjectId }, id: string) {
   await connectDb();
   const event = await Event.findOne({ _id: eventId(id), weddingId: ctx.weddingId }).lean();
   if (!event) throw notFound();
-  return toEventResponse(event);
+  const [response] = await withHeadcounts(ctx, [event]);
+  return response!;
 }
 
 /**
@@ -202,24 +240,25 @@ export async function updateEvent(
       }).lean()
     : await Event.findOne(filter).lean();
   if (!event) throw notFound();
-  return toEventResponse(event);
+  const [response] = await withHeadcounts(ctx, [event]);
+  return response!;
 }
 
 /**
- * `GET /api/events/:id/delete-preview` (DATABASE_DESIGN §14.1): who loses this event. Guests,
- * tasks, expenses and photos do not exist yet, so every count is 0; each module adds its count
- * here when it lands (guests in slice 4).
+ * `GET /api/events/:id/delete-preview` (DATABASE_DESIGN §14.1): who loses this event. Tasks,
+ * expenses and photos do not exist yet, so their counts are 0; each module adds its count here
+ * when it lands (M3).
  */
 export async function eventDeletePreview(
   ctx: { weddingId: Types.ObjectId },
   id: string,
 ): Promise<EventDeletePreview> {
+  const _id = eventId(id);
   await connectDb();
-  const exists = await Event.exists({ _id: eventId(id), weddingId: ctx.weddingId });
+  const exists = await Event.exists({ _id, weddingId: ctx.weddingId });
   if (!exists) throw notFound();
   return {
-    invitedCount: 0,
-    onlyThisEvent: { count: 0, names: [] },
+    ...(await eventInvitees(ctx, _id)),
     tasks: 0,
     expenses: 0,
     photos: 0,
@@ -227,9 +266,9 @@ export async function eventDeletePreview(
 }
 
 /**
- * `DELETE /api/events/:id`: one transaction deletes the event and writes `event.deleted`
- * (DATABASE_DESIGN §8, §14.1). The guest, task, expense, vendor and photo cascades join this
- * transaction as those modules land (guests in slice 4).
+ * `DELETE /api/events/:id`: one transaction deletes the event, removes it from every guest's
+ * invitation and writes `event.deleted` (DATABASE_DESIGN §8, §14.1). The task, expense, vendor and
+ * photo cascades join this transaction as those modules land (M3).
  */
 export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
   const _id = eventId(id);
@@ -240,12 +279,13 @@ export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
       { session },
     ).lean();
     if (!event) throw notFound();
+    const meta = await removeEventFromGuests(session, ctx, _id);
     await recordActivity(session, {
       weddingId: ctx.weddingId,
       actor: { userId: ctx.userId, name: ctx.user.name },
       action: 'event.deleted',
       target: { type: 'event', id: _id, label: event.name },
-      meta: { affectedGuests: 0, leftWithNoEvents: 0 },
+      meta,
     });
   });
 }

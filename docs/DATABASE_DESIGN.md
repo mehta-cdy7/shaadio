@@ -506,7 +506,7 @@ One guest document is one invitation — "Rajesh Sharma" or "Sharma Family" — 
 | Index | Options | Used by |
 |---|---|---|
 | `{ 'inviteLink.token': 1 }` | unique | Public invitation page (no wedding context yet) |
-| `{ weddingId: 1, name: 1 }` | | Guest list sorted by name, and every other scoped guest query |
+| `{ weddingId: 1, name: 1 }` | collation `{ locale: 'en', strength: 2 }` | Guest list sorted by name ignoring case (the list query uses the same collation), and every other scoped guest query |
 | `{ weddingId: 1, 'invitedEvents.eventId': 1 }` | multikey | Filter by event, event-delete cascade |
 | `{ weddingId: 1, phone: 1 }` | | Duplicate-phone detection during import |
 

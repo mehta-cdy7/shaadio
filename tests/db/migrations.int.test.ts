@@ -37,6 +37,7 @@ describe('runMigrations', () => {
       '0001_auth_indexes',
       '0002_wedding_indexes',
       '0003_event_and_activity_indexes',
+      '0004_guest_indexes',
     ]);
 
     expect(await indexKeys(db, 'users')).toContainEqual({ key: { email: 1 }, unique: true });
@@ -51,6 +52,7 @@ describe('runMigrations', () => {
       '0001_auth_indexes',
       '0002_wedding_indexes',
       '0003_event_and_activity_indexes',
+      '0004_guest_indexes',
     ]);
   });
 
@@ -76,6 +78,16 @@ describe('runMigrations', () => {
     expect(await indexKeys(db, 'activity_logs')).toContainEqual({
       key: { weddingId: 1, createdAt: -1, _id: -1 },
     });
+  });
+
+  it('creates the guest indexes', async () => {
+    const db = await freshDb();
+    await runMigrations(db);
+    const guests = await indexKeys(db, 'guests');
+    expect(guests).toContainEqual({ key: { 'inviteLink.token': 1 }, unique: true });
+    expect(guests).toContainEqual({ key: { weddingId: 1, name: 1 } });
+    expect(guests).toContainEqual({ key: { weddingId: 1, 'invitedEvents.eventId': 1 } });
+    expect(guests).toContainEqual({ key: { weddingId: 1, phone: 1 } });
   });
 
   it('skips migrations already applied', async () => {
@@ -108,6 +120,7 @@ describe('runMigrations', () => {
       '0001_auth_indexes',
       '0002_wedding_indexes',
       '0003_event_and_activity_indexes',
+      '0004_guest_indexes',
     ]);
   });
 });

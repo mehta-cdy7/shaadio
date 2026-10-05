@@ -8,6 +8,14 @@ export function newToken(): string {
 }
 
 /**
+ * A random 128-bit token, base64url (22 characters, short enough for a WhatsApp message). Used for
+ * the links families share: guest invitations and the gallery (DATABASE_DESIGN §11).
+ */
+export function newLinkToken(): string {
+  return randomBytes(16).toString('base64url');
+}
+
+/**
  * HMAC-SHA256 of a token with SESSION_SECRET. Only this is stored, so a database leak cannot be
  * replayed as a login or a reset link (DATABASE_DESIGN §5.2).
  */

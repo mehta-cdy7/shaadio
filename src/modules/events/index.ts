@@ -1,6 +1,7 @@
 import 'server-only';
 
 export {
+  assertEventsExist,
   countEvents,
   createEvent,
   deleteEvent,
