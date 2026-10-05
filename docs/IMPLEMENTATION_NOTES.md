@@ -420,6 +420,48 @@ From the Stitch screen "Wedding Details Settings" (`f5d4f6926afd4572a21b9f46fd6b
 
 ---
 
+## 2026-10-04 — Slice 3: Events
+
+From the Stitch screens "Events List" (`e2cd067725414916b9cbdcc97a0c669d`), "Add Event" (`1dc1dcaf8eff4f9ca0ea0b0e2e1e4fd9`) and "Delete Event Confirmation" (`7b01bfd187d449efad8a3ac0ecaa9133`), desktop; phone and dark follow the design system.
+
+**API (API_DESIGN §13), all `withMember`, any member:**
+- `GET/POST /api/events`, `GET/PATCH/DELETE /api/events/:id`, `GET /api/events/:id/delete-preview`. Path ids that are malformed or belong to another wedding are the same 404 (§3.3); `server/db/ids.ts` `toObjectId`. Dynamic routes read `RouteContext` params and wrap `handler`/`withMember` per call.
+- `createEventSchema` / `updateEventSchema` (strict; PATCH omitted = unchanged, `null` clears; the venue is replaced whole and a venue with no parts is stored absent). Map links must be http(s), so a `javascript:` link can never reach a guest's invitation. Limits from DB §1.12/§5.7. 30 events per wedding, soft check-then-insert (DB §15) → `409 LIMIT_REACHED { limit: 30 }`.
+- Sort: date, then start time (no time first), then `_id`.
+- Delete: one transaction deletes the event and appends `event.deleted` (meta `affectedGuests`, `leftWithNoEvents`) (DB §8, §14.1). `assertSameOrigin` (split out of `readJson`) guards the body-less DELETE.
+- **Not real yet:** `headcount` is `{0,0}`, delete-preview counts are 0 and the guest/task/expense/vendor/photo cascades are not in the transaction: those collections do not exist. Each joins the service with its slice (guests in slice 4).
+
+**Activity log (`modules/activity`):** `activity_logs` model (§5.15) with the doc's action list, tenant-guarded, and append-only: every update/delete through the model throws `AppendOnlyError`. `recordActivity(session, entry)` writes inside the caller's transaction.
+
+**UI:**
+- `/app/events`: summary line, Add event (hidden at 30), cards with date tile (sandalwood for the next ceremony), type pill when the name differs, "Next ceremony", "Wedding day" (event date = wedding date) and "Done" (past) pills, time range or "Time to be announced", venue or "Venue to be announced", dress code, confirmed count (desktop), "⋯" menu (Edit, Delete). Empty state.
+- Delete: a native `<dialog>` loads `delete-preview`, then says who loses the event (copy ready for guests), "This can't be undone", red Delete (new `danger` button). A 404 on delete (already gone) also closes and refreshes.
+- `/app/events/new` and `/app/events/[id]`: type chips (picking one fills the name until the user types their own), name, date, start/end time (end before start = next day, with a hint), venue name, address, map link, dress code, description; live guest-invitation preview with "Open in Maps"; unsaved-changes warning; edit sends only changed fields (`updateEventBody`).
+- Dashboard: events card and "Upcoming events" now use real data (`eventSummary`: count + next 3 from today). Get-started and empty-state CTAs go to `/app/events/new`.
+- Left out of Stitch: "Multi-day itinerary management", "Guest stationery view", the "Order of ceremonies automatically syncs…" note (not in the PRD). Cover image waits for R2 (M2).
+- `lib/dates.ts` `formatTimeRange`; `lib/api.ts` `deleteJson`; icons More, Plus, ArrowLeft, ExternalLink.
+
+**Review fixes (same day), with product decisions written into PRD §9.5, API §13 and DB §5.7:**
+- **Times:** an end time needs a start time and must differ from it (an earlier end is still "next day"). `eventTimeProblem` is shared by `createEventSchema`, the service (PATCH checks the stored values merged with the change, so clearing only the start is refused) and the form (the end-time input is disabled until a start is set, and clearing the start clears the end).
+- **Date range (owner decision, option A):** no earliest date (past events like a roka are fine); latest = one year after the wedding date (`latestEventDate`, `addYears` clamps 29 Feb). Checked on create and when the date changes, never on other edits, so moving the wedding date later never strands existing events. The form sets `max` on the date input. `MemberCtx` now carries `wedding: { weddingDate, timezone }` from the membership lookup, so the service needs no extra read.
+- **At the limit:** `/app/events/new` shows the "already has 30 events" notice and disables Save (`countEvents`); the server check stays.
+- **`isEmpty`:** `isWeddingEmpty(weddingId)` now returns false when the wedding has events (`hasEvents` from the events module). It had been left at `true` from slice 2, so a wedding with events reported `isEmpty: true`, which slice 13 would have trusted to skip the name confirmation. The function's comment now says every new collection must add its check there; STATUS lists it for slice 4.
+- The architecture lint test gets a 30 s timeout: loading ESLint takes about 7 s when the whole suite runs in parallel, which tripped the 5 s default.
+
+**Data:** migration `0003_event_and_activity_indexes` (events `{weddingId, date, startTime}`, activity `{weddingId, createdAt -1, _id -1}`). **Applied to the Atlas dev database.**
+
+**Verification:**
+- lint, format, typecheck, 204 unit + integration tests, build pass; e2e 58 of 60 locally (the two health-check smoke tests fail only because the Atlas dev cluster was unreachable from this machine at the time).
+- `tests/security/events.int.test.ts` (own database), using the new `tests/factories/api.ts`: 401 / NO_WEDDING; create + sort order; another wedding's event → 404 on read, edit, preview and delete, and unchanged; malformed ids → 404; server-owned fields, unknown type, `javascript:`/`data:` map links, bad time/date → 400 with nothing written; 30-event limit; PATCH null clears and blank venue is removed; delete writes `event.deleted` in the same transaction and a second delete is 404; foreign Origin on POST and DELETE → 403; events and activity logs tenant-guarded, activity append-only; time rules on create and PATCH (end without start, equal times, clearing only the start), date range (a year after the wedding is the latest, any earlier date allowed, the rule applies only when the date changes). Migration test covers 0003. Unit tests for `formatTimeRange` and the form bodies.
+- Manually on `pnpm dev` + Atlas dev (throwaway `design-preview-*` accounts): empty state; Haldi chip fills the name; date and `javascript:` map-link errors, cleared on edit; save → list; list with past (Done), next, wedding-day pills and an overnight sangeet; edit via menu; delete via dialog (204, list refreshes); unknown id 404; dashboard shows the count; dark and Pixel 7.
+
+### Known gaps
+1. **Guests cascade, headcount and delete-preview counts** land with slice 4. **Open.**
+2. **No e2e** for these pages (need a real session). **Open.**
+3. **Review fixes not checked in a browser:** the Atlas dev cluster refused connections (IP access list) while they were made; they are covered by unit and integration tests. Check the end-time behaviour, the date `max` and the at-limit notice by hand. **Verify.**
+
+---
+
 ## Template for future entries
 
 ```

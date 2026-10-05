@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { CalendarIcon, MailIcon, UsersIcon } from '@/components/ui/icons';
 
 const STEPS = [
-  { key: 'events', href: '/app/events', icon: CalendarIcon },
+  { key: 'events', href: '/app/events/new', icon: CalendarIcon },
   { key: 'guests', href: '/app/guests', icon: UsersIcon },
   { key: 'members', href: '/app/settings/members', icon: MailIcon },
 ] as const;

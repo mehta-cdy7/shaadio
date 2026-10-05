@@ -4,6 +4,7 @@ import type { Types } from 'mongoose';
 import type { z } from 'zod';
 import { coupleNames } from '@/lib/couple';
 import { todayIn } from '@/lib/dates';
+import { hasEvents } from '@/modules/events';
 import { addMember } from '@/modules/members';
 import { connectDb } from '@/server/db/connection';
 import { withTransaction } from '@/server/db/transaction';
@@ -36,11 +37,12 @@ export type MemberContext = MembershipRef & {
 
 /**
  * Whether the wedding has no events, guests, tasks, expenses, vendors or photos (API_DESIGN §11).
- * None of those collections exist yet, so it is always true; each module adds its check here,
- * scoped by the wedding id, as it lands (slice 13 relies on this for one-step deletion).
+ * Wedding deletion (slice 13) relies on it: only an empty wedding may be deleted without typing the
+ * couple's names (PRD §9.2). **Every module that adds one of those collections must add its check
+ * here when it lands**, through its own module API and scoped by the wedding id. Today: events.
  */
-async function isWeddingEmpty(): Promise<boolean> {
-  return true;
+async function isWeddingEmpty(weddingId: Types.ObjectId): Promise<boolean> {
+  return !(await hasEvents({ weddingId }));
 }
 
 /**
@@ -81,7 +83,7 @@ export async function createWedding(
         await addMember(session, { weddingId: created!._id, userId, role: 'ADMIN' });
         return created!;
       });
-      return toWeddingResponse(wedding.toObject(), await isWeddingEmpty());
+      return toWeddingResponse(wedding.toObject(), await isWeddingEmpty(wedding._id));
     } catch (error) {
       const duplicate = error as { code?: number; keyPattern?: Record<string, unknown> };
       if (duplicate.code !== 11000) throw error;
@@ -114,7 +116,7 @@ export async function getWedding(ctx: { weddingId: Types.ObjectId }): Promise<We
   await connectDb();
   const wedding = await Wedding.findOne({ _id: ctx.weddingId, status: 'ACTIVE' }).lean();
   if (!wedding) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
-  return toWeddingResponse(wedding, await isWeddingEmpty());
+  return toWeddingResponse(wedding, await isWeddingEmpty(wedding._id));
 }
 
 type UpdateWedding = z.output<typeof updateWeddingSchema>;
@@ -183,5 +185,5 @@ export async function updateWedding(
       }).lean()
     : await Wedding.findOne(filter).lean();
   if (!wedding) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
-  return toWeddingResponse(wedding, await isWeddingEmpty());
+  return toWeddingResponse(wedding, await isWeddingEmpty(wedding._id));
 }

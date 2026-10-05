@@ -305,3 +305,29 @@ export const UserIcon = (p: IconProps) => (
     <path d="M5 20a7 7 0 0 1 14 0" />
   </Icon>
 );
+
+export const MoreIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="5" cy="12" r="1.2" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+    <circle cx="19" cy="12" r="1.2" fill="currentColor" />
+  </Icon>
+);
+
+export const PlusIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Icon>
+);
+
+export const ArrowLeftIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M19 12H5M11 6l-6 6 6 6" />
+  </Icon>
+);
+
+export const ExternalLinkIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M14 5h5v5M19 5l-8 8M17 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h4" />
+  </Icon>
+);

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   addDays,
+  addYears,
   calendarDateParts,
   daysBetween,
   formatCalendarDate,
+  formatTimeRange,
   formatWallTime,
   hourIn,
   isCalendarDate,
@@ -35,6 +37,11 @@ describe('dates', () => {
     expect(addDays('2027-03-01', -1)).toBe('2027-02-28');
   });
 
+  it('addYears keeps the day, clamping 29 February', () => {
+    expect(addYears('2027-02-14', 1)).toBe('2028-02-14');
+    expect(addYears('2028-02-29', 1)).toBe('2029-02-28');
+  });
+
   it('isCalendarDate rejects malformed and impossible dates', () => {
     expect(isCalendarDate('2027-02-14')).toBe(true);
     expect(isCalendarDate('2028-02-29')).toBe(true);
@@ -50,6 +57,13 @@ describe('formatting', () => {
     expect(formatCalendarDate('2027-02-14', 'short')).toBe('14 Feb 2027');
     expect(formatCalendarDate('2027-02-14', 'full')).toBe('Sunday, 14 February 2027');
     expect(calendarDateParts('2027-02-10')).toEqual({ day: '10', month: 'Feb' });
+  });
+
+  it('writes a time range, a lone start, or nothing', () => {
+    expect(formatTimeRange('16:00', '19:00')).toBe('4:00 pm – 7:00 pm');
+    expect(formatTimeRange('20:00', '01:00')).toBe('8:00 pm – 1:00 am');
+    expect(formatTimeRange('16:00')).toBe('4:00 pm');
+    expect(formatTimeRange(undefined, '19:00')).toBeUndefined();
   });
 
   it('writes wall-clock times in 12-hour form', () => {

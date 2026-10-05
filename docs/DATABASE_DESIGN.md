@@ -444,7 +444,7 @@ The tenant root. Its 1:1 settings are embedded.
 | `type` | enum | ✓ | `ROKA` \| `ENGAGEMENT` \| `MEHENDI` \| `HALDI` \| `SANGEET` \| `COCKTAIL` \| `WEDDING` \| `RECEPTION` \| `CUSTOM` |
 | `date` | `"YYYY-MM-DD"` | ✓ | |
 | `startTime` | `"HH:mm"` | | Wall-clock, §1.5 |
-| `endTime` | `"HH:mm"` | | Earlier than `startTime` = next day |
+| `endTime` | `"HH:mm"` | | Only with `startTime`, never equal to it; earlier than `startTime` = next day |
 | `venue` | object | | `{ name, address, mapUrl }`, all optional; absent venue shows "To be announced" |
 | `description` | string | | ≤ 2,000 |
 | `dressCode` | string | | ≤ 200 |
