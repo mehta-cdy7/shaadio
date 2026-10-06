@@ -20,6 +20,7 @@ import {
   type GuestListResponse,
   type GuestResponse,
   type GuestSummary,
+  type markSentSchema,
   type memberRsvpSchema,
   type updateGuestSchema,
 } from './schemas';
@@ -34,6 +35,7 @@ type Scope = { weddingId: Types.ObjectId };
 type CreateGuest = z.output<typeof createGuestSchema>;
 type UpdateGuest = z.output<typeof updateGuestSchema>;
 type MemberRsvp = z.output<typeof memberRsvpSchema>;
+type MarkSent = z.output<typeof markSentSchema>;
 
 function notFound(): AppError {
   return new AppError('NOT_FOUND', 'Guest not found.');
@@ -458,6 +460,28 @@ export async function regenerateGuestLink(ctx: GuestCtx, id: string): Promise<Gu
     return updated;
   });
   return toGuestDetail(guest);
+}
+
+/**
+ * `POST /api/guests/:id/mark-sent` (API_DESIGN §16): first one wins. The filter requires
+ * `delivery` absent, so an already-sent guest comes back unchanged. Not logged (PRD §9.14).
+ */
+export async function markGuestSent(
+  scope: Scope,
+  id: string,
+  input: MarkSent,
+): Promise<GuestResponse> {
+  const _id = guestId(id);
+  await connectDb();
+  const updated = await Guest.findOneAndUpdate(
+    { _id, weddingId: scope.weddingId, delivery: { $exists: false } },
+    { $set: { delivery: { sentAt: new Date(), sentVia: input.via } }, $inc: { version: 1 } },
+    { returnDocument: 'after', runValidators: true },
+  ).lean();
+  if (updated) return toGuestResponse(updated);
+  const current = await Guest.findOne({ _id, weddingId: scope.weddingId }).lean();
+  if (!current) throw notFound();
+  return toGuestResponse(current);
 }
 
 /**

@@ -12,6 +12,7 @@ import { getJson } from '@/lib/api';
 import { formatPhone } from '@/lib/phone';
 import type { GuestListResponse, GuestResponse } from '@/modules/guests/schemas';
 import { GuestActions } from './guest-actions';
+import type { CoupleNames } from './whatsapp-share';
 import { RsvpBadge } from './rsvp-badge';
 import { useRsvpLabel } from './rsvp-label';
 
@@ -29,6 +30,7 @@ export function GuestTable({
   total,
   query,
   events,
+  couple,
 }: {
   page: GuestListResponse;
   /** Guests matching the current filters. */
@@ -36,6 +38,8 @@ export function GuestTable({
   /** The current filters as URL parameters, for the next pages. */
   query: string;
   events: Array<{ id: string; name: string }>;
+  /** The couple's names in their order, for the WhatsApp message. */
+  couple: CoupleNames;
 }) {
   const t = useTranslations('members.guests');
   const errorMessage = useApiErrorMessage();
@@ -131,7 +135,7 @@ export function GuestTable({
                 <InviteStatus guest={guest} />
               </td>
               <td className="px-3 py-4">
-                <GuestActions guest={guest} />
+                <GuestActions guest={guest} couple={couple} />
               </td>
             </tr>
           ))}
@@ -144,7 +148,7 @@ export function GuestTable({
           <li key={guest.id} className="flex flex-col gap-3 p-4">
             <div className="flex items-start justify-between gap-3">
               <GuestName guest={guest} />
-              <GuestActions guest={guest} />
+              <GuestActions guest={guest} couple={couple} />
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <GuestRsvp guest={guest} />
@@ -260,7 +264,7 @@ function InviteStatus({ guest }: { guest: GuestResponse }) {
       className={`flex items-center gap-1.5 text-body ${guest.delivery ? 'text-ink' : 'text-ink-muted'}`}
     >
       <MailIcon width={16} height={16} />
-      {guest.delivery ? t('sent') : t('notSent')}
+      {guest.delivery ? t(`sentVia.${guest.delivery.sentVia}`) : t('notSent')}
     </span>
   );
 }

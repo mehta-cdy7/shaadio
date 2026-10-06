@@ -8,9 +8,11 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeftIcon, ClockIcon, MapPinIcon, PencilIcon } from '@/components/ui/icons';
 import { currentMember } from '@/app/_lib/current-member';
 import { formatCalendarDate, formatTimeRange } from '@/lib/dates';
+import { coupleNames } from '@/lib/couple';
 import { formatPhone } from '@/lib/phone';
 import { listEvents } from '@/modules/events';
 import { getGuest } from '@/modules/guests';
+import { getWedding } from '@/modules/weddings';
 import { GuestActions } from '../_components/guest-actions';
 import { InviteLinkCard } from '../_components/invite-link-card';
 import { RsvpCard } from '../_components/rsvp-card';
@@ -29,12 +31,13 @@ export default async function GuestPage({ params }: PageProps<'/app/guests/[id]'
   if (!current?.member) redirect('/onboarding');
   const scope = { weddingId: current.member.weddingId };
   const { id } = await params;
-  const [guest, events] = await Promise.all([
+  const [guest, events, wedding] = await Promise.all([
     getGuest(scope, id).catch((error: unknown) => {
       if ((error as { code?: string }).code === 'NOT_FOUND') notFound();
       throw error;
     }),
     listEvents(scope),
+    getWedding(scope),
   ]);
   const t = await getTranslations('members.guests');
   const invited = events.filter((event) => guest.invitedEventIds.includes(event.id));
@@ -147,7 +150,7 @@ export default async function GuestPage({ params }: PageProps<'/app/guests/[id]'
         </div>
 
         <aside className="flex flex-col gap-6 lg:sticky lg:top-8">
-          <InviteLinkCard guest={guest} />
+          <InviteLinkCard guest={guest} couple={coupleNames(wedding)} />
         </aside>
       </div>
     </div>

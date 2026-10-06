@@ -862,7 +862,9 @@ Three ways to deliver an invitation, matching the PRD: WhatsApp share, a single 
 
 `{ via: 'WHATSAPP' | 'MANUAL' }` → **200** `Guest`.
 
-The WhatsApp button is built entirely in the browser: `https://wa.me/<phone>?text=<message with inviteUrl>`, or `https://wa.me/?text=…` when there is no phone. The browser calls `mark-sent` when the button is tapped. The API cannot know whether the message was actually sent; "sent" means "the family shared it".
+The WhatsApp button is built entirely in the browser: `https://wa.me/<phone>?text=<message with inviteUrl>`, or `https://wa.me/?text=…` when there is no phone. The browser calls `mark-sent` when the button is tapped. The API cannot know whether the message was actually sent; "sent" means "the family shared it". The message text is in PRD §9.14.
+
+**Idempotent, first one wins.** The update filter requires `delivery` to be absent, so a guest that is already sent (by any channel, including `EMAIL`) is returned unchanged with **200**: no error, and a second tap of either button never changes `sentAt` or `sentVia`. Only `regenerate-link` (§14) clears `delivery`. A real change increments `version`. Not written to the activity log (PRD Activity Log). Foreign or malformed id → **404**.
 
 ## `POST /api/guests/:id/send-invitation-email`
 

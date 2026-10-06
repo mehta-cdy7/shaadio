@@ -447,6 +447,11 @@
         "noEvents": "No events assigned",
         "more": "+{count} more",
         "sent": "Sent",
+        "sentVia": {
+          "WHATSAPP": "Sent via WhatsApp",
+          "MANUAL": "Marked sent",
+          "EMAIL": "Sent by email"
+        },
         "notSent": "Not sent",
         "opened": "Opened",
         "showing": "Showing {shown} of {total, plural, one {# invitation} other {# invitations}}",
@@ -465,6 +470,8 @@
       "menu": {
         "view": "View",
         "edit": "Edit",
+        "share": "Share on WhatsApp",
+        "markSent": "Mark as sent",
         "delete": "Delete",
         "label": "Actions for {name}"
       },
@@ -571,8 +578,19 @@
         "copied": "Link copied",
         "copyFailed": "Couldn't copy. Select the link and copy it yourself.",
         "sent": "Invitation sent",
+        "sentVia": {
+          "WHATSAPP": "Sent via WhatsApp",
+          "MANUAL": "Marked as sent",
+          "EMAIL": "Sent by email"
+        },
         "notSent": "Not sent yet",
         "sentOn": "Sent {date}",
+        "preview": "Message preview",
+        "message": "Dear {guest}, {first} & {second} would love for you to celebrate their wedding with them. Please see the details and reply here: {url}",
+        "share": "Share on WhatsApp",
+        "shareAgain": "Share again on WhatsApp",
+        "otherWay": "Already sent it another way?",
+        "markSent": "Mark as sent",
         "opened": "Invitation opened",
         "notOpened": "Not opened yet",
         "openedOn": "First opened {date}",
