@@ -11,6 +11,7 @@ export {
   guestSummary,
   hasGuests,
   listGuests,
+  markGuestSent,
   markInvitationOpened,
   regenerateGuestLink,
   removeEventFromGuests,

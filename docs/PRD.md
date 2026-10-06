@@ -609,6 +609,16 @@ Each guest has a **Share on WhatsApp** button that opens WhatsApp with a pre-fil
 
 No WhatsApp API integration. Shaadioo does not send WhatsApp messages automatically. Sharing through WhatsApp marks the invitation as sent.
 
+The pre-filled message (English only in V1), with the couple's names in their chosen order:
+
+> Dear {guest name}, {name 1} & {name 2} would love for you to celebrate their wedding with them. Please see the details and reply here: {invitation link}
+
+The guest detail page shows this message as a read-only preview next to **Share on WhatsApp** and **Copy link**. An invitation shared another way (a personal message, a printed card) can be marked with **Mark as sent**. Both actions also appear in each guest's row menu on the guest list.
+
+- An invitation is marked sent once. Sharing again, or marking it again, keeps the first channel and date.
+- **Regenerate link** clears the sent state, because the new link has not been shared yet.
+- Marking an invitation sent is not written to the activity log.
+
 ---
 
 # 9.15 Expense Tracker
@@ -902,6 +912,7 @@ A minimal, append-only record of important changes.
 - Log entries cannot be edited or deleted by anyone.
 - Visible to Admins in **Settings → Activity Log** as a simple, newest-first list.
 - Guest actions (RSVP, photo upload) are not logged here; they are visible in their own modules.
+- Marking an invitation sent (WhatsApp share or Mark as sent, §9.14) is not logged; the guest list shows it.
 
 ---
 

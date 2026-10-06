@@ -476,7 +476,7 @@ One guest document is one invitation — "Rajesh Sharma" or "Sharma Family" — 
 | `invitedEvents` | array | ✓ | `[{ eventId }]`, default `[]`, ≤ 30, subdocument `_id: false` |
 | `rsvp` | object | ✓ | See below |
 | `inviteLink` | object | ✓ | See below |
-| `delivery` | object | | `{ sentAt, sentVia }`, `sentVia`: `EMAIL` \| `WHATSAPP` \| `MANUAL` |
+| `delivery` | object | | `{ sentAt, sentVia }`, `sentVia`: `EMAIL` \| `WHATSAPP` \| `MANUAL`. Set once: the write's filter requires `delivery` absent (API §16). Cleared only by regenerating the link |
 | `notes` | string | | ≤ 2,000 |
 | `version` | int | ✓ | Default 0, incremented on every write (§10) |
 | `createdByUserId` | ObjectId | ✓ | |

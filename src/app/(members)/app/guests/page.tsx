@@ -6,8 +6,10 @@ import { Card } from '@/components/ui/card';
 import { PlusIcon, UsersIcon } from '@/components/ui/icons';
 import { Eyebrow } from '@/components/ui/typography';
 import { currentMember } from '@/app/_lib/current-member';
+import { coupleNames } from '@/lib/couple';
 import { listEvents } from '@/modules/events';
 import { countGuests, guestSummary, listGuests } from '@/modules/guests';
+import { getWedding } from '@/modules/weddings';
 import {
   GUESTS_PER_WEDDING,
   guestListQueryInput,
@@ -48,12 +50,13 @@ export default async function GuestsPage({ searchParams }: PageProps<'/app/guest
   const t = await getTranslations('members.guests');
 
   const { query, params } = filtersFrom(await searchParams);
-  const [summary, all, events, page, matching] = await Promise.all([
+  const [summary, all, events, page, matching, wedding] = await Promise.all([
     guestSummary(scope),
     countGuests(scope),
     listEvents(scope),
     listGuests(scope, query),
     countGuests(scope, query),
+    getWedding(scope),
   ]);
   const full = all >= GUESTS_PER_WEDDING;
   const eventNames = events.map((event) => ({ id: event.id, name: event.name }));
@@ -102,7 +105,13 @@ export default async function GuestsPage({ searchParams }: PageProps<'/app/guest
         <>
           <GuestStats summary={summary} />
           <GuestFilters events={eventNames} />
-          <GuestTable page={page} total={matching} query={params.toString()} events={eventNames} />
+          <GuestTable
+            page={page}
+            total={matching}
+            query={params.toString()}
+            events={eventNames}
+            couple={coupleNames(wedding)}
+          />
           {full && (
             <p className="text-body text-ink-muted">
               {t('limitReached', { max: GUESTS_PER_WEDDING })}

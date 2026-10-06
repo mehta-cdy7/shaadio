@@ -106,6 +106,10 @@ export const memberRsvpSchema = z
   });
 export type MemberRsvpInput = z.input<typeof memberRsvpSchema>;
 
+/** `POST /api/guests/:id/mark-sent` (API_DESIGN §16): `EMAIL` is set only by the email paths. */
+export const markSentSchema = z.strictObject({ via: z.enum(['WHATSAPP', 'MANUAL']) });
+export type MarkSentInput = z.input<typeof markSentSchema>;
+
 const flag = z.enum(['true', 'false']).transform((value) => value === 'true');
 
 /**
