@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { POST as loginRoute } from '@/app/api/auth/login/route';
 import { POST as logoutRoute } from '@/app/api/auth/logout/route';
 import { POST as signupRoute } from '@/app/api/auth/signup/route';
@@ -47,6 +47,17 @@ async function signupAsha(): Promise<Response> {
   return signupRoute(post('/api/auth/signup', asha));
 }
 
+/**
+ * Rate limits count in fixed windows aligned to the clock (15 minutes, 1 hour). A test that runs
+ * across a window boundary splits its attempts between two counters and the limit never trips, so
+ * the limit tests start one minute into a fresh hour. The clock still moves forward from there.
+ */
+function startInFreshWindow() {
+  const hour = 60 * 60 * 1000;
+  vi.useFakeTimers({ toFake: ['Date'], shouldAdvanceTime: true });
+  vi.setSystemTime(Math.floor(Date.now() / hour) * hour + hour + 60_000);
+}
+
 describe('auth security', () => {
   beforeEach(async () => {
     const conn = await connectDb();
@@ -57,6 +68,8 @@ describe('auth security', () => {
     );
     await Promise.all(Object.values(conn.models).map((model) => model.createIndexes()));
   });
+
+  afterEach(() => vi.useRealTimers());
 
   afterAll(() => mongoose.disconnect());
 
@@ -197,6 +210,7 @@ describe('auth security', () => {
   });
 
   it('login is rate limited per email with 429 and Retry-After', async () => {
+    startInFreshWindow();
     await signupAsha();
     const attempt = () =>
       loginRoute(post('/api/auth/login', { email: asha.email, password: 'wrong-password-1' }));
@@ -212,6 +226,7 @@ describe('auth security', () => {
   });
 
   it('signup is rate limited per IP', async () => {
+    startInFreshWindow();
     const ip = { 'x-real-ip': '203.0.113.9' };
     for (let i = 0; i < 10; i++) {
       const res = await signupRoute(
