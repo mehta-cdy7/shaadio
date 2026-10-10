@@ -69,3 +69,20 @@ export function authEnv(): AuthEnv {
   cachedAuth ??= parseAuthEnv(process.env);
   return cachedAuth;
 }
+
+const emailEnvSchema = z.object({
+  RESEND_API_KEY: z.string().min(1),
+  // "Name <address>" or a bare address on a domain verified in Resend.
+  EMAIL_FROM: z.string().min(3),
+});
+
+export type EmailEnv = z.infer<typeof emailEnvSchema>;
+
+/**
+ * The Resend variables, or undefined when they are not set. Email is best-effort in V1 slices that
+ * also return a shareable link (member invitations), so a missing key degrades instead of failing.
+ */
+export function emailEnv(): EmailEnv | undefined {
+  const result = emailEnvSchema.safeParse(process.env);
+  return result.success ? result.data : undefined;
+}

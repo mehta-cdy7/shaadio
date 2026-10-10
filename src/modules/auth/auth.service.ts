@@ -1,5 +1,5 @@
 import 'server-only';
-import type { Types } from 'mongoose';
+import type { ClientSession, Types } from 'mongoose';
 import {
   hashPassword,
   isCommonPassword,
@@ -27,7 +27,20 @@ const HOUR = 60 * MINUTE;
 /** Result of signup and login: the response body plus the token for the cookie. */
 export type AuthResult = { me: MeResponse; token: string; userId: Types.ObjectId };
 
-export async function signup(input: SignupInput, ip: string): Promise<AuthResult> {
+/**
+ * Runs inside the signup transaction once the user exists. Joining a wedding by member invitation
+ * uses it (API_DESIGN §10 `memberInviteToken`): if joining fails, the account is not created.
+ */
+export type SignupJoin = (
+  session: ClientSession,
+  user: { userId: Types.ObjectId; name: string; email: string },
+) => Promise<void>;
+
+export async function signup(
+  input: Omit<SignupInput, 'memberInviteToken'>,
+  ip: string,
+  join?: SignupJoin,
+): Promise<AuthResult> {
   await consume({ scope: 'signup', key: ip, limit: 10, windowSeconds: HOUR });
 
   if (isCommonPassword(input.password)) {
@@ -48,6 +61,7 @@ export async function signup(input: SignupInput, ip: string): Promise<AuthResult
         { session },
       );
       await Session.create([sessionFields(created!._id, token, now)], { session });
+      await join?.(session, { userId: created!._id, name: created!.name, email: created!.email });
       return created!;
     });
     return { me: { user: toUserResponse(user) }, token, userId: user._id };
@@ -133,4 +147,22 @@ function sessionFields(userId: Types.ObjectId, token: string, now: Date) {
     lastSeenAt: now,
     expiresAt: new Date(now.getTime() + TTL_MS),
   };
+}
+
+/** Names and emails of the given users, by id (member lists, invitation senders). */
+export async function findUsers(
+  ids: Types.ObjectId[],
+): Promise<Map<string, { name: string; email: string }>> {
+  await connectDb();
+  const users = await User.find({ _id: { $in: ids } }, { name: 1, email: 1 }).lean();
+  return new Map(
+    users.map((user) => [user._id.toHexString(), { name: user.name, email: user.email }]),
+  );
+}
+
+/** The id of the account with this (lowercased) email, if there is one. */
+export async function findUserIdByEmail(email: string): Promise<Types.ObjectId | undefined> {
+  await connectDb();
+  const user = await User.findOne({ email }, { _id: 1 }).lean();
+  return user?._id;
 }

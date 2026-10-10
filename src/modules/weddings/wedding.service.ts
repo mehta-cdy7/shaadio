@@ -1,6 +1,6 @@
 import 'server-only';
 import { randomBytes } from 'node:crypto';
-import type { Types } from 'mongoose';
+import type { ClientSession, Types } from 'mongoose';
 import type { z } from 'zod';
 import { coupleNames } from '@/lib/couple';
 import { todayIn } from '@/lib/dates';
@@ -43,7 +43,7 @@ export type MemberContext = MembershipRef & {
  * here when it lands**, through its own module API and scoped by the wedding id. Today: events and
  * guests.
  */
-async function isWeddingEmpty(weddingId: Types.ObjectId): Promise<boolean> {
+export async function isWeddingEmpty(weddingId: Types.ObjectId): Promise<boolean> {
   const [events, guests] = await Promise.all([hasEvents({ weddingId }), hasGuests({ weddingId })]);
   return !events && !guests;
 }
@@ -263,4 +263,26 @@ export async function findInvitationWedding(
     },
   ).lean();
   return wedding ?? undefined;
+}
+
+/**
+ * Moves `counters.adminCount` inside the caller's transaction (DATABASE_DESIGN §9.2). Every Admin
+ * change writes this one wedding document, so two concurrent demotions conflict instead of both
+ * committing. A decrement never goes below 1: false means it would leave no Admin (LAST_ADMIN).
+ */
+export async function changeAdminCount(
+  session: ClientSession,
+  weddingId: Types.ObjectId,
+  delta: 1 | -1,
+): Promise<boolean> {
+  const filter =
+    delta < 0
+      ? { _id: weddingId, status: 'ACTIVE' as const, 'counters.adminCount': { $gt: 1 } }
+      : { _id: weddingId, status: 'ACTIVE' as const };
+  const result = await Wedding.updateOne(
+    filter,
+    { $inc: { 'counters.adminCount': delta } },
+    { session },
+  );
+  return result.modifiedCount === 1;
 }

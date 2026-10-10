@@ -8,7 +8,7 @@ import { afterSignInPath } from '../_components/after-sign-in';
  * instead of showing a form that would start a second session. Not for /join or /reset-password:
  * those make sense while signed in.
  */
-export async function redirectIfSignedIn(): Promise<void> {
+export async function redirectIfSignedIn(next?: string): Promise<void> {
   const session = await currentUser();
-  if (session) redirect(afterSignInPath({ user: session.user }));
+  if (session) redirect(afterSignInPath({ user: session.user }, next));
 }

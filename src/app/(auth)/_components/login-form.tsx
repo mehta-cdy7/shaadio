@@ -17,7 +17,7 @@ import { afterSignInPath } from './after-sign-in';
 type FieldErrors = { email?: string; password?: string };
 
 /** Email + password sign-in (PRD §9.1, API_DESIGN §10 `POST /api/auth/login`). */
-export function LoginForm() {
+export function LoginForm({ next }: { next?: string }) {
   const t = useTranslations('auth.signIn');
   const errorMessage = useApiErrorMessage();
   const router = useRouter();
@@ -70,7 +70,7 @@ export function LoginForm() {
       return;
     }
     // Stays pending while the next page loads, so the button can't be pressed twice.
-    router.replace(afterSignInPath(result.data));
+    router.replace(afterSignInPath(result.data, next));
     router.refresh();
   }
 
