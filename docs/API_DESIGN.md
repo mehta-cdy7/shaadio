@@ -623,7 +623,9 @@ Admin. **200** `{ items: MemberInvitation[] }` — pending and expired only; acc
 
 ## `POST /api/member-invitations`
 
-Admin. `{ email, role, label? }` → **201** `MemberInvitation`. Sends the invitation email immediately, from the transactional reserve.
+Admin. `{ email, role, label? }` → **201** `MemberInvitation & { joinUrl: string; emailSent: boolean }`. Sends the invitation email immediately, from the transactional reserve.
+
+`joinUrl` (`/join/<token>`) is returned **only** by this call and by resend, never stored in plain text and never returned by the list. The Admin can copy it or share it on WhatsApp in addition to the email (PRD §9.4). If the email cannot be sent, the invitation is still created and `emailSent` is `false`; the UI asks the Admin to share the link instead. Counts against the member-invitation rate limit (§7).
 
 Errors: `INVITATION_PENDING`, `ALREADY_MEMBER` (the email belongs to a member of this wedding), `LIMIT_REACHED` (25 members), `EMAIL_QUOTA_EXHAUSTED`.
 
@@ -631,7 +633,7 @@ If the email belongs to someone in **another** wedding, the invitation is still 
 
 ## `POST /api/member-invitations/:id/resend`
 
-Admin. New token and a fresh 7-day expiry; the old link stops working. **200** `MemberInvitation`.
+Admin. New token and a fresh 7-day expiry; the old link stops working. Sends the email again. **200** `MemberInvitation & { joinUrl: string; emailSent: boolean }`, as for create. Counts against the member-invitation rate limit (§7).
 
 ## `POST /api/member-invitations/:id/revoke`
 

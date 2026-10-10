@@ -65,3 +65,19 @@ export async function findGuestByInviteToken(
   if (!doc) return undefined;
   return { guestId: doc._id as Types.ObjectId, weddingId: doc.weddingId as Types.ObjectId };
 }
+
+/**
+ * Lookup 2: the member invitation a link belongs to, found by `tokenHash` alone (unique). Returns
+ * only the ids; the caller continues scoped with `weddingId`, checks status and expiry, and checks
+ * the wedding is ACTIVE.
+ */
+export async function findMemberInvitationByTokenHash(
+  tokenHash: string,
+): Promise<{ invitationId: Types.ObjectId; weddingId: Types.ObjectId } | undefined> {
+  const mongoose = await connectDb();
+  const doc = await mongoose.connection
+    .db!.collection('member_invitations')
+    .findOne({ tokenHash }, { projection: { _id: 1, weddingId: 1 } });
+  if (!doc) return undefined;
+  return { invitationId: doc._id as Types.ObjectId, weddingId: doc.weddingId as Types.ObjectId };
+}

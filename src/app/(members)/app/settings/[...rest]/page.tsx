@@ -20,8 +20,8 @@ export async function generateMetadata({
 }
 
 /**
- * Settings tabs not built yet: Members (slice 10), Activity log (M4), Danger zone (slice 13).
- * All three are Admin-only, so a Manager gets the same 404 as an unknown path.
+ * Settings tabs not built yet: Activity log (M4), Danger zone (slice 13).
+ * Both are Admin-only, so a Manager gets the same 404 as an unknown path.
  */
 export default async function SettingsComingSoonPage({
   params,

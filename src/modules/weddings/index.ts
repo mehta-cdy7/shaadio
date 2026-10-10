@@ -7,9 +7,11 @@ import type { RequestMeta } from '@/server/http/route';
 import { resolveMember } from './wedding.service';
 
 export {
+  changeAdminCount,
   createWedding,
   findInvitationWedding,
   getWedding,
+  isWeddingEmpty,
   resolveMember,
   updateWedding,
 } from './wedding.service';

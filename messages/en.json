@@ -85,6 +85,59 @@
       "passwordTooShort": "Use at least {min} characters.",
       "passwordTooLong": "Use at most {max} characters.",
       "passwordCommon": "This password is too common. Choose another."
+    },
+    "join": {
+      "metaTitle": "Join a wedding",
+      "eyebrow": "You're invited to help plan",
+      "wedding": "{first} & {second}'s wedding",
+      "invitedAs": "{inviter} invited you to join as {role}.",
+      "invitedAsLabel": "{inviter} invited you to join as {role} · {label}.",
+      "roles": {
+        "ADMIN": "Admin",
+        "MANAGER": "Manager"
+      },
+      "emailLocked": "This invitation is for this email.",
+      "createAndJoin": "Create account and join",
+      "creating": "Joining…",
+      "haveAccount": "Already have an account?",
+      "logInToJoin": "Log in to join",
+      "signedInAs": "Signed in as",
+      "joinWedding": "Join wedding",
+      "joining": "Joining…",
+      "notYou": "Not you?",
+      "signOut": "Sign out",
+      "signingOut": "Signing out…",
+      "expired": {
+        "title": "Link expired",
+        "body": "This invitation has expired. Ask {inviter} to send a new one."
+      },
+      "mismatch": {
+        "title": "Different account",
+        "body": "This invitation was sent to {invited}. You're signed in as {current}. Sign out, then open the link again."
+      },
+      "alreadyMember": {
+        "title": "You already have a wedding",
+        "body": "Shaadioo supports one wedding per account, and you're already part of another wedding, so you can't join this one.",
+        "emptyBody": "You've already started your own wedding, but it has no guests or events yet. Shaadioo supports one wedding per account. Deleting an empty wedding to join this one is coming soon.",
+        "goToWedding": "Go to my wedding"
+      },
+      "sameWedding": {
+        "title": "You're already in",
+        "body": "You're already a member of this wedding.",
+        "open": "Open the wedding"
+      },
+      "invalid": {
+        "eyebrow": "Invalid link",
+        "title": "Invalid invitation",
+        "body": "This invitation link isn't valid. It may have been revoked or replaced by a newer one.",
+        "home": "Go to Shaadioo"
+      },
+      "errors": {
+        "INVITATION_EXPIRED": "This invitation has expired. Ask for a new one.",
+        "INVITE_EMAIL_MISMATCH": "This invitation was sent to a different email address.",
+        "NOT_FOUND": "This invitation isn't valid any more. It may have been revoked or replaced.",
+        "ALREADY_MEMBER": "You already belong to a wedding, so you can't join this one."
+      }
     }
   },
   "members": {
@@ -208,6 +261,96 @@
         "unsavedWarning": "You have an unsaved RSVP deadline. Leave anyway?",
         "inPast": "Choose today or a later date.",
         "afterWedding": "Choose a date on or before the wedding date."
+      },
+      "members": {
+        "metaTitle": "Members",
+        "title": "Members",
+        "lead": "People who help plan this wedding. Admins can invite and manage members; Managers can edit everything else.",
+        "invite": "Invite member",
+        "you": "You",
+        "joined": "Joined {date}",
+        "count": "{count} of {max} members, including pending invitations",
+        "roles": {
+          "ADMIN": "Admin",
+          "MANAGER": "Manager"
+        },
+        "roleHelp": {
+          "ADMIN": "Can invite and manage members, and edit everything.",
+          "MANAGER": "Can manage guests, events and everything else, but not members."
+        },
+        "menu": {
+          "label": "Actions for {name}",
+          "changeRole": "Change role",
+          "editLabel": "Edit label",
+          "remove": "Remove from wedding"
+        },
+        "edit": {
+          "role": "Role",
+          "label": "Relationship label",
+          "labelHint": "Optional, e.g. Bride's Father. Up to {max} characters.",
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
+        },
+        "remove": {
+          "title": "Remove {name}?",
+          "body": "They lose access to this wedding immediately. You can invite them again later.",
+          "selfBody": "You will lose access to this wedding immediately. Another Admin can invite you again.",
+          "confirm": "Remove",
+          "removing": "Removing…",
+          "cancel": "Cancel"
+        },
+        "pending": {
+          "title": "Pending invitations",
+          "empty": "No pending invitations.",
+          "invitedBy": "Invited by {name}",
+          "expires": "Expires {date}",
+          "expired": "Expired {date}",
+          "resend": "Resend",
+          "resending": "Sending…",
+          "revoke": "Revoke",
+          "revokeTitle": "Revoke the invitation for {email}?",
+          "revokeBody": "The link stops working at once. You can invite them again later.",
+          "revokeConfirm": "Revoke",
+          "revoking": "Revoking…",
+          "cancel": "Cancel"
+        },
+        "dialog": {
+          "title": "Invite a member",
+          "email": "Email address",
+          "emailPlaceholder": "name@example.com",
+          "emailInvalid": "Enter a valid email address.",
+          "role": "Role",
+          "label": "Relationship label",
+          "labelOptional": "(optional)",
+          "labelPlaceholder": "e.g. Bride's Mother",
+          "labelTooLong": "Use at most {max} characters.",
+          "note": "They'll get an email with a link to join. You can also share the link on WhatsApp. It expires in {days} days.",
+          "send": "Send invitation",
+          "sending": "Sending…",
+          "cancel": "Cancel",
+          "close": "Close"
+        },
+        "sent": {
+          "title": "Invitation ready",
+          "emailSent": "We emailed the invitation to {email}.",
+          "emailNotSent": "We couldn't email {email}. Share the link below on WhatsApp or copy it.",
+          "linkLabel": "Invitation link",
+          "linkNote": "This link is shown only now. Resending makes a new one and the old one stops working.",
+          "whatsapp": "Share on WhatsApp",
+          "copy": "Copy link",
+          "copied": "Link copied",
+          "copyFailed": "Couldn't copy. Select the link and copy it yourself.",
+          "message": "{inviter} invited you to help plan {first} & {second}'s wedding on Shaadioo as {role}. Join here: {url}",
+          "done": "Done"
+        },
+        "errors": {
+          "ALREADY_MEMBER": "This person is already a member of this wedding.",
+          "INVITATION_PENDING": "This email already has a pending invitation. Resend it from the list instead.",
+          "LIMIT_REACHED": "This wedding already has {limit} members and invitations, the most allowed.",
+          "LAST_ADMIN": "A wedding needs at least one Admin.",
+          "NOT_FOUND": "This member or invitation no longer exists. Refresh the page."
+        }
       }
     },
     "dashboard": {
@@ -1065,6 +1208,20 @@
       "capacity": "This invitation is for up to {max, plural, one {# person} other {# people}}.",
       "noEventsError": "There are no events on your invitation right now, so there is nothing to reply to yet.",
       "unavailable": "This link is no longer available. Please ask the family to share it again."
+    }
+  },
+  "emails": {
+    "memberInvitation": {
+      "subject": "{inviter} invited you to help plan {first} & {second}'s wedding",
+      "intro": "{inviter} has invited you to help plan {first} & {second}'s wedding on Shaadioo.",
+      "roleLine": "You'll join as {role}.",
+      "action": "Accept the invitation",
+      "expiry": "This link expires in {days} days.",
+      "ignore": "If you weren't expecting this, you can ignore this email.",
+      "roles": {
+        "ADMIN": "an Admin",
+        "MANAGER": "a Manager"
+      }
     }
   }
 }

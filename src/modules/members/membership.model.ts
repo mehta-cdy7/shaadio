@@ -1,8 +1,7 @@
 import 'server-only';
 import mongoose, { Schema, type InferSchemaType, type Model } from 'mongoose';
 import { tenantGuard } from '@/server/db/tenant-guard';
-
-export const ROLES = ['ADMIN', 'MANAGER'] as const;
+import { LABEL_MAX, ROLES } from './schemas';
 
 /**
  * `wedding_memberships` (DATABASE_DESIGN §5.5). The unique `userId` index IS the one-wedding-per-user
@@ -14,7 +13,7 @@ const membershipSchema = new Schema(
     weddingId: { type: Schema.Types.ObjectId, required: true, immutable: true },
     userId: { type: Schema.Types.ObjectId, required: true, immutable: true },
     role: { type: String, required: true, enum: ROLES },
-    label: { type: String, trim: true, maxlength: 60 },
+    label: { type: String, trim: true, maxlength: LABEL_MAX },
     joinedAt: { type: Date, required: true },
   },
   { timestamps: true, versionKey: false, collection: 'wedding_memberships' },

@@ -4,8 +4,15 @@ import { AppError } from '@/server/http/errors';
 import type { RequestMeta } from '@/server/http/route';
 import { resolveSession, type SessionUser } from './auth.service';
 
-export { login, logout, resolveSession, signup } from './auth.service';
-export type { AuthResult, SessionUser } from './auth.service';
+export {
+  findUserIdByEmail,
+  findUsers,
+  login,
+  logout,
+  resolveSession,
+  signup,
+} from './auth.service';
+export type { AuthResult, SessionUser, SignupJoin } from './auth.service';
 
 export type UserCtx = SessionUser & RequestMeta;
 

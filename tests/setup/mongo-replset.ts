@@ -11,6 +11,8 @@ export async function setup(): Promise<void> {
   process.env.MONGODB_URI = replSet.getUri('shaadioo-test');
   process.env.APP_ORIGIN ??= 'http://localhost:3000';
   process.env.SESSION_SECRET ??= 'integration-test-session-secret-0123456789';
+  // Tests never send real email: without a key the adapter skips the send (src/server/email).
+  delete process.env.RESEND_API_KEY;
 }
 
 export async function teardown(): Promise<void> {

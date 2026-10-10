@@ -19,6 +19,8 @@ export const signupSchema = z.strictObject({
     .string()
     .min(PASSWORD_MIN, `Use at least ${PASSWORD_MIN} characters.`)
     .max(PASSWORD_MAX, `Use at most ${PASSWORD_MAX} characters.`),
+  /** Joins that wedding in the same request (API_DESIGN §10, PRD Rule 9). */
+  memberInviteToken: z.string().min(1).max(100).optional(),
 });
 export type SignupInput = z.infer<typeof signupSchema>;
 
