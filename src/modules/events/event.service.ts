@@ -296,6 +296,33 @@ export type InvitationEvent = Pick<
 >;
 
 /**
+ * Every event of the wedding for its public website (PRD §9.18: the website lists all events), in
+ * date order, with the same minimal projection as the invitation: no ids or headcounts.
+ */
+export async function websiteEvents(scope: {
+  weddingId: Types.ObjectId;
+}): Promise<InvitationEvent[]> {
+  await connectDb();
+  const events = await Event.find({ weddingId: scope.weddingId })
+    .sort({ date: 1, startTime: 1, _id: 1 })
+    .lean();
+  return events.map(toPublicEvent);
+}
+
+function toPublicEvent(doc: Parameters<typeof toEventResponse>[0]): InvitationEvent {
+  const { name, type, date, startTime, endTime, venue, dressCode } = toEventResponse(doc);
+  return {
+    name,
+    type,
+    date,
+    ...(startTime ? { startTime } : {}),
+    ...(endTime ? { endTime } : {}),
+    ...(venue ? { venue } : {}),
+    ...(dressCode ? { dressCode } : {}),
+  };
+}
+
+/**
  * The events on a guest's invitation (API_DESIGN §24), in date order: a minimal projection with no
  * ids or headcounts. Ids that are not this wedding's events are simply not found.
  */
@@ -308,16 +335,5 @@ export async function invitationEvents(
   const events = await Event.find({ weddingId: scope.weddingId, _id: { $in: ids } })
     .sort({ date: 1, startTime: 1, _id: 1 })
     .lean();
-  return events.map((doc) => {
-    const { name, type, date, startTime, endTime, venue, dressCode } = toEventResponse(doc);
-    return {
-      name,
-      type,
-      date,
-      ...(startTime ? { startTime } : {}),
-      ...(endTime ? { endTime } : {}),
-      ...(venue ? { venue } : {}),
-      ...(dressCode ? { dressCode } : {}),
-    };
-  });
+  return events.map(toPublicEvent);
 }

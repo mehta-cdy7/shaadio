@@ -1,7 +1,7 @@
 # Shaadioo — Project Status
 
 **Last updated:** 2026-10-11 · **Production:** https://shaadio.in · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
-**Next slice:** 7 — Wedding website `/w/[slug]` (classic theme), or 9 — password reset
+**Next slice:** 9 — Email foundation + password reset
 
 This is a one-screen snapshot. Update it in the same PR that finishes or changes a slice.
 Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOTES.md); scope in [docs/PRD.md](docs/PRD.md).
@@ -24,9 +24,10 @@ Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOT
 | Slice 4 — Guests                                | 2026-10-05 | List + filters + stats, add/edit with preview, detail, member RSVP, new link; migration 0004   |
 | Slice 5 — Invitation page + RSVP                | 2026-10-05 | `/invite/[token]`, public invite + RSVP API, deadline lock, Settings RSVP deadline card        |
 | Slice 6 — WhatsApp share + mark sent            | 2026-10-06 | `POST /api/guests/:id/mark-sent` (first one wins), share + preview on detail, row menu items   |
+| Slice 7 — Wedding website                       | 2026-10-11 | `/w/[slug]` classic theme, publish/unpublish (logged), `/app/website` share + welcome message  |
 | Slice 10 — Wedding members                      | 2026-10-11 | Invite by email + WhatsApp/copy link, `/join/[token]`, roles, last-admin guard; migration 0005 |
 
-Checks: lint, typecheck, 295 unit + integration tests, build — all green. Slice 10 (members) tested manually in Chrome on 2026-10-11: invite, join by signup, LAST_ADMIN, promote, resend, revoke, ALREADY_MEMBER.
+Checks: lint, typecheck, 305 unit + integration tests, 66 e2e, build — all green. Slice 10 (members) tested manually in Chrome on 2026-10-11: invite, join by signup, LAST_ADMIN, promote, resend, revoke, ALREADY_MEMBER.
 
 ## Roadmap
 
@@ -41,7 +42,7 @@ Checks: lint, typecheck, 295 unit + integration tests, build — all green. Slic
 - [x] 4 Guests _(also took 5b: member RSVP edit and regenerate link)_
 - [x] 5 Invitation page + RSVP _(guest side and RSVP deadline; member edit and new link landed in slice 4)_
 - [x] 6 WhatsApp share + mark sent
-- [ ] 7 Wedding website `/w/[slug]` (classic theme)
+- [x] 7 Wedding website `/w/[slug]` (classic theme) _(cover photo, featured photos, livestream in M2)_
 - [ ] 8 Go-live prep — Vercel prod, Atlas backups + restore test, domain, Resend
 - [ ] 9 Email foundation + password reset
 - [x] 10 Wedding members — invite, join, roles, last-admin _(built ahead of 7–9; "delete empty wedding and join" waits for 13)_
