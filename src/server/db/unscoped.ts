@@ -81,3 +81,23 @@ export async function findMemberInvitationByTokenHash(
   if (!doc) return undefined;
   return { invitationId: doc._id as Types.ObjectId, weddingId: doc.weddingId as Types.ObjectId };
 }
+
+/**
+ * Lookup 4: the wedding behind a public website slug (unique). Only a published, ACTIVE wedding is
+ * found: a draft, a deleting wedding and an unknown slug are all the same undefined (SYSTEM §26).
+ * Returns only the id; the caller continues by that id. A slug that is not lowercase letters,
+ * digits and dashes is not looked up.
+ */
+export async function findPublishedWeddingIdBySlug(
+  slug: string,
+): Promise<Types.ObjectId | undefined> {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80) return undefined;
+  const mongoose = await connectDb();
+  const doc = await mongoose.connection
+    .db!.collection('weddings')
+    .findOne(
+      { 'website.slug': slug, 'website.published': true, status: 'ACTIVE' },
+      { projection: { _id: 1 } },
+    );
+  return doc ? (doc._id as Types.ObjectId) : undefined;
+}

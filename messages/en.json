@@ -746,6 +746,52 @@
         "regenerated": "New link ready. Send it to them again.",
         "cancel": "Cancel"
       }
+    },
+    "website": {
+      "metaTitle": "Website",
+      "title": "Wedding website",
+      "lead": "A simple page with your wedding details and all events. It's unlisted: only people with the link can see it.",
+      "publish": {
+        "title": "Your website",
+        "draft": "Draft",
+        "published": "Published",
+        "draftNote": "Guests can't open the link until you publish.",
+        "publishedOn": "Published on {date}. Unpublishing hides the page immediately.",
+        "publishedNote": "Unpublishing hides the page immediately.",
+        "publishAction": "Publish website",
+        "unpublish": "Unpublish",
+        "working": "Saving…",
+        "linkLabel": "Website link",
+        "copy": "Copy link",
+        "copied": "Link copied",
+        "copyFailed": "Couldn't copy. Select the link and copy it yourself.",
+        "whatsapp": "Share on WhatsApp",
+        "open": "Open website",
+        "unlistedNote": "Search engines won't list this page.",
+        "message": "{first} & {second}'s wedding: see all the celebrations here: {url}"
+      },
+      "welcome": {
+        "title": "Welcome message",
+        "lead": "A short note from the families, shown at the top of your website.",
+        "label": "Message",
+        "placeholder": "With the blessings of our elders, we invite you to celebrate with us…",
+        "hint": "{count} / {max} characters",
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "unsavedWarning": "You have an unsaved welcome message. Leave anyway?"
+      },
+      "theme": {
+        "title": "Theme",
+        "names": {
+          "CLASSIC": "Classic Indian",
+          "MINIMAL": "Minimal Elegant",
+          "MODERN": "Modern Celebration"
+        },
+        "selected": "Selected",
+        "comingSoon": "Coming soon"
+      },
+      "allEventsNote": "Your website lists all events. Event invitations only control who is asked to RSVP."
     }
   },
   "landing": {
@@ -1223,5 +1269,17 @@
         "MANAGER": "a Manager"
       }
     }
+  },
+  "website": {
+    "metaTitle": "{couple} — Wedding",
+    "eyebrow": "Wedding celebrations",
+    "welcomeTitle": "Welcome",
+    "eventsTitle": "Celebrations",
+    "eventsCount": "{count, plural, one {# event} other {# events}}",
+    "noEvents": "The family will add the celebrations here soon.",
+    "timeTba": "Time announced shortly",
+    "openInMaps": "Open in Maps",
+    "dressCode": "Dress: {dressCode}",
+    "madeWith": "Made with <brand>Shaadioo</brand>"
   }
 }

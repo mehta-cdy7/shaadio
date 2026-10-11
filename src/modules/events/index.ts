@@ -12,5 +12,6 @@ export {
   invitationEvents,
   listEvents,
   updateEvent,
+  websiteEvents,
 } from './event.service';
 export type { EventCtx, InvitationEvent } from './event.service';

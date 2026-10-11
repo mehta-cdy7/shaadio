@@ -149,3 +149,62 @@ export type WeddingResponse = {
   isEmpty: boolean;
   createdAt: string;
 };
+
+// --- Website (API_DESIGN §20) --------------------------------------------------------------------
+
+export const WEBSITE_THEMES = ['CLASSIC', 'MINIMAL', 'MODERN'] as const;
+export type WebsiteTheme = (typeof WEBSITE_THEMES)[number];
+/** Milestone 1 ships one theme (PRD §16); the others are accepted once they exist. */
+export const AVAILABLE_THEMES = ['CLASSIC'] as const;
+export const WELCOME_MESSAGE_MAX = 1000;
+
+/** PATCH: omitted is unchanged; `null` or blank clears the welcome message. */
+export const updateWebsiteSchema = z
+  .strictObject({
+    theme: z.enum(AVAILABLE_THEMES, { message: 'This theme is not available yet.' }).optional(),
+    welcomeMessage: z
+      .string()
+      .trim()
+      .max(WELCOME_MESSAGE_MAX, `Use at most ${WELCOME_MESSAGE_MAX} characters.`)
+      .transform((value) => value || null)
+      .nullable()
+      .optional(),
+  })
+  .refine((value) => value.theme !== undefined || value.welcomeMessage !== undefined, {
+    message: 'Nothing to change.',
+  });
+export type UpdateWebsiteInput = z.input<typeof updateWebsiteSchema>;
+
+export type WebsiteResponse = {
+  url: string;
+  published: boolean;
+  publishedAt?: string;
+  theme: WebsiteTheme;
+  welcomeMessage?: string;
+  featuredPhotoCount: number;
+  livestream?: { youtubeVideoId: string; sourceUrl: string };
+};
+
+export type PublicWebsiteEvent = {
+  name: string;
+  type: string;
+  date: string;
+  startTime?: string;
+  endTime?: string;
+  venue?: { name?: string; address?: string; mapUrl?: string };
+  dressCode?: string;
+};
+
+/** What `/w/[slug]` renders: only fields the couple chose to publish (SYSTEM_DESIGN §26). */
+export type PublicWebsite = {
+  brideName: string;
+  groomName: string;
+  nameOrder: 'BRIDE_FIRST' | 'GROOM_FIRST';
+  title?: string;
+  description?: string;
+  weddingDate: string;
+  city: string;
+  theme: WebsiteTheme;
+  welcomeMessage?: string;
+  events: PublicWebsiteEvent[];
+};

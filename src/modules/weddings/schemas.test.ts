@@ -3,6 +3,7 @@ import { addDays, todayIn } from '@/lib/dates';
 import {
   CITY_MAX,
   createWeddingSchema,
+  updateWebsiteSchema,
   joinAddress,
   PAST_DATE,
   splitVenue,
@@ -123,5 +124,22 @@ describe('address helpers', () => {
     expect(splitVenue({ formattedAddress: 'Rajpur Road, 248001', city: 'Dehradun' })).toBe(
       'Rajpur Road, 248001',
     );
+  });
+});
+
+describe('updateWebsiteSchema', () => {
+  it('trims the welcome message and treats null or blank as clearing it', () => {
+    expect(updateWebsiteSchema.parse({ welcomeMessage: '  Hi  ' })).toEqual({
+      welcomeMessage: 'Hi',
+    });
+    expect(updateWebsiteSchema.parse({ welcomeMessage: ' ' })).toEqual({ welcomeMessage: null });
+    expect(updateWebsiteSchema.parse({ welcomeMessage: null })).toEqual({ welcomeMessage: null });
+  });
+
+  it('accepts only the themes that exist and rejects empty or unknown fields', () => {
+    expect(updateWebsiteSchema.safeParse({ theme: 'CLASSIC' }).success).toBe(true);
+    expect(updateWebsiteSchema.safeParse({ theme: 'MINIMAL' }).success).toBe(false);
+    expect(updateWebsiteSchema.safeParse({}).success).toBe(false);
+    expect(updateWebsiteSchema.safeParse({ slug: 'x' }).success).toBe(false);
   });
 });

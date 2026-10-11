@@ -16,6 +16,13 @@ export {
   updateWedding,
 } from './wedding.service';
 export type { InvitationWedding, MemberContext } from './wedding.service';
+export {
+  findPublicWebsite,
+  getWebsite,
+  setWebsitePublished,
+  updateWebsite,
+  websiteUrl,
+} from './website.service';
 
 export type MemberCtx = UserCtx & {
   weddingId: Types.ObjectId;
