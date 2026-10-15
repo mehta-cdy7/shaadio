@@ -744,7 +744,13 @@
         "regenerateConfirm": "Make new link",
         "regenerating": "Making link…",
         "regenerated": "New link ready. Send it to them again.",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "emailButton": "Email invitation",
+        "emailAgain": "Email again",
+        "emailing": "Sending…",
+        "emailSent": "Invitation emailed",
+        "noEmail": "Add an email address to send by email.",
+        "noEvents": "Invite them to an event first to send by email."
       }
     },
     "website": {
@@ -792,6 +798,99 @@
         "comingSoon": "Coming soon"
       },
       "allEventsNote": "Your website lists all events. Event invitations only control who is asked to RSVP."
+    },
+    "invitations": {
+      "metaTitle": "Invitations & RSVPs",
+      "title": "Invitations & RSVPs",
+      "lead": "Send invitations, see who has opened them and who has replied.",
+      "replyBy": "Reply by {date}",
+      "stats": {
+        "label": "Invitation progress",
+        "guests": "Guests",
+        "guestsHint": "Invited to at least one event",
+        "sent": "Invitation sent",
+        "sentHint": "{percent}% of guests",
+        "opened": "Opened link",
+        "openedHint": "{percent}% of guests",
+        "attending": "Attending",
+        "attendingHint": "{count, plural, one {# person} other {# people}}",
+        "declined": "Declined",
+        "declinedHint": "Can't make it",
+        "awaiting": "Awaiting reply",
+        "awaitingHint": "Haven't replied yet",
+        "responded": "{count} of {total} replied"
+      },
+      "email": {
+        "title": "Email invitations",
+        "ready": "{count, plural, one {# guest with an email hasn't} other {# guests with an email haven't}} been sent their invitation yet.",
+        "none": "Everyone with an email address has been sent their invitation.",
+        "allQueued": "All queued: {count, plural, one {# invitation email is} other {# invitation emails are}} waiting to go out.",
+        "queue": "Queue {count, plural, one {# email} other {# emails}}",
+        "whatsappHint": "Guests without an email: share their link on WhatsApp from the list below.",
+        "dialogTitle": "Queue invitation emails?",
+        "dialogBody": "Up to {count, plural, one {# guest} other {# guests}} will get their invitation by email. Because of the daily email limit, this may take about {days, plural, one {# day} other {# days}}. Guests already sent an invitation another way are skipped.",
+        "dialogNote": "Emails go out once a day, in the morning.",
+        "confirm": "Queue emails",
+        "queueing": "Queuing…",
+        "cancel": "Cancel",
+        "queued": "{count, plural, one {# invitation email} other {# invitation emails}} queued. We'll send them over the next {days, plural, one {day} other {# days}}.",
+        "nothingToSend": "There's no one to email right now: everyone with an email is already sent or queued."
+      },
+      "progress": {
+        "title": "Email progress",
+        "kind": {
+          "GUEST_INVITATION": "Invitations",
+          "RSVP_REMINDER": "Reminders"
+        },
+        "startedBy": "{name} · {date}",
+        "counts": "Queued {queued} · Sent {sent}",
+        "failedCount": "{count} failed",
+        "cancelledCount": "{count} skipped",
+        "daysLeft": "About {days, plural, one {# more day} other {# more days}} to finish (daily email limit)",
+        "done": "All {count} sent",
+        "retry": "Retry failed",
+        "retrying": "Retrying…",
+        "empty": "No emails queued yet."
+      },
+      "awaiting": {
+        "title": "Awaiting reply",
+        "lead": "Guests who haven't replied yet. Nudge them on WhatsApp.",
+        "filters": {
+          "all": "All pending",
+          "notSent": "Not sent",
+          "notOpened": "Sent, not opened",
+          "opened": "Opened, no reply"
+        },
+        "filtersLabel": "Show",
+        "events": "{count, plural, one {# event} other {# events}}",
+        "notSent": "Not sent",
+        "queued": "Email queued",
+        "sentVia": {
+          "WHATSAPP": "Sent on WhatsApp · {date}",
+          "MANUAL": "Marked sent · {date}",
+          "EMAIL": "Emailed · {date}"
+        },
+        "opened": "Opened",
+        "notOpened": "Not opened",
+        "noEmail": "No email",
+        "whatsapp": "WhatsApp",
+        "email": "Email",
+        "emailing": "Sending…",
+        "emailed": "Emailed",
+        "view": "View",
+        "loadMore": "Load more",
+        "loading": "Loading…",
+        "empty": "No guests match this filter.",
+        "allReplied": "Everyone has replied",
+        "allRepliedBody": "Every invited guest has answered. See the final numbers on the Guests page.",
+        "toGuests": "Go to Guests"
+      },
+      "errors": {
+        "EMAIL_QUOTA_EXHAUSTED": "Today's email limit is reached. Try again tomorrow, or share on WhatsApp.",
+        "EMAIL_PROVIDER_ERROR": "The email couldn't be sent. Please try again.",
+        "NO_EVENTS": "This guest isn't invited to any event yet.",
+        "VALIDATION_ERROR": "Add an email address to send by email."
+      }
     }
   },
   "landing": {
@@ -1268,6 +1367,16 @@
         "ADMIN": "an Admin",
         "MANAGER": "a Manager"
       }
+    },
+    "guestInvitation": {
+      "subject": "{first} & {second}'s wedding invitation",
+      "greeting": "Dear {guest},",
+      "lead": "{first} & {second} would love for you to celebrate their wedding with them.",
+      "when": "{date} · {city}",
+      "eventsTitle": "Your invited celebrations",
+      "action": "View invitation & RSVP",
+      "replyBy": "Please reply by {date}.",
+      "footer": "Sent with Shaadioo on behalf of {first} & {second}'s family. If this reached you by mistake, you can ignore it."
     }
   },
   "website": {

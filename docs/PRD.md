@@ -595,11 +595,11 @@ Technical note: confirm the email provider's daily sending limits before bulk se
 
 ---
 
-# 9.13 RSVP Email Reminders
+# 9.13 RSVP Email Reminders (moved to V2)
 
-Members can view guests whose RSVP is still Pending and use **Send Reminder to Pending Guests** (email only, guests with email addresses).
+**Decision 2026-10-12:** emailed RSVP reminders are deferred to V2 (§17). In V1, members see guests whose RSVP is still Pending on the Invitations & RSVPs page and nudge them with **Share on WhatsApp** (§9.14).
 
-No automated scheduled reminders in V1.
+V2 adds **Send Reminder to Pending Guests** (email only, guests with email addresses). No automated scheduled reminders.
 
 ---
 
@@ -1149,7 +1149,7 @@ Target dates assume a mid-December pilot wedding; adjust once the date is fixed.
 - Guest management, side tag, CSV import
 - Event-level invitations and invitation links
 - Invitation page and RSVP (with deadline)
-- Email invitations, reminders, WhatsApp share
+- Email invitations and WhatsApp share (RSVP email reminders moved to V2, §9.13)
 - Wedding website with **one theme**, publish toggle, unlisted slug
 - Dashboard shell
 
@@ -1195,6 +1195,7 @@ Deliberately excluded from V1.
 
 ### Communication
 - WhatsApp API
+- RSVP email reminders, member-triggered (moved from V1 on 2026-10-12, §9.13)
 - SMS reminders
 - Automated RSVP reminders
 

@@ -1,4 +1,5 @@
 import { deleteGuest, getGuest, updateGuest } from '@/modules/guests';
+import { cancelGuestEmailJobs } from '@/modules/invitations';
 import { updateGuestSchema } from '@/modules/guests/schemas';
 import { withMember } from '@/modules/weddings';
 import { assertSameOrigin, handler, readJson } from '@/server/http/route';
@@ -32,7 +33,10 @@ export function DELETE(req: Request, { params }: Context) {
     withMember({}, async (request, ctx) => {
       // A DELETE has no body, but it is still a mutation: it must come from the app (API §2.2).
       assertSameOrigin(request);
-      await deleteGuest(ctx, (await params).id);
+      // The guest's queued emails are cancelled in the same transaction (DATABASE_DESIGN §14.2).
+      await deleteGuest(ctx, (await params).id, (session, guestId) =>
+        cancelGuestEmailJobs(session, ctx, guestId),
+      );
       return new Response(null, { status: 204 });
     }),
   )(req);

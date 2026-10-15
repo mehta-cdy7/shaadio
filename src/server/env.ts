@@ -76,6 +76,34 @@ const emailEnvSchema = z.object({
   EMAIL_FROM: z.string().min(3),
 });
 
+const emailQuotaSchema = z.object({
+  // Provider quota per UTC day, for the whole app (SYSTEM_DESIGN §51). Resend free plan: 100.
+  EMAIL_DAILY_LIMIT: z.coerce.number().int().min(1).default(100),
+  // Kept back each day for member invitations and password resets.
+  EMAIL_TRANSACTIONAL_RESERVE: z.coerce.number().int().min(0).default(20),
+});
+
+export type EmailQuota = { dailyLimit: number; reserve: number };
+
+/** The daily email quota; defaults match the Resend free plan. Invalid values fall back too. */
+export function emailQuota(): EmailQuota {
+  const result = emailQuotaSchema.safeParse(process.env);
+  const parsed = result.success ? result.data : emailQuotaSchema.parse({});
+  return {
+    dailyLimit: parsed.EMAIL_DAILY_LIMIT,
+    reserve: Math.min(parsed.EMAIL_TRANSACTIONAL_RESERVE, parsed.EMAIL_DAILY_LIMIT),
+  };
+}
+
+/**
+ * `CRON_SECRET` for `/api/internal/*` (API_DESIGN §2.3), or undefined when unset: the internal
+ * routes then refuse every request rather than run unprotected.
+ */
+export function cronSecret(): string | undefined {
+  const value = process.env.CRON_SECRET;
+  return value && value.length >= 32 ? value : undefined;
+}
+
 export type EmailEnv = z.infer<typeof emailEnvSchema>;
 
 /**

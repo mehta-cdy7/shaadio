@@ -983,7 +983,7 @@ Resend is the email delivery provider.
 | Member invitation | Transactional | Immediate (§46) |
 | Single guest invitation | Transactional | Immediate (§46) |
 | Bulk guest invitations | Campaign | Job queue (§49) |
-| RSVP reminders | Campaign | Job queue (§49) |
+| RSVP reminders (V2, PRD §9.13) | Campaign | Job queue (§49) |
 
 ---
 
@@ -1078,6 +1078,8 @@ Two separate numbers, both configurable:
 | Emails per processing cycle | 80 | Fits within the provider's daily quota |
 | Transactional reserve | 20/day | Password resets and member invites must never be starved by a campaign |
 | Resend batch API call size | up to 100 | One API call, not one call per email |
+
+**V1 values (Resend free plan, decided 2026-10-12):** `EMAIL_DAILY_LIMIT=100`, `EMAIL_TRANSACTIONAL_RESERVE=20`, so campaigns get at most 80 per day. Usage is the `email-day` counter (DATABASE_DESIGN §5.16), one for the whole app because the provider quota is per account; the day is the UTC date, matching the provider. The email cron runs once a day at 03:30 UTC (09:00 IST). Single guest invitations count as campaign capacity (they may not dip into the reserve, API §16); member invitations and password resets may use the reserve.
 
 The reserve is the important one. Without it, a 300-guest campaign can consume the entire daily quota and lock a parent out of their account with no way to reset their password.
 

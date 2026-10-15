@@ -4,7 +4,7 @@ import type { z } from 'zod';
 import { recordActivity } from '@/modules/activity';
 import { findUserIdByEmail, findUsers } from '@/modules/auth';
 import { changeAdminCount, findInvitationWedding, isWeddingEmpty } from '@/modules/weddings';
-import { sendEmail } from '@/server/email/email';
+import { sendTransactional } from '@/server/email/email';
 import { env } from '@/server/env';
 import { hashToken, newToken } from '@/server/auth/tokens';
 import { connectDb } from '@/server/db/connection';
@@ -69,7 +69,7 @@ async function sendInvitation(
 ): Promise<boolean> {
   const wedding = await findInvitationWedding(ctx.weddingId);
   if (!wedding) return false;
-  return sendEmail(
+  return sendTransactional(
     memberInvitationEmail({
       to: doc.email,
       inviterName: ctx.user.name,

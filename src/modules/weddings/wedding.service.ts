@@ -238,7 +238,10 @@ export async function updateWedding(
 export type InvitationWedding = Pick<
   WeddingDoc,
   'brideName' | 'groomName' | 'nameOrder' | 'weddingDate' | 'timezone' | 'rsvpDeadline'
-> & { website: Pick<WeddingDoc['website'], 'theme' | 'welcomeMessage'> };
+> & {
+  website: Pick<WeddingDoc['website'], 'theme' | 'welcomeMessage'>;
+  location: Pick<WeddingDoc['location'], 'city'>;
+};
 
 /**
  * The wedding behind a resolved invitation token (DATABASE_DESIGN §6.3 #3), only while ACTIVE.
@@ -260,6 +263,7 @@ export async function findInvitationWedding(
       rsvpDeadline: 1,
       'website.theme': 1,
       'website.welcomeMessage': 1,
+      'location.city': 1,
     },
   ).lean();
   return wedding ?? undefined;

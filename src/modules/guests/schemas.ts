@@ -123,10 +123,7 @@ export const guestListQuerySchema = z.strictObject({
   rsvpStatus: z.array(z.enum(RSVP_STATUSES)).optional(),
   sent: flag.optional(),
   opened: flag.optional(),
-  noEvents: z
-    .literal('true')
-    .transform(() => true)
-    .optional(),
+  noEvents: flag.optional(),
   limit: z.coerce.number().int().min(1).max(PAGE_SIZE_MAX).optional(),
   cursor: z.string().max(500).optional(),
 });
@@ -184,4 +181,10 @@ export type GuestSummary = {
   peopleAttending: number;
   respondedViaLink: number;
   notInvitedToAnyEvent: number;
+  /** Delivered by any channel (WhatsApp, manual, email). */
+  sent: number;
+  /** Invitation link opened at least once. */
+  linkOpened: number;
+  /** Has an email, is invited to an event and is not sent yet; may include already-queued guests. */
+  emailReady: number;
 };

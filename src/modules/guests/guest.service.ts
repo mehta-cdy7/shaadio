@@ -118,7 +118,11 @@ function listFilter(scope: Scope, query: GuestListQuery): Record<string, unknown
   if (query.opened !== undefined) {
     and.push({ 'inviteLink.firstOpenedAt': { $exists: query.opened } });
   }
-  if (query.noEvents) and.push({ invitedEvents: { $size: 0 } });
+  if (query.noEvents !== undefined) {
+    and.push(
+      query.noEvents ? { invitedEvents: { $size: 0 } } : { 'invitedEvents.0': { $exists: true } },
+    );
+  }
   return { weddingId: scope.weddingId, ...(and.length ? { $and: and } : {}) };
 }
 
@@ -181,6 +185,25 @@ export async function guestSummary(scope: Scope): Promise<GuestSummary> {
           respondedViaLink: {
             $sum: { $cond: [{ $eq: ['$rsvp.respondedVia', 'GUEST_LINK'] }, 1, 0] },
           },
+          sent: { $sum: { $cond: [{ $ifNull: ['$delivery', false] }, 1, 0] } },
+          linkOpened: {
+            $sum: { $cond: [{ $ifNull: ['$inviteLink.firstOpenedAt', false] }, 1, 0] },
+          },
+          emailReady: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $ifNull: ['$email', false] },
+                    { $gt: [{ $size: '$invitedEvents' }, 0] },
+                    { $not: [{ $ifNull: ['$delivery', false] }] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
         },
       },
       { $project: { _id: 0 } },
@@ -195,6 +218,9 @@ export async function guestSummary(scope: Scope): Promise<GuestSummary> {
     pending: 0,
     peopleAttending: 0,
     respondedViaLink: 0,
+    sent: 0,
+    linkOpened: 0,
+    emailReady: 0,
     ...totals[0],
     notInvitedToAnyEvent,
   };
@@ -488,7 +514,12 @@ export async function markGuestSent(
  * `DELETE /api/guests/:id` (DATABASE_DESIGN §14.2): the guest and `guest.deleted` in one
  * transaction. Cancelling the guest's pending emails joins this transaction with email jobs.
  */
-export async function deleteGuest(ctx: GuestCtx, id: string): Promise<void> {
+export async function deleteGuest(
+  ctx: GuestCtx,
+  id: string,
+  /** Joins the transaction: the invitations module cancels the guest's queued emails here. */
+  onDeleted?: (session: ClientSession, guestId: Types.ObjectId) => Promise<void>,
+): Promise<void> {
   const _id = guestId(id);
   await connectDb();
   await withTransaction(async (session) => {
@@ -497,6 +528,7 @@ export async function deleteGuest(ctx: GuestCtx, id: string): Promise<void> {
       { session },
     ).lean();
     if (!guest) throw notFound();
+    await onDeleted?.(session, _id);
     await recordActivity(session, {
       weddingId: ctx.weddingId,
       actor: actor(ctx),
@@ -504,6 +536,89 @@ export async function deleteGuest(ctx: GuestCtx, id: string): Promise<void> {
       target: { type: 'guest', id: _id, label: guest.name },
     });
   });
+}
+
+// --- For the invitations module (email delivery) ------------------------------------------------
+
+/**
+ * The next email campaign's audience (API_DESIGN §16): guests invited to at least one event and not
+ * delivered by any channel. Those with an email are the recipients; the rest are counted as
+ * skipped.
+ */
+export async function emailAudience(scope: Scope): Promise<{
+  recipients: Array<{ guestId: Types.ObjectId; email: string }>;
+  noEmail: Types.ObjectId[];
+}> {
+  await connectDb();
+  const guests = await Guest.find(
+    {
+      weddingId: scope.weddingId,
+      'invitedEvents.0': { $exists: true },
+      delivery: { $exists: false },
+    },
+    { _id: 1, email: 1 },
+  ).lean();
+  return {
+    recipients: guests.flatMap((guest) =>
+      guest.email ? [{ guestId: guest._id, email: guest.email }] : [],
+    ),
+    noEmail: guests.flatMap((guest) => (guest.email ? [] : [guest._id])),
+  };
+}
+
+export type EmailGuest = {
+  name: string;
+  email?: string;
+  invitedEventIds: Types.ObjectId[];
+  inviteToken: string;
+  delivered: boolean;
+};
+
+/** What an invitation email needs, read at send time (DATABASE_DESIGN §5.14), or undefined. */
+export async function guestForEmail(
+  scope: Scope,
+  id: Types.ObjectId,
+): Promise<EmailGuest | undefined> {
+  await connectDb();
+  const guest = await Guest.findOne(
+    { _id: id, weddingId: scope.weddingId },
+    { name: 1, email: 1, invitedEvents: 1, 'inviteLink.token': 1, delivery: 1 },
+  ).lean();
+  if (!guest) return undefined;
+  return {
+    name: guest.name,
+    ...(guest.email ? { email: guest.email } : {}),
+    invitedEventIds: guest.invitedEvents.map((item) => item.eventId),
+    inviteToken: guest.inviteLink.token,
+    delivered: Boolean(guest.delivery),
+  };
+}
+
+/** The guest id as an ObjectId, or 404 like every other guest route (API §3.3). */
+export function parseGuestId(id: string): Types.ObjectId {
+  return guestId(id);
+}
+
+/**
+ * Records an email delivery, first one wins like WhatsApp and manual (API_DESIGN §16): a guest
+ * already sent another way keeps that channel. Returns the guest either way.
+ */
+export async function recordEmailDelivery(
+  scope: Scope,
+  id: Types.ObjectId,
+  session?: ClientSession,
+): Promise<GuestResponse | undefined> {
+  await connectDb();
+  const updated = await Guest.findOneAndUpdate(
+    { _id: id, weddingId: scope.weddingId, delivery: { $exists: false } },
+    { $set: { delivery: { sentAt: new Date(), sentVia: 'EMAIL' } }, $inc: { version: 1 } },
+    { returnDocument: 'after', runValidators: true, session },
+  ).lean();
+  if (updated) return toGuestResponse(updated);
+  const current = await Guest.findOne({ _id: id, weddingId: scope.weddingId }, null, {
+    session,
+  }).lean();
+  return current ? toGuestResponse(current) : undefined;
 }
 
 // --- For the events module -----------------------------------------------------------------------

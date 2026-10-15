@@ -19,12 +19,13 @@ import {
 import { useApiErrorMessage } from '@/components/ui/use-api-error';
 import { postJson } from '@/lib/api';
 import { whatsAppUrl } from '@/lib/whatsapp';
-import type { GuestDetailResponse, MarkSentInput } from '@/modules/guests/schemas';
+import type { GuestDetailResponse, GuestResponse, MarkSentInput } from '@/modules/guests/schemas';
+import { useInvitationErrorMessage } from '../../invitations/_components/invitation-errors';
 import { markSent, useInviteMessage, type CoupleNames } from './whatsapp-share';
 
 type LinkGuest = Pick<
   GuestDetailResponse,
-  'id' | 'name' | 'phone' | 'inviteUrl' | 'delivery' | 'linkOpenedAt'
+  'id' | 'name' | 'phone' | 'email' | 'invitedEventIds' | 'inviteUrl' | 'delivery' | 'linkOpenedAt'
 >;
 
 function formatInstant(iso: string): string {
@@ -56,6 +57,9 @@ export function InviteLinkCard({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const [regenerated, setRegenerated] = useState(false);
+  const [emailing, setEmailing] = useState(false);
+  const [emailed, setEmailed] = useState(false);
+  const emailError = useInvitationErrorMessage();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -77,6 +81,25 @@ export function InviteLinkCard({
     }
     setGuest((current) => ({ ...current, delivery: result.data.delivery }));
     // The list's "Invite" column and the RSVP card's version changed.
+    router.refresh();
+  }
+
+  /** `POST /api/guests/:id/send-invitation-email` (API_DESIGN §16): sent now, not queued. */
+  async function sendEmail() {
+    setEmailing(true);
+    setError(undefined);
+    setEmailed(false);
+    const result = await postJson<GuestResponse>(
+      `/api/guests/${guest.id}/send-invitation-email`,
+      {},
+    );
+    setEmailing(false);
+    if (!result.ok) {
+      setError(emailError(result));
+      return;
+    }
+    setGuest((current) => ({ ...current, delivery: result.data.delivery }));
+    setEmailed(true);
     router.refresh();
   }
 
@@ -163,6 +186,35 @@ export function InviteLinkCard({
               <CheckIcon width={14} height={14} />
               {t('markSent')}
             </button>
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Button
+          variant="outline"
+          onClick={sendEmail}
+          disabled={emailing || !guest.email || guest.invitedEventIds.length === 0}
+        >
+          <MailIcon width={16} height={16} />
+          {emailing
+            ? t('emailing')
+            : guest.delivery?.sentVia === 'EMAIL'
+              ? t('emailAgain')
+              : t('emailButton')}
+        </Button>
+        {!guest.email ? (
+          <p className="text-center text-label text-ink-muted">{t('noEmail')}</p>
+        ) : guest.invitedEventIds.length === 0 ? (
+          <p className="text-center text-label text-ink-muted">{t('noEvents')}</p>
+        ) : null}
+        {emailed && (
+          <p
+            role="status"
+            className="inline-flex items-center justify-center gap-1.5 text-label font-medium text-success"
+          >
+            <CheckCircleIcon width={14} height={14} />
+            {t('emailSent')}
           </p>
         )}
       </div>

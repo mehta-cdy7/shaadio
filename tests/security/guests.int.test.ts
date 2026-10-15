@@ -512,6 +512,9 @@ describe('guests security', () => {
         peopleAttending: 3,
         respondedViaLink: 0,
         notInvitedToAnyEvent: 1,
+        sent: 0,
+        linkOpened: 0,
+        emailReady: 0,
       });
     });
 

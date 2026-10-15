@@ -8,13 +8,12 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { AlertIcon, MoreIcon } from '@/components/ui/icons';
 import { useApiErrorMessage } from '@/components/ui/use-api-error';
-import { deleteJson, getJson } from '@/lib/api';
+import { deleteJson } from '@/lib/api';
 import { formatPhone } from '@/lib/phone';
-import { whatsAppUrl } from '@/lib/whatsapp';
-import type { GuestDetailResponse, GuestResponse } from '@/modules/guests/schemas';
+import type { GuestResponse } from '@/modules/guests/schemas';
 import { RsvpBadge } from './rsvp-badge';
 import { useRsvpLabel } from './rsvp-label';
-import { markSent, useInviteMessage, type CoupleNames } from './whatsapp-share';
+import { markSent, useShareGuest, type CoupleNames } from './whatsapp-share';
 
 /**
  * The "⋯" menu for a guest (View, Edit, Share on WhatsApp, Mark as sent, Delete) and the delete
@@ -44,7 +43,7 @@ export function GuestActions({
   const dialogRef = useRef<HTMLDialogElement>(null);
   // The list renders a menu per layout (table and cards), so ids must be unique per instance.
   const titleId = useId();
-  const inviteMessage = useInviteMessage(couple ?? ['', '']);
+  const shareGuest = useShareGuest(couple ?? ['', '']);
 
   // Close the menu on an outside click or Escape.
   useEffect(() => {
@@ -67,28 +66,12 @@ export function GuestActions({
     dialogRef.current?.showModal();
   }
 
-  /**
-   * Lists never carry the link (API_DESIGN §29), so it is read from `GET /api/guests/:id`. The tab
-   * opens first, inside the click, so a popup blocker allows it.
-   */
   async function share() {
     setOpen(false);
     setShareError(undefined);
-    const tab = window.open('', '_blank');
-    const result = await getJson<GuestDetailResponse>(`/api/guests/${guest.id}`);
-    if (!result.ok) {
-      tab?.close();
-      setShareError(errorMessage(result));
-      return;
-    }
-    const url = whatsAppUrl(guest.phone, inviteMessage(guest.name, result.data.inviteUrl));
-    if (tab) {
-      tab.opener = null;
-      tab.location.href = url;
-    } else {
-      window.location.href = url;
-    }
-    if (!guest.delivery) await record('WHATSAPP');
+    const failure = await shareGuest(guest);
+    if (failure) setShareError(errorMessage(failure));
+    else router.refresh();
   }
 
   async function record(via: 'WHATSAPP' | 'MANUAL') {

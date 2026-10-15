@@ -11,3 +11,8 @@ test('unknown routes show the generic not-found page', async ({ page }) => {
   expect(res?.status()).toBe(404);
   await expect(page.getByRole('heading', { name: "This link isn't available." })).toBeVisible();
 });
+
+test('the email cron route refuses requests without the secret', async ({ request }) => {
+  const res = await request.get('/api/internal/jobs/email');
+  expect(res.status()).toBe(401);
+});
