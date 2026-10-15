@@ -4,6 +4,8 @@ import * as weddingIndexes from './0002_wedding_indexes.ts';
 import * as eventIndexes from './0003_event_and_activity_indexes.ts';
 import * as guestIndexes from './0004_guest_indexes.ts';
 import * as memberInvitationIndexes from './0005_member_invitation_indexes.ts';
+import * as emailJobIndexes from './0006_email_job_indexes.ts';
+import * as emailJobOneWaiting from './0007_email_job_one_waiting.ts';
 
 /**
  * Applies unapplied migrations in order and records each in `schema_migrations` (DATABASE_DESIGN
@@ -21,6 +23,8 @@ export const MIGRATIONS: readonly Migration[] = [
   { id: '0003_event_and_activity_indexes', up: eventIndexes.up },
   { id: '0004_guest_indexes', up: guestIndexes.up },
   { id: '0005_member_invitation_indexes', up: memberInvitationIndexes.up },
+  { id: '0006_email_job_indexes', up: emailJobIndexes.up },
+  { id: '0007_email_job_one_waiting', up: emailJobOneWaiting.up },
 ];
 
 export const MIGRATIONS_COLLECTION = 'schema_migrations';

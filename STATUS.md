@@ -1,7 +1,7 @@
 # Shaadioo — Project Status
 
-**Last updated:** 2026-10-11 · **Production:** https://shaadio.in · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
-**Next slice:** 9 — Email foundation + password reset
+**Last updated:** 2026-10-15 · **Production:** https://shaadio.in · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
+**Next slice:** 9 — Password reset (email foundation landed with slice 11), then Tasks
 
 This is a one-screen snapshot. Update it in the same PR that finishes or changes a slice.
 Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOTES.md); scope in [docs/PRD.md](docs/PRD.md).
@@ -26,8 +26,9 @@ Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOT
 | Slice 6 — WhatsApp share + mark sent            | 2026-10-06 | `POST /api/guests/:id/mark-sent` (first one wins), share + preview on detail, row menu items   |
 | Slice 7 — Wedding website                       | 2026-10-11 | `/w/[slug]` classic theme, publish/unpublish (logged), `/app/website` share + welcome message  |
 | Slice 10 — Wedding members                      | 2026-10-11 | Invite by email + WhatsApp/copy link, `/join/[token]`, roles, last-admin guard; migration 0005 |
+| Slice 11 — Invitations + guest emails           | 2026-10-15 | `/app/invitations`, single + queued email campaigns, 09:00 IST cron, daily quota; mig 0006–07  |
 
-Checks: lint, typecheck, 305 unit + integration tests, 66 e2e, build — all green. Slice 10 (members) tested manually in Chrome on 2026-10-11: invite, join by signup, LAST_ADMIN, promote, resend, revoke, ALREADY_MEMBER.
+Checks: lint, typecheck, 326 unit + integration tests, build — all green (e2e last run before slice 11 review fixes). Slice 10 (members) tested manually in Chrome on 2026-10-11: invite, join by signup, LAST_ADMIN, promote, resend, revoke, ALREADY_MEMBER.
 
 ## Roadmap
 
@@ -46,7 +47,7 @@ Checks: lint, typecheck, 305 unit + integration tests, 66 e2e, build — all gre
 - [ ] 8 Go-live prep — Vercel prod, Atlas backups + restore test, domain, Resend
 - [ ] 9 Email foundation + password reset
 - [x] 10 Wedding members — invite, join, roles, last-admin _(built ahead of 7–9; "delete empty wedding and join" waits for 13)_
-- [ ] 11 Guest emails — single, campaigns, reminders _(first to cut if late)_
+- [x] 11 Invitations & RSVPs + guest emails — single and queued campaigns _(RSVP email reminders moved to V2; prod needs `CRON_SECRET` + migrations 0006, 0007)_
 - [ ] 12 CSV import
 - [ ] 13 Delete empty wedding _(must: delete memberships in the same step that marks the wedding DELETING; change DATABASE_DESIGN §14.8 first)_
 
@@ -70,6 +71,8 @@ Checks: lint, typecheck, 305 unit + integration tests, 66 e2e, build — all gre
 - Run `pnpm db:migrate` on each new environment: 0002 holds the one-wedding-per-user index.
 
 ## Open decisions
+
+- Tasks (M3) pulled forward to right after slices 11 and 9, at the product owner's request (2026-10-12).
 
 - Revoked member invitations: API §12 says they show in the activity log, but DB §5.15 has no action for it. Decide and add `member.invitation_revoked` (or drop the API sentence).
 

@@ -674,7 +674,7 @@ One document per photo between "upload URL issued" and "published". Each documen
 |---|---|---|---|
 | `weddingId` | ObjectId | ✓ | |
 | `campaignId` | ObjectId | ✓ | Groups one "send to all" action, for progress display |
-| `kind` | enum | ✓ | `GUEST_INVITATION` \| `RSVP_REMINDER` |
+| `kind` | enum | ✓ | `GUEST_INVITATION` \| `RSVP_REMINDER` (V2; V1 creates only invitations, PRD §9.13) |
 | `guestId` | ObjectId | ✓ | |
 | `toEmail` | string | ✓ | Snapshot; refreshed from the guest at send time |
 | `status` | enum | ✓ | `PENDING` \| `PROCESSING` \| `SENT` \| `FAILED` \| `CANCELLED` |
@@ -698,6 +698,7 @@ One document per photo between "upload URL issued" and "published". Each documen
 | `{ status: 1, createdAt: 1 }` | | Worker claim — **global**, not wedding-scoped (§6.3) |
 | `{ weddingId: 1, campaignId: 1, status: 1 }` | | "120 of 300 sent" |
 | `{ weddingId: 1, guestId: 1 }` | | Cancel on guest delete |
+| `{ weddingId: 1, guestId: 1, kind: 1 }` | unique, partial: `status` in `PENDING`/`PROCESSING` | At most one waiting email per guest: concurrent campaigns or a retry next to a newer campaign cannot email twice |
 | `{ purgeAt: 1 }` | TTL, `expireAfterSeconds: 0` | Remove finished jobs |
 
 **Claiming a batch** (SYSTEM §53). `updateMany` cannot take a limit, so the worker selects candidates, claims them conditionally, then reads back only what it actually won:

@@ -49,3 +49,44 @@ export type InvitationResponse = {
 };
 
 export type GuestRsvpResponse = { rsvp: InvitationRsvp; rsvpLocked: boolean };
+
+// --- Email invitations (API_DESIGN §16) ----------------------------------------------------------
+
+/** V1 queues invitations only; RSVP reminders are V2 (PRD §9.13). */
+export const createCampaignSchema = z.strictObject({
+  kind: z.literal('GUEST_INVITATION'),
+  guestIds: z
+    .array(z.string().regex(/^[0-9a-f]{24}$/i, 'Invalid id.'))
+    .min(1)
+    .max(1000)
+    .optional(),
+});
+export type CreateCampaignInput = z.input<typeof createCampaignSchema>;
+
+export type CampaignCounts = {
+  pending: number;
+  processing: number;
+  sent: number;
+  failed: number;
+  cancelled: number;
+};
+
+export type Campaign = {
+  id: string;
+  kind: 'GUEST_INVITATION' | 'RSVP_REMINDER';
+  counts: CampaignCounts;
+  /** ceil(waiting / campaign emails per day) at the current quota. */
+  estimatedDaysRemaining: number;
+  createdBy: { userId: string; name: string };
+  createdAt: string;
+};
+
+export type CampaignList = { items: Campaign[] };
+
+export type CreatedCampaign = {
+  campaign: Campaign;
+  skipped: { noEmail: number; alreadyQueued: number };
+};
+
+/** The cron route's report (API_DESIGN §27). */
+export type EmailJobReport = { processed: number; remaining: number; durationMs: number };

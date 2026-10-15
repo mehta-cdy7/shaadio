@@ -577,6 +577,9 @@ Admin.
     peopleAttending: number;
     respondedViaLink: number;          // pilot metric numerator (PRD §15)
     notInvitedToAnyEvent: number;      // excluded from all numbers above
+    sent: number;                      // delivered by any channel (WhatsApp, manual, email)
+    linkOpened: number;                // invitation link opened at least once
+    emailReady: number;                // has email, invited to an event, not sent yet (may include already-queued guests)
   };
   expenses: { totalPaise: number };
   vendors:  { count: number };
@@ -747,7 +750,7 @@ Paginated, sorted by name.
 | `rsvpStatus` | Repeatable |
 | `sent` | `true` / `false` — invitation delivered or not |
 | `opened` | `true` / `false` — link opened or not |
-| `noEvents` | `true` — invited to no event |
+| `noEvents` | `true` — invited to no event; `false` — invited to at least one |
 
 **200** `{ items: Guest[], nextCursor? }`. `inviteUrl` is **not** included in lists.
 
@@ -896,18 +899,22 @@ type Campaign = {
 { kind: 'GUEST_INVITATION' | 'RSVP_REMINDER'; guestIds?: string[] }
 ```
 
+**V1 accepts only `kind: 'GUEST_INVITATION'`** (PRD §9.13: reminders moved to V2). `RSVP_REMINDER` is `400 VALIDATION_ERROR` until V2; the rows below that mention it describe V2.
+
 Without `guestIds`, the audience is:
 
 | Kind | Guests with email, invited to ≥ 1 event, and… |
 |---|---|
 | `GUEST_INVITATION` | …not yet delivered by any channel |
-| `RSVP_REMINDER` | …delivered, RSVP `PENDING`, RSVP not locked |
+| `RSVP_REMINDER` (V2) | …delivered, RSVP `PENDING`, RSVP not locked |
 
 **202** `{ campaign: Campaign; skipped: { noEmail: number; alreadyQueued: number } }`.
 
 The response and the UI say "queued", never "sent". With the free-tier quota, 300 emails take about 4 days (SYSTEM §47); `estimatedDaysRemaining` makes that visible.
 
-`409 RSVP_LOCKED` for a reminder campaign after the deadline.
+`409 RSVP_LOCKED` for a reminder campaign after the deadline (V2).
+
+Guests invited to no event are simply outside the audience. If the audience is empty, no campaign is created: `409 CONFLICT` with `details.reason = 'NOTHING_TO_SEND'`.
 
 ## `GET /api/email-campaigns` · `GET /api/email-campaigns/:id`
 

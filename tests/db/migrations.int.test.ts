@@ -39,6 +39,8 @@ describe('runMigrations', () => {
       '0003_event_and_activity_indexes',
       '0004_guest_indexes',
       '0005_member_invitation_indexes',
+      '0006_email_job_indexes',
+      '0007_email_job_one_waiting',
     ]);
 
     expect(await indexKeys(db, 'users')).toContainEqual({ key: { email: 1 }, unique: true });
@@ -55,6 +57,8 @@ describe('runMigrations', () => {
       '0003_event_and_activity_indexes',
       '0004_guest_indexes',
       '0005_member_invitation_indexes',
+      '0006_email_job_indexes',
+      '0007_email_job_one_waiting',
     ]);
   });
 
@@ -101,6 +105,17 @@ describe('runMigrations', () => {
     expect(invitations).toContainEqual({ key: { weddingId: 1, status: 1 } });
   });
 
+  it('creates the email job indexes', async () => {
+    const db = await freshDb();
+    await runMigrations(db);
+    const jobs = await indexKeys(db, 'email_jobs');
+    expect(jobs).toContainEqual({ key: { idempotencyKey: 1 }, unique: true });
+    expect(jobs).toContainEqual({ key: { status: 1, createdAt: 1 } });
+    expect(jobs).toContainEqual({ key: { weddingId: 1, campaignId: 1, status: 1 } });
+    expect(jobs).toContainEqual({ key: { weddingId: 1, guestId: 1 } });
+    expect(jobs).toContainEqual({ key: { purgeAt: 1 }, ttl: 0 });
+  });
+
   it('skips migrations already applied', async () => {
     const db = await freshDb();
     await runMigrations(db);
@@ -133,6 +148,8 @@ describe('runMigrations', () => {
       '0003_event_and_activity_indexes',
       '0004_guest_indexes',
       '0005_member_invitation_indexes',
+      '0006_email_job_indexes',
+      '0007_email_job_one_waiting',
     ]);
   });
 });

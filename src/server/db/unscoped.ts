@@ -101,3 +101,76 @@ export async function findPublishedWeddingIdBySlug(
     );
   return doc ? (doc._id as Types.ObjectId) : undefined;
 }
+
+export type ClaimedEmailJob = {
+  jobId: Types.ObjectId;
+  weddingId: Types.ObjectId;
+  guestId: Types.ObjectId;
+  campaignId: Types.ObjectId;
+  kind: string;
+  attempts: number;
+};
+
+const EMAIL_LEASE_MS = 5 * 60 * 1000;
+
+/**
+ * Lookup 6: the email worker claims up to `limit` jobs across all weddings (DATABASE_DESIGN §5.14,
+ * SYSTEM_DESIGN §53): pending jobs, or processing jobs whose lease ran out because a previous run
+ * died. Candidates are claimed conditionally, so two overlapping runs can never both win a job, and
+ * only the jobs this claim actually won are returned. Each carries its `weddingId`; everything
+ * after the claim is scoped by it.
+ */
+export async function claimEmailJobs(
+  limit: number,
+  claimId: string,
+  now = new Date(),
+): Promise<ClaimedEmailJob[]> {
+  if (limit <= 0) return [];
+  const mongoose = await connectDb();
+  const jobs = mongoose.connection.db!.collection('email_jobs');
+  const claimable = {
+    $or: [{ status: 'PENDING' }, { status: 'PROCESSING', lockedUntil: { $lt: now } }],
+  };
+  const candidates = await jobs
+    .find(claimable, { projection: { _id: 1 } })
+    .sort({ createdAt: 1 })
+    .limit(limit)
+    .toArray();
+  if (!candidates.length) return [];
+  const ids = candidates.map((candidate) => candidate._id);
+  await jobs.updateMany(
+    { _id: { $in: ids }, ...claimable },
+    {
+      $set: {
+        status: 'PROCESSING',
+        claimId,
+        lockedUntil: new Date(now.getTime() + EMAIL_LEASE_MS),
+        lastAttemptAt: now,
+      },
+      $inc: { attempts: 1 },
+    },
+  );
+  const mine = await jobs
+    .find(
+      { _id: { $in: ids }, claimId, status: 'PROCESSING' },
+      { projection: { weddingId: 1, guestId: 1, campaignId: 1, kind: 1, attempts: 1 } },
+    )
+    .sort({ createdAt: 1 })
+    .toArray();
+  return mine.map((doc) => ({
+    jobId: doc._id as Types.ObjectId,
+    weddingId: doc.weddingId as Types.ObjectId,
+    guestId: doc.guestId as Types.ObjectId,
+    campaignId: doc.campaignId as Types.ObjectId,
+    kind: doc.kind as string,
+    attempts: doc.attempts as number,
+  }));
+}
+
+/** Lookup 6, read-only: jobs still waiting across all weddings, for the worker's report. */
+export async function countWaitingEmailJobs(): Promise<number> {
+  const mongoose = await connectDb();
+  return mongoose.connection
+    .db!.collection('email_jobs')
+    .countDocuments({ status: { $in: ['PENDING', 'PROCESSING'] } });
+}
