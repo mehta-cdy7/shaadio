@@ -1,4 +1,4 @@
-# Shaadioo — Implementation Notes
+# Shaadio — Implementation Notes
 
 This file records **what has actually been built and when**. `SYSTEM_DESIGN.md` describes the intended design; this file describes reality, including the places where the two differ and why.
 
@@ -591,3 +591,13 @@ Numbered, each marked Open / Verify / Closed.
   read-back uses `_id`. Awaiting rows resync after refresh; non-default filters reload.
 - **V2 backlog:** the batch idempotency key is per run; a timed-out batch that Resend accepted can
   be resent next run (Resend keys last 24 h, runs are daily). Needs reconciliation with Resend.
+
+## 2026-10-15 — Rename: Shaadioo → Shaadio
+
+The product name is now **Shaadio** everywhere: UI copy (`messages/en.json`), logo, email templates, page titles, `package.json`, docs, tests and example URLs (`shaadio.in`, the live domain). Earlier entries in this file keep the old spelling as history.
+
+Kept on purpose:
+
+- The Atlas databases stay `shaadioo-dev` / `shaadioo-prod` (renaming a Mongo database means copying it). `.env.example`, the `MONGODB_URI` validation message and `scripts/migrate.ts` name them as they are. Test and CI databases use the new name; they are throwaway.
+- The Stitch design system is still titled "Shaadioo" in Stitch, so the `tokens.css` source comment keeps that title.
+- R2 buckets do not exist yet; they are created as `shaadio-dev` / `shaadio-prod`.

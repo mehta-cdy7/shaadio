@@ -1,4 +1,4 @@
-# Shaadioo — rules for every coding session
+# Shaadio — rules for every coding session
 
 Indian wedding-planning app. Next.js App Router + TS modular monolith on Vercel; MongoDB Atlas +
 Mongoose; Zod; server-side sessions; R2, Resend, Google Places, Vercel Cron.

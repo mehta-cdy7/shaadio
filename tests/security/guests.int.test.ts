@@ -22,7 +22,7 @@ import { adminWithWedding, getRequest, jsonRequest, ORIGIN, signUp } from '../fa
  * Guests (API_DESIGN §3, §5, §6, §14, §30; DATABASE_DESIGN §5.8, §6.4, §6.5, §10, §13, §14.1–2)
  * through the real route handlers on the in-memory replica set. Own database.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-guests');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-guests');
 
 const params = (id: string) => ({ params: Promise.resolve({ id }) });
 

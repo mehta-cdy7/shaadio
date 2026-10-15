@@ -1,4 +1,4 @@
-# Shaadioo
+# Shaadio
 ## Product Requirements Document
 
 **Version:** V1 (Document revision 3)
@@ -13,7 +13,7 @@
 
 ## Revision 2 (changes from the original "Make My Marriage" draft)
 
-1. **Name** changed to **Shaadioo**. All example URLs updated (`shaadioo.com` is a placeholder until the domain is verified).
+1. **Name** changed to **Shaadio**. All example URLs updated (`shaadio.in` is the live domain). Renamed again from "Shaadioo" to **Shaadio** on 2026-10-15; the Atlas databases keep their original `shaadioo-dev` / `shaadioo-prod` names.
 2. **RSVP storage (9.11):** guests still answer once, but the answer is saved against every event they are invited to, so per-event RSVP in V1.1 is a UI change, not a data migration.
 3. **Signup via invitation (9.1, 9.2):** members who sign up through an invitation link join that wedding directly and skip wedding creation. Empty weddings can be deleted, so Rule 1 cannot lock anyone out.
 4. **Wedding website (9.18):** shows all events, is unlisted (publish toggle, `noindex`, random slug suffix), and shows a gallery glimpse of up to 12 admin-featured photos only.
@@ -34,7 +34,7 @@
 ## Revision 3 (aligned with SYSTEM_DESIGN.md)
 
 18. **RSVP storage (9.11)** reverted to guest-level storage, matching the implemented design. Per-event RSVP in V1.1 will require a migration; this trade-off is now stated explicitly.
-19. **Vendor discovery (9.17, 9.16)** changed to copy Google details into a Shaadioo-owned vendor record instead of storing only the place ID. The Google terms risk is recorded in the PRD.
+19. **Vendor discovery (9.17, 9.16)** changed to copy Google details into a Shaadio-owned vendor record instead of storing only the place ID. The Google terms risk is recorded in the PRD.
 
 ---
 
@@ -42,11 +42,11 @@
 
 ## 1.1 Product Name
 
-**Shaadioo**
+**Shaadio**
 
 ## 1.2 Product Vision
 
-Shaadioo is a digital wedding management platform that helps couples and their families collaboratively plan and manage an Indian wedding from one place.
+Shaadio is a digital wedding management platform that helps couples and their families collaboratively plan and manage an Indian wedding from one place.
 
 Indian weddings involve multiple events, dozens of tasks, many family members, hundreds of guests, vendors, expenses, invitations, photos, and several moving pieces.
 
@@ -61,7 +61,7 @@ Most families currently manage this using a combination of:
 - Different vendor conversations
 - Shared photo folders
 
-Shaadioo brings these activities together inside one structured wedding workspace.
+Shaadio brings these activities together inside one structured wedding workspace.
 
 The product should feel like:
 
@@ -93,7 +93,7 @@ There is usually no single source of truth.
 
 One family member tracks guests in Excel. Someone else tracks expenses. Tasks are discussed inside WhatsApp groups. Vendor details are stored in individual phones. Invitations are shared separately. Wedding photos get scattered across dozens of devices after the wedding.
 
-Shaadioo aims to solve this by providing one central wedding workspace.
+Shaadio aims to solve this by providing one central wedding workspace.
 
 ---
 
@@ -165,7 +165,7 @@ Managers can access everything an Admin can, except:
 
 Guests are **not** Wedding Members and are **not** stored as user accounts.
 
-Guests do not log in. They interact with Shaadioo through secure unique links and the wedding QR code.
+Guests do not log in. They interact with Shaadio through secure unique links and the wedding QR code.
 
 A guest may:
 
@@ -212,7 +212,7 @@ A user who signs up through a member invitation link joins that wedding and is n
 
 # 6. Product Goals
 
-Shaadioo V1 should allow a family to manage the core activities of a wedding from beginning to end.
+Shaadio V1 should allow a family to manage the core activities of a wedding from beginning to end.
 
 The product should enable users to:
 
@@ -236,7 +236,7 @@ The product should enable users to:
 
 # 7. Non-Goals
 
-Shaadioo V1 will NOT include:
+Shaadio V1 will NOT include:
 
 - Multiple weddings per user
 - Wedding planner business accounts
@@ -531,7 +531,7 @@ When the wedding has events, the add-guest form requires at least one invited ev
 
 Every guest receives a secure unique invitation link.
 
-Example: `shaadioo.com/invite/X7K29PQ4M2`
+Example: `shaadio.in/invite/X7K29PQ4M2`
 
 The link identifies the wedding, the guest, and the invited events.
 
@@ -607,7 +607,7 @@ V2 adds **Send Reminder to Pending Guests** (email only, guests with email addre
 
 Each guest has a **Share on WhatsApp** button that opens WhatsApp with a pre-filled message containing that guest's invitation link.
 
-No WhatsApp API integration. Shaadioo does not send WhatsApp messages automatically. Sharing through WhatsApp marks the invitation as sent.
+No WhatsApp API integration. Shaadio does not send WhatsApp messages automatically. Sharing through WhatsApp marks the invitation as sent.
 
 The pre-filled message (English only in V1), with the couple's names in their chosen order:
 
@@ -670,7 +670,7 @@ Members maintain a list of vendors selected for the wedding.
 - Related Events
 - Notes
 
-For Google-sourced vendors, the details are copied into the vendor record when it is added (9.17) and are editable afterwards. All vendor fields are stored and owned by Shaadioo.
+For Google-sourced vendors, the details are copied into the vendor record when it is added (9.17) and are editable afterwards. All vendor fields are stored and owned by Shaadio.
 
 ## Vendor Cost Check
 
@@ -696,7 +696,7 @@ Displayed where available: vendor name, rating, address, distance, phone, websit
 
 - Only Wedding Members (logged in) can search.
 - Search results are fetched live from Google at search time.
-- **Add to My Vendors copies the relevant details** (name, category, phone, address, website, place ID) into a Shaadioo-owned vendor record. After that, the vendor record does not depend on Google remaining available.
+- **Add to My Vendors copies the relevant details** (name, category, phone, address, website, place ID) into a Shaadio-owned vendor record. After that, the vendor record does not depend on Google remaining available.
 - Google attribution is displayed on the discovery results screen.
 - The API key is used **server-side only**, never exposed to the browser.
 - Search is rate-limited per member.
@@ -706,7 +706,7 @@ Displayed where available: vendor name, rating, address, distance, phone, websit
 
 **Add to My Vendors** creates a vendor with Source = Google, copies the fetched details, and lets the member edit them and fill family-owned fields.
 
-Shaadioo does not process vendor bookings or payments.
+Shaadio does not process vendor bookings or payments.
 
 ---
 
@@ -714,7 +714,7 @@ Shaadioo does not process vendor bookings or payments.
 
 Each wedding has a hosted, **unlisted** wedding website.
 
-Example: `shaadioo.com/w/akshay-princi-k7x2m9`
+Example: `shaadio.in/w/akshay-princi-k7x2m9`
 
 ## Visibility Rules
 
@@ -847,7 +847,7 @@ If the video cannot be embedded (embedding disabled by owner), the website shows
 
 Members can add, update, and remove the livestream.
 
-No video streaming infrastructure is built by Shaadioo.
+No video streaming infrastructure is built by Shaadio.
 
 ---
 
@@ -1047,10 +1047,10 @@ Guest uploads are validated server-side (type, size, count) and rate-limited per
 The Google Places API key and email provider credentials are server-side only.
 
 ### Guest Personal Data
-Shaadioo stores names, phone numbers, and emails of guests who never signed up. Collect only the listed fields, never share them with third parties, and permanently delete them when the wedding is deleted.
+Shaadio stores names, phone numbers, and emails of guests who never signed up. Collect only the listed fields, never share them with third parties, and permanently delete them when the wedding is deleted.
 
 ### Account Deletion
-Members can delete their own account at any time (9.25 Account). Together with Delete wedding, this means a family can remove everything it has stored in Shaadioo.
+Members can delete their own account at any time (9.25 Account). Together with Delete wedding, this means a family can remove everything it has stored in Shaadio.
 
 ---
 
@@ -1106,14 +1106,14 @@ Members can delete their own account at any time (9.25 Account). Together with D
 
 # 15. Success Metrics
 
-Shaadioo V1 is a portfolio project piloted with real weddings. Success is measured by real usage in pilots and by engineering quality.
+Shaadio V1 is a portfolio project piloted with real weddings. Success is measured by real usage in pilots and by engineering quality.
 
 ## Pilot Metrics (per pilot wedding)
 
 - **RSVP via link:** percentage of invited guests who RSVP through their link. **Target: ≥ 60%.**
-- **Headcount source:** the family uses Shaadioo's attending count for catering (yes/no).
+- **Headcount source:** the family uses Shaadio's attending count for catering (yes/no).
 - **Collaboration:** number of active Wedding Members (target: 3+).
-- **Guest list setup:** time taken to get the guest list into Shaadioo (import + cleanup).
+- **Guest list setup:** time taken to get the guest list into Shaadio (import + cleanup).
 - **Gallery:** number of photos uploaded by guests.
 - **Qualitative:** what the family used, ignored, and asked for.
 
@@ -1252,7 +1252,7 @@ AI should enhance the actual product data rather than add a generic chatbot.
 
 # 18. V1 Product Definition
 
-Shaadioo V1 is functionally complete when:
+Shaadio V1 is functionally complete when:
 
 > A bride or groom can create a wedding, invite family members to collaboratively manage it, create wedding events, manage tasks, maintain and import guests, send invitations by email or WhatsApp, collect RSVPs, track expenses including who paid, manage vendors and discover them through Google Places, publish an unlisted themed wedding website, embed a YouTube livestream, and privately collect and share wedding photos through links and QR codes, while guests participate without creating accounts, and Admins can trace changes through the activity log.
 

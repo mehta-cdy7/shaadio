@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Shaadioo",
+    "title": "Shaadio",
     "description": "Plan every wedding event with your family, share invitations on WhatsApp, and know exactly who's coming."
   },
   "notFound": {
@@ -10,7 +10,7 @@
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "genericWithReference": "Something went wrong. Please try again. If it keeps happening, send us this reference: {requestId}",
-    "NETWORK_ERROR": "We couldn't reach Shaadioo. Check your internet connection and try again.",
+    "NETWORK_ERROR": "We couldn't reach Shaadio. Check your internet connection and try again.",
     "INVALID_CREDENTIALS": "Email or password is incorrect.",
     "RATE_LIMITED": "Too many attempts. Please try again in {minutes, plural, one {# minute} other {# minutes}}."
   },
@@ -37,7 +37,7 @@
       "hidePassword": "Hide",
       "submit": "Sign in",
       "submitting": "Signing in…",
-      "noAccount": "New to Shaadioo?",
+      "noAccount": "New to Shaadio?",
       "createAccount": "Create an account",
       "emailInvalid": "Enter a valid email address.",
       "passwordRequired": "Enter your password.",
@@ -117,8 +117,8 @@
       },
       "alreadyMember": {
         "title": "You already have a wedding",
-        "body": "Shaadioo supports one wedding per account, and you're already part of another wedding, so you can't join this one.",
-        "emptyBody": "You've already started your own wedding, but it has no guests or events yet. Shaadioo supports one wedding per account. Deleting an empty wedding to join this one is coming soon.",
+        "body": "Shaadio supports one wedding per account, and you're already part of another wedding, so you can't join this one.",
+        "emptyBody": "You've already started your own wedding, but it has no guests or events yet. Shaadio supports one wedding per account. Deleting an empty wedding to join this one is coming soon.",
         "goToWedding": "Go to my wedding"
       },
       "sameWedding": {
@@ -130,7 +130,7 @@
         "eyebrow": "Invalid link",
         "title": "Invalid invitation",
         "body": "This invitation link isn't valid. It may have been revoked or replaced by a newer one.",
-        "home": "Go to Shaadioo"
+        "home": "Go to Shaadio"
       },
       "errors": {
         "INVITATION_EXPIRED": "This invitation has expired. Ask for a new one.",
@@ -341,7 +341,7 @@
           "copy": "Copy link",
           "copied": "Link copied",
           "copyFailed": "Couldn't copy. Select the link and copy it yourself.",
-          "message": "{inviter} invited you to help plan {first} & {second}'s wedding on Shaadioo as {role}. Join here: {url}",
+          "message": "{inviter} invited you to help plan {first} & {second}'s wedding on Shaadio as {role}. Join here: {url}",
           "done": "Done"
         },
         "errors": {
@@ -958,7 +958,7 @@
       "body": "Replace chaotic shared drives and lost chat threads with a purpose-built ceremonial workspace.",
       "mock": {
         "label": "The family workspace for Priyanka & Nik: 186 invitations for 612 people, 80% of families have replied, ₹24,50,000 in recorded expenses, recent changes by family members, and RSVPs for the Sangeet.",
-        "url": "shaadioo.com/app",
+        "url": "shaadio.in/app",
         "title": "Priyanka & Nik · Family workspace",
         "allEvents": "All events",
         "invitations": {
@@ -1053,7 +1053,7 @@
           "body": "Candid Haldi photos lost across dozens of individual chat threads."
         }
       },
-      "closing": "Shaadioo brings it all into one shared, dignified plan."
+      "closing": "Shaadio brings it all into one shared, dignified plan."
     },
     "chapters": {
       "plan": {
@@ -1104,7 +1104,7 @@
           "eyebrow": "Guest invitations",
           "title": "One private link per family",
           "linkLabel": "The Kapoors' invitation link",
-          "link": "shaadioo.com/invite/k7Xq2mP9vR4tLw8nZc3yBA",
+          "link": "shaadio.in/invite/k7Xq2mP9vR4tLw8nZc3yBA",
           "rows": {
             "kapoor": {
               "name": "The Kapoors",
@@ -1280,8 +1280,8 @@
       "title": "Frequently asked questions",
       "items": {
         "free": {
-          "q": "Is Shaadioo free?",
-          "a": "Yes. Shaadioo is free for couples and families, with every core feature included: multi-event planning, your family workspace and RSVP tracking."
+          "q": "Is Shaadio free?",
+          "a": "Yes. Shaadio is free for couples and families, with every core feature included: multi-event planning, your family workspace and RSVP tracking."
         },
         "download": {
           "q": "Do guests need to download anything?",
@@ -1303,14 +1303,14 @@
     },
     "finalCta": {
       "title": "Less chaos. More celebration.",
-      "body": "Bring your family together on Shaadioo and plan every ceremony the way it was meant to be.",
+      "body": "Bring your family together on Shaadio and plan every ceremony the way it was meant to be.",
       "primaryCta": "Start planning — it's free",
       "note": "No credit card required · Free for families"
     },
     "footer": {
       "tagline": "Designed and built for modern Indian families.",
       "navLabel": "Footer",
-      "copyright": "© {year} Shaadioo. All rights reserved."
+      "copyright": "© {year} Shaadio. All rights reserved."
     }
   },
   "invite": {
@@ -1358,7 +1358,7 @@
   "emails": {
     "memberInvitation": {
       "subject": "{inviter} invited you to help plan {first} & {second}'s wedding",
-      "intro": "{inviter} has invited you to help plan {first} & {second}'s wedding on Shaadioo.",
+      "intro": "{inviter} has invited you to help plan {first} & {second}'s wedding on Shaadio.",
       "roleLine": "You'll join as {role}.",
       "action": "Accept the invitation",
       "expiry": "This link expires in {days} days.",
@@ -1376,7 +1376,7 @@
       "eventsTitle": "Your invited celebrations",
       "action": "View invitation & RSVP",
       "replyBy": "Please reply by {date}.",
-      "footer": "Sent with Shaadioo on behalf of {first} & {second}'s family. If this reached you by mistake, you can ignore it."
+      "footer": "Sent with Shaadio on behalf of {first} & {second}'s family. If this reached you by mistake, you can ignore it."
     }
   },
   "website": {
@@ -1389,6 +1389,6 @@
     "timeTba": "Time announced shortly",
     "openInMaps": "Open in Maps",
     "dressCode": "Dress: {dressCode}",
-    "madeWith": "Made with <brand>Shaadioo</brand>"
+    "madeWith": "Made with <brand>Shaadio</brand>"
   }
 }

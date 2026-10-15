@@ -1,4 +1,4 @@
-# Shaadioo
+# Shaadio
 
 Wedding-planning web app for Indian weddings: a shared workspace for the family, plus
 account-free invitation, RSVP and photo pages for guests.

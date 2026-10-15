@@ -4,13 +4,13 @@ const connect = vi.fn();
 const disconnect = vi.fn(async () => undefined);
 vi.mock('mongoose', () => ({ default: { connect, disconnect } }));
 
-const URI_A = 'mongodb://localhost:27017/shaadioo-a';
-const URI_B = 'mongodb://localhost:27017/shaadioo-b';
+const URI_A = 'mongodb://localhost:27017/shaadio-a';
+const URI_B = 'mongodb://localhost:27017/shaadio-b';
 
 describe('connectDb', () => {
   beforeEach(() => {
     vi.resetModules();
-    delete (globalThis as { __shaadiooMongo?: unknown }).__shaadiooMongo;
+    delete (globalThis as { __shaadioMongo?: unknown }).__shaadioMongo;
     connect.mockReset();
     vi.stubEnv('NODE_ENV', 'development');
     vi.stubEnv('APP_ORIGIN', 'http://localhost:3000');

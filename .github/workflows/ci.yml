@@ -56,7 +56,7 @@ jobs:
         ports:
           - 27017:27017
     env:
-      MONGODB_URI: mongodb://localhost:27017/shaadioo-e2e
+      MONGODB_URI: mongodb://localhost:27017/shaadio-e2e
       APP_ORIGIN: http://localhost:3100
       MONGOMS_DISABLE_POSTINSTALL: '1' # e2e uses the mongo service, not the in-memory binary
     steps:

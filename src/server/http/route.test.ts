@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { AppError } from './errors';
 import { handler, readJson } from './route';
 
-const ORIGIN = 'https://shaadioo.example';
+const ORIGIN = 'https://shaadio.example';
 const schema = z.strictObject({ name: z.string().min(1) });
 
 function post(body: string, headers: Record<string, string> = {}): Request {

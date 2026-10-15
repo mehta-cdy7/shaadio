@@ -89,7 +89,7 @@ export function guestInvitationEmail(input: GuestInvitationEmail): Email {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#FFFFFF;border:1px solid ${LINE};border-radius:16px">
 <tr><td align="center" style="padding:40px 32px 8px">
 <div style="font:20px ${SERIF};color:${BRASS}">&#10022;</div>
-<div style="margin-top:8px;font:bold 11px ${SANS};letter-spacing:3px;color:${BRASS}">SHAADIOO</div>
+<div style="margin-top:8px;font:bold 11px ${SANS};letter-spacing:3px;color:${BRASS}">SHAADIO</div>
 <h1 style="margin:20px 0 0;font:normal 30px/1.2 ${SERIF};color:${PLUM}">${e(greeting)}</h1>
 <p style="margin:16px 0 0;font:italic 19px/1.45 ${SERIF};color:${INK}">${e(lead)}</p>
 <p style="margin:20px 0 0"><span style="display:inline-block;padding:8px 18px;border:1px solid ${LINE};border-radius:999px;background:${PANEL};font:14px ${SANS};color:${INK}">${e(when)}</span></p>

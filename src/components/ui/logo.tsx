@@ -25,7 +25,7 @@ export function Logo({ mark = true }: { mark?: boolean }) {
         </svg>
       )}
       <span className="flex items-end gap-0.5 font-display text-headline-sm font-semibold tracking-tight text-ink">
-        Shaadioo
+        Shaadio
         <span aria-hidden="true" className="mb-1.5 size-1.5 rounded-full bg-secondary" />
       </span>
     </Link>

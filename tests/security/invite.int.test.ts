@@ -20,7 +20,7 @@ import { adminWithWedding, getRequest, jsonRequest } from '../factories/api';
  * Public invitation and RSVP (API_DESIGN §7, §8.1, §24, §30; DATABASE_DESIGN §6.3 #3, §10;
  * PRD §9.10–9.11) through the real route handlers on the in-memory replica set. Own database.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-invite');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-invite');
 
 const idParams = (id: string) => ({ params: Promise.resolve({ id }) });
 const tokenParams = (token: string) => ({ params: Promise.resolve({ token }) });

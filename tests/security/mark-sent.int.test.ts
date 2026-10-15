@@ -11,7 +11,7 @@ import { adminWithWedding, jsonRequest, signUp } from '../factories/api';
  * Mark as sent and WhatsApp share (PRD §9.14, API_DESIGN §16, DATABASE_DESIGN §5.8) through the
  * real route handlers on the in-memory replica set. Own database.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-mark-sent');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-mark-sent');
 
 const params = (id: string) => ({ params: Promise.resolve({ id }) });
 

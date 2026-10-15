@@ -26,7 +26,7 @@ test.describe('sign-up page', () => {
   });
 
   test('renders the form and links to sign-in', async ({ page }) => {
-    await expect(page).toHaveTitle('Create account · Shaadioo');
+    await expect(page).toHaveTitle('Create account · Shaadio');
     await expect(
       page.getByRole('heading', { level: 1, name: 'Start planning your wedding' }),
     ).toBeVisible();
