@@ -168,3 +168,43 @@ export async function countUploadOutcomes(
   if (!Object.keys(inc).length) return;
   await Wedding.updateOne({ _id: weddingId }, { $inc: inc });
 }
+
+export type PublicGalleryWedding = {
+  brideName: string;
+  groomName: string;
+  nameOrder: 'BRIDE_FIRST' | 'GROOM_FIRST';
+  guestViewEnabled: boolean;
+  guestUploadEnabled: boolean;
+  photosPurged: boolean;
+};
+
+/**
+ * What a guest's gallery page may know about the wedding (API_DESIGN §25), after the token lookup
+ * (DATABASE_DESIGN §6.3 #5). Undefined once the wedding is no longer ACTIVE.
+ */
+export async function findPublicGalleryWedding(
+  weddingId: Types.ObjectId,
+): Promise<PublicGalleryWedding | undefined> {
+  await connectDb();
+  const doc = await Wedding.findOne(
+    { _id: weddingId, status: ACTIVE },
+    {
+      _id: 0,
+      brideName: 1,
+      groomName: 1,
+      nameOrder: 1,
+      'gallery.guestViewEnabled': 1,
+      'gallery.guestUploadEnabled': 1,
+      photosPurgedAt: 1,
+    },
+  ).lean();
+  if (!doc) return undefined;
+  return {
+    brideName: doc.brideName,
+    groomName: doc.groomName,
+    nameOrder: doc.nameOrder,
+    guestViewEnabled: doc.gallery.guestViewEnabled,
+    guestUploadEnabled: doc.gallery.guestUploadEnabled,
+    photosPurged: Boolean(doc.photosPurgedAt),
+  };
+}

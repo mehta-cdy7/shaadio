@@ -928,28 +928,7 @@
         "albumHint": "The ceremony these photos are from.",
         "other": "Other / Wedding memories",
         "choose": "Choose photos",
-        "note": "Photos are resized to at most 2560 pixels before upload, so they load fast on every phone. Original full-size files aren't kept. Videos aren't supported.",
-        "summary": "{done} of {total} uploaded{failed, plural, =0 {} other { · # failed}}",
-        "clear": "Clear list",
-        "retry": "Retry",
-        "status": {
-          "preparing": "Preparing…",
-          "uploading": "Uploading…",
-          "finishing": "Finishing…",
-          "done": "Uploaded"
-        },
-        "errors": {
-          "VIDEO": "Videos can't be uploaded. Choose a photo.",
-          "NOT_AN_IMAGE": "This file isn't a photo.",
-          "TOO_BIG": "This photo is over 15 MB. Choose a smaller one.",
-          "UNREADABLE": "This browser can't open this photo. Try again from your phone's Photos app, or choose a JPEG.",
-          "MISSING_OBJECT": "The upload didn't finish. Retry.",
-          "EXPIRED": "The upload took too long. Retry.",
-          "UPLOAD_FAILED": "The upload failed. Check your connection and retry.",
-          "NETWORK_ERROR": "You seem to be offline. Retry when you're connected.",
-          "GALLERY_FULL": "The gallery is full. {remaining, plural, =0 {No more photos fit.} one {Only # more photo fits.} other {Only # more photos fit.}}",
-          "generic": "Something went wrong. Retry."
-        }
+        "note": "Photos are resized to at most 2560 pixels before upload, so they load fast on every phone. Original full-size files aren't kept. Videos aren't supported."
       },
       "viewer": {
         "label": "Photo viewer",
@@ -969,6 +948,35 @@
         "download": "Download",
         "position": "{index} of {total}",
         "featuredNote": "Featured photos appear on your wedding website."
+      },
+      "share": {
+        "title": "Share the gallery",
+        "lead": "Guests open this link, or scan the QR code, to add their photos and see everyone's. No account needed.",
+        "linkLabel": "Gallery link",
+        "copy": "Copy link",
+        "copied": "Link copied",
+        "copyFailed": "Couldn't copy. Select the link and copy it yourself.",
+        "whatsapp": "Share on WhatsApp",
+        "showQr": "Show QR code",
+        "message": "Share the memories 📸 Add your photos from {couple}'s wedding and see everyone's here: {url}",
+        "accessTitle": "What guests can do",
+        "guestViewEnabled": {
+          "label": "Guests can view photos",
+          "hint": "When off, guests can still add photos but can't see the gallery."
+        },
+        "guestUploadEnabled": {
+          "label": "Guests can upload photos",
+          "hint": "Turn off if the link is being misused. The link and QR code stay the same."
+        },
+        "qr": {
+          "title": "Share the Memories 📸",
+          "caption": "Scan to upload and view photos from {couple}'s wedding.",
+          "alt": "QR code card for {couple}'s wedding gallery",
+          "download": "Download PNG",
+          "print": "Print",
+          "stable": "This QR code never changes, so printed cards keep working.",
+          "failed": "Couldn't make the QR code. Reload the page and try again."
+        }
       }
     }
   },
@@ -1469,5 +1477,72 @@
     "openInMaps": "Open in Maps",
     "dressCode": "Dress: {dressCode}",
     "madeWith": "Made with <brand>Shaadio</brand>"
+  },
+  "photoUpload": {
+    "summary": "{done} of {total} uploaded{failed, plural, =0 {} other { · # failed}}",
+    "clear": "Clear list",
+    "retry": "Retry",
+    "status": {
+      "preparing": "Preparing…",
+      "uploading": "Uploading…",
+      "finishing": "Finishing…",
+      "done": "Uploaded"
+    },
+    "errors": {
+      "VIDEO": "Videos can't be uploaded. Choose a photo.",
+      "NOT_AN_IMAGE": "This file isn't a photo.",
+      "TOO_BIG": "This photo is over 15 MB. Choose a smaller one.",
+      "UNREADABLE": "This browser can't open this photo. Try again from your phone's Photos app, or choose a JPEG.",
+      "MISSING_OBJECT": "The upload didn't finish. Retry.",
+      "EXPIRED": "The upload took too long. Retry.",
+      "UPLOAD_FAILED": "The upload failed. Check your connection and retry.",
+      "NETWORK_ERROR": "You seem to be offline. Retry when you're connected.",
+      "GALLERY_FULL": "The gallery is full. {remaining, plural, =0 {No more photos fit.} one {Only # more photo fits.} other {Only # more photos fit.}}",
+      "generic": "Something went wrong. Retry.",
+      "UPLOADS_DISABLED": "The couple has turned uploads off.",
+      "RATE_LIMITED": "You've reached today's upload limit on this phone. {remaining, plural, =0 {Try again tomorrow.} one {# more photo fits today.} other {# more photos fit today.}}"
+    }
+  },
+  "gallery": {
+    "metaTitle": "{couple} · Wedding photos",
+    "eyebrow": "Share the memories",
+    "lead": "Add your photos from the celebrations and see everyone else's.",
+    "leadViewOnly": "Photos from the celebrations, shared by family and friends.",
+    "closed": "The family has closed this gallery for now.",
+    "purged": "The photos from this wedding are no longer available. Photos are kept for 12 months after the wedding.",
+    "viewOff": "The family has chosen to keep the gallery private. Your photos still reach them.",
+    "photosTitle": "Photos",
+    "albums": {
+      "label": "Albums",
+      "all": "All",
+      "other": "Other / Wedding memories"
+    },
+    "empty": "No photos here yet. Be the first to add one!",
+    "openPhoto": "Open photo {index}",
+    "loading": "Loading…",
+    "loadMore": "Load more photos",
+    "loadFailed": "Couldn't load more photos. Check your connection and try again.",
+    "footer": "Only people with this link can open this gallery.",
+    "upload": {
+      "title": "Add your photos",
+      "lead": "Pick photos from your phone. They appear in the gallery straight away.",
+      "name": "Your name",
+      "nameHint": "Optional. Shown with your photos.",
+      "namePlaceholder": "e.g. Meera Aunty",
+      "album": "Which ceremony?",
+      "other": "Other / Wedding memories",
+      "choose": "Choose photos",
+      "note": "Up to 150 photos a day from each phone. Photos are resized for quick viewing; full-size originals aren't kept. Videos aren't supported."
+    },
+    "viewer": {
+      "label": "Photo viewer",
+      "by": "Shared by {name}",
+      "position": "{index} of {total}",
+      "close": "Close",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "download": "Download",
+      "downloadNote": "Saves the gallery-size copy."
+    }
   }
 }

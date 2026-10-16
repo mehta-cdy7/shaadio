@@ -19,12 +19,14 @@ export type { InvitationWedding, MemberContext } from './wedding.service';
 export {
   changeFeaturedCount,
   countUploadOutcomes,
+  findPublicGalleryWedding,
   galleryUrl,
   getGallerySettings,
   releasePhotoSlots,
   reservePhotoSlots,
   updateGallerySettings,
 } from './gallery.service';
+export type { PublicGalleryWedding } from './gallery.service';
 export {
   findPublicWebsite,
   getWebsite,

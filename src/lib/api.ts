@@ -19,10 +19,14 @@ export type ApiResult<T> = { ok: true; data: T } | ApiFailure;
 
 type ErrorEnvelope = { error?: { code?: unknown; details?: unknown; requestId?: unknown } };
 
-export function postJson<T>(url: string, body: unknown): Promise<ApiResult<T>> {
+export function postJson<T>(
+  url: string,
+  body: unknown,
+  headers: Record<string, string> = {},
+): Promise<ApiResult<T>> {
   return request<T>(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify(body),
   });
 }

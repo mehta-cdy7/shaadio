@@ -14,7 +14,10 @@ const nextConfig: NextConfig = {
       { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
       { key: 'Referrer-Policy', value: 'no-referrer' },
     ];
-    return [{ source: '/invite/:token', headers: guestPage }];
+    return [
+      { source: '/invite/:token', headers: guestPage },
+      { source: '/gallery/:token', headers: guestPage },
+    ];
   },
 };
 

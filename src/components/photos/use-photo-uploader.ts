@@ -33,7 +33,7 @@ export type UploadItem = {
   remaining?: number;
 };
 
-type Entry = { file: File; eventId?: string; prepared?: PreparedPhoto };
+type Entry = { file: File; eventId?: string; uploaderName?: string; prepared?: PreparedPhoto };
 
 const PUT_CONCURRENCY = 3;
 const PUT_ATTEMPTS = 2;
@@ -76,9 +76,12 @@ async function putWithRetry(
 
 export function usePhotoUploader({
   base,
+  headers,
   onPublished,
 }: {
   base: string;
+  /** Sent with every API call; guests send their `X-Device-Id`. */
+  headers?: Record<string, string>;
   onPublished: (photo: Photo) => void;
 }) {
   const [items, setItems] = useState<UploadItem[]>([]);
@@ -100,18 +103,23 @@ export function usePhotoUploader({
   );
 
   const uploadBatch = useCallback(
-    async (keys: string[], eventId: string | undefined) => {
+    async (keys: string[], eventId: string | undefined, uploaderName: string | undefined) => {
       const prepared = keys.map((key) => entries.current.get(key)!.prepared!);
-      const request = await postJson<UploadTicketsResponse>(`${base}/upload-requests`, {
-        ...(eventId ? { eventId } : {}),
-        photos: prepared.map((p) => ({
-          mimeType: p.mimeType,
-          displayBytes: p.display.size,
-          thumbBytes: p.thumb.size,
-          width: p.width,
-          height: p.height,
-        })),
-      });
+      const request = await postJson<UploadTicketsResponse>(
+        `${base}/upload-requests`,
+        {
+          ...(eventId ? { eventId } : {}),
+          ...(uploaderName ? { uploaderName } : {}),
+          photos: prepared.map((p) => ({
+            mimeType: p.mimeType,
+            displayBytes: p.display.size,
+            thumbBytes: p.thumb.size,
+            width: p.width,
+            height: p.height,
+          })),
+        },
+        headers,
+      );
       if (!request.ok) {
         const remaining = (request.details as { remaining?: number } | undefined)?.remaining;
         for (const key of keys)
@@ -151,13 +159,15 @@ export function usePhotoUploader({
           }
         },
       );
-      if (abandoned.length) void postJson(`${base}/cancel`, { uploadIds: abandoned });
+      if (abandoned.length) void postJson(`${base}/cancel`, { uploadIds: abandoned }, headers);
       if (!uploaded.length) return;
 
       // 4. Verify and publish.
-      const done = await postJson<CompleteUploadsResponse>(`${base}/complete`, {
-        uploadIds: uploaded.map((u) => u.uploadId),
-      });
+      const done = await postJson<CompleteUploadsResponse>(
+        `${base}/complete`,
+        { uploadIds: uploaded.map((u) => u.uploadId) },
+        headers,
+      );
       const keyOf = new Map(uploaded.map((u) => [u.uploadId, u.key]));
       if (!done.ok) {
         for (const { key } of uploaded) fail(key, done.code);
@@ -177,7 +187,7 @@ export function usePhotoUploader({
         }
       }
     },
-    [base, fail, update],
+    [base, headers, fail, update],
   );
 
   const run = useCallback(
@@ -200,27 +210,41 @@ export function usePhotoUploader({
         ready.push(key);
       }
 
-      // 2. One upload request per 30 photos and album.
-      const groups = new Map<string, string[]>();
+      // 2. One upload request per 30 photos, album and name.
+      const groups = new Map<string, { eventId?: string; uploaderName?: string; keys: string[] }>();
       for (const key of ready) {
-        const album = entries.current.get(key)!.eventId ?? '';
-        groups.set(album, [...(groups.get(album) ?? []), key]);
+        const { eventId, uploaderName } = entries.current.get(key)!;
+        const group = JSON.stringify([eventId ?? '', uploaderName ?? '']);
+        const existing = groups.get(group) ?? { eventId, uploaderName, keys: [] };
+        existing.keys.push(key);
+        groups.set(group, existing);
       }
-      for (const [album, albumKeys] of groups) {
-        for (let start = 0; start < albumKeys.length; start += PHOTOS_PER_REQUEST) {
-          await uploadBatch(albumKeys.slice(start, start + PHOTOS_PER_REQUEST), album || undefined);
+      for (const group of groups.values()) {
+        for (let start = 0; start < group.keys.length; start += PHOTOS_PER_REQUEST) {
+          await uploadBatch(
+            group.keys.slice(start, start + PHOTOS_PER_REQUEST),
+            group.eventId,
+            group.uploaderName,
+          );
         }
       }
     },
     [fail, update, uploadBatch],
   );
 
-  /** Adds files to the list and uploads them into `eventId`'s album (none: "Other"). */
+  /**
+   * Adds files to the list and uploads them into `eventId`'s album (none: "Other"). Guests may
+   * pass their name.
+   */
   const add = useCallback(
-    (files: File[], eventId?: string) => {
+    (files: File[], eventId?: string, uploaderName?: string) => {
       const keys = files.map((file) => {
         const key = `u${++counter.current}`;
-        entries.current.set(key, { file, ...(eventId ? { eventId } : {}) });
+        entries.current.set(key, {
+          file,
+          ...(eventId ? { eventId } : {}),
+          ...(uploaderName ? { uploaderName } : {}),
+        });
         return { key, name: file.name };
       });
       setItems((list) => [
