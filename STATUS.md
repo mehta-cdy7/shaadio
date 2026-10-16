@@ -1,34 +1,35 @@
 # Shaadio — Project Status
 
-**Last updated:** 2026-10-15 · **Production:** https://shaadio.in · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
-**Next slice:** 9 — Password reset (email foundation landed with slice 11), then Tasks
+**Last updated:** 2026-10-16 · **Production:** https://shaadio.in · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
+**Next slice:** M2 Photos B — guest gallery + QR (Part A, member photos, done), then C, then 9 — Password reset, then Tasks
 
 This is a one-screen snapshot. Update it in the same PR that finishes or changes a slice.
 Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOTES.md); scope in [docs/PRD.md](docs/PRD.md).
 
 ## Done
 
-| What                                            | Merged     | Notes                                                                                          |
-| ----------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| Walking skeleton                                | 2026-09-25 | Next 16, Mongo connection, tenant guard, `/api/health`, lint boundaries, CI                    |
-| Slice 0 — design foundation + landing page      | 2026-09-29 | Tokens (brand → semantic → Tailwind), dark mode, UI primitives, static `/`                     |
-| Landing redo — new Stitch theme, coded mock-ups | 2026-10-01 | Plum `#4A2943` + brass, Playfair Display, mock-ups as components, copy guardrail test          |
-| `/login` sign-in page (light + dark)            | 2026-10-03 | Stitch auth screens recoloured to landing tokens; errors shown by code                         |
-| `/signup` page + `/onboarding` placeholder      | 2026-10-03 | Sign-out button; `/onboarding` redirects to `/login` without a session                         |
-| Tenant guard: `weddingId` must name one wedding | 2026-09-30 | Blocks `$ne`/`$in`/`$exists` filters                                                           |
-| Slice 1a — auth API (signup/login/logout/me)    | 2026-10-01 | Server-side sessions, scrypt, auth rate limits, Origin/JSON checks                             |
-| Migration runner + auth indexes in dev          | 2026-10-03 | `pnpm db:migrate`; fixed duplicate-email signups; signed-in redirect off `/login`              |
-| Slice 2 — create wedding, app shell, dashboard  | 2026-10-04 | Name order choice, date today or later, `POST/GET /api/wedding`, `/app` gate; migration 0002   |
-| Settings → Wedding details (edit the wedding)   | 2026-10-04 | `PATCH /api/wedding`, shared create/edit form, settings tabs; other tabs "Coming soon"         |
-| Slice 3 — Events                                | 2026-10-05 | List, add/edit with preview, delete with preview dialog; activity log module; migration 0003   |
-| Slice 4 — Guests                                | 2026-10-05 | List + filters + stats, add/edit with preview, detail, member RSVP, new link; migration 0004   |
-| Slice 5 — Invitation page + RSVP                | 2026-10-05 | `/invite/[token]`, public invite + RSVP API, deadline lock, Settings RSVP deadline card        |
-| Slice 6 — WhatsApp share + mark sent            | 2026-10-06 | `POST /api/guests/:id/mark-sent` (first one wins), share + preview on detail, row menu items   |
-| Slice 7 — Wedding website                       | 2026-10-11 | `/w/[slug]` classic theme, publish/unpublish (logged), `/app/website` share + welcome message  |
-| Slice 10 — Wedding members                      | 2026-10-11 | Invite by email + WhatsApp/copy link, `/join/[token]`, roles, last-admin guard; migration 0005 |
-| Slice 11 — Invitations + guest emails           | 2026-10-15 | `/app/invitations`, single + queued email campaigns, 09:00 IST cron, daily quota; mig 0006–07  |
+| What                                            | Merged     | Notes                                                                                             |
+| ----------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| Walking skeleton                                | 2026-09-25 | Next 16, Mongo connection, tenant guard, `/api/health`, lint boundaries, CI                       |
+| Slice 0 — design foundation + landing page      | 2026-09-29 | Tokens (brand → semantic → Tailwind), dark mode, UI primitives, static `/`                        |
+| Landing redo — new Stitch theme, coded mock-ups | 2026-10-01 | Plum `#4A2943` + brass, Playfair Display, mock-ups as components, copy guardrail test             |
+| `/login` sign-in page (light + dark)            | 2026-10-03 | Stitch auth screens recoloured to landing tokens; errors shown by code                            |
+| `/signup` page + `/onboarding` placeholder      | 2026-10-03 | Sign-out button; `/onboarding` redirects to `/login` without a session                            |
+| Tenant guard: `weddingId` must name one wedding | 2026-09-30 | Blocks `$ne`/`$in`/`$exists` filters                                                              |
+| Slice 1a — auth API (signup/login/logout/me)    | 2026-10-01 | Server-side sessions, scrypt, auth rate limits, Origin/JSON checks                                |
+| Migration runner + auth indexes in dev          | 2026-10-03 | `pnpm db:migrate`; fixed duplicate-email signups; signed-in redirect off `/login`                 |
+| Slice 2 — create wedding, app shell, dashboard  | 2026-10-04 | Name order choice, date today or later, `POST/GET /api/wedding`, `/app` gate; migration 0002      |
+| Settings → Wedding details (edit the wedding)   | 2026-10-04 | `PATCH /api/wedding`, shared create/edit form, settings tabs; other tabs "Coming soon"            |
+| Slice 3 — Events                                | 2026-10-05 | List, add/edit with preview, delete with preview dialog; activity log module; migration 0003      |
+| Slice 4 — Guests                                | 2026-10-05 | List + filters + stats, add/edit with preview, detail, member RSVP, new link; migration 0004      |
+| Slice 5 — Invitation page + RSVP                | 2026-10-05 | `/invite/[token]`, public invite + RSVP API, deadline lock, Settings RSVP deadline card           |
+| Slice 6 — WhatsApp share + mark sent            | 2026-10-06 | `POST /api/guests/:id/mark-sent` (first one wins), share + preview on detail, row menu items      |
+| Slice 7 — Wedding website                       | 2026-10-11 | `/w/[slug]` classic theme, publish/unpublish (logged), `/app/website` share + welcome message     |
+| Slice 10 — Wedding members                      | 2026-10-11 | Invite by email + WhatsApp/copy link, `/join/[token]`, roles, last-admin guard; migration 0005    |
+| Slice 11 — Invitations + guest emails           | 2026-10-15 | `/app/invitations`, single + queued email campaigns, 09:00 IST cron, daily quota; mig 0006–07     |
+| M2 Photos A — member photos                     | 2026-10-16 | `/app/photos`: in-browser resize, direct-to-R2 upload, albums, viewer, feature 12; migration 0008 |
 
-Checks: lint, typecheck, 326 unit + integration tests, build — all green (e2e last run before slice 11 review fixes). Slice 10 (members) tested manually in Chrome on 2026-10-11: invite, join by signup, LAST_ADMIN, promote, resend, revoke, ALREADY_MEMBER.
+Checks: lint, typecheck, 364 unit + integration tests, build — all green, e2e 68/68 (2026-10-16). Slice 10 (members) tested manually in Chrome on 2026-10-11: invite, join by signup, LAST_ADMIN, promote, resend, revoke, ALREADY_MEMBER.
 
 ## Roadmap
 
@@ -52,14 +53,19 @@ Checks: lint, typecheck, 326 unit + integration tests, build — all green (e2e 
 - [ ] 13 Delete empty wedding _(must: delete memberships in the same step that marks the wedding DELETING; change DATABASE_DESIGN §14.8 first)_
 
 **M2 — Wedding day (7 Dec 2026):** photo upload (R2) · guest gallery + QR · featured photos · livestream · cleanup/retention jobs
-**M3 — Planning & money (31 Jan 2027):** tasks · expenses · vendors · vendor discovery · full dashboard
-**M4 — V1 complete (31 Mar 2027):** other two themes · activity log view · settings + danger zone · security review · perf pass · analytics
+
+- [x] Photos A — member photos: upload, albums, viewer, feature, download, delete, gallery settings API
+- [ ] Photos B — guest gallery `/gallery/[token]`, device/IP limits, QR card (needs the `qrcode` library approved), guest switches UI
+- [ ] Photos C — website glimpse, wedding/event covers, upload cleanup + retention jobs
+- [ ] Livestream
+      **M3 — Planning & money (31 Jan 2027):** tasks · expenses · vendors · vendor discovery · full dashboard
+      **M4 — V1 complete (31 Mar 2027):** other two themes · activity log view · settings + danger zone · security review · perf pass · analytics
 
 ## Blockers and setup (not code)
 
 - [x] Atlas dev cluster → `MONGODB_URI` for `pnpm dev` (run `pnpm db:migrate` against it after each new migration)
 - [x] Vercel project linked; production live on `shaadio.in` (2026-10-11)
-- [ ] R2 prod: `shaadio-prod` custom domain `media.shaadio.in` (needs Cloudflare zone Active), CORS, staging rule, prod token, Vercel vars, then `pnpm r2:check` with prod values (steps: IMPLEMENTATION_NOTES 2026-10-15). Dev bucket done, r2:check passed 2026-10-16. Needed before the M2 photo slice
+- [x] R2 dev + prod buckets, CORS, staging rule, tokens, `media.shaadio.in`, Vercel vars; `pnpm r2:check` passed on both (2026-10-16). DNS for `shaadio.in` moved to Cloudflare; `www` redirects to the apex
 - [ ] Domain bought + verified in Resend (needed for slice 9; DNS takes days). Resend key + `EMAIL_FROM` are in `.env.local`; until the domain is verified, member invites reach only the Resend account owner, so Admins share the link on WhatsApp
 - [ ] Stitch designs for guest pages (invitation, gallery, website) and mobile screens (needed for slices 5, 7)
 - [ ] Pilot wedding date confirmed

@@ -84,16 +84,16 @@ export async function signUploadUrl(
   );
 }
 
-export type ObjectInfo = { size: number; contentType?: string };
+export type ObjectInfo = { size: number; contentType?: string; etag?: string };
 
-/** Size and type of a stored object, or undefined when it does not exist. */
+/** Size, type and ETag of a stored object, or undefined when it does not exist. */
 export async function headObject(key: string): Promise<ObjectInfo | undefined> {
   const { config, client } = storage();
   try {
     const head = await client.send(
       new HeadObjectCommand({ Bucket: config.R2_BUCKET_NAME, Key: key }),
     );
-    return { size: head.ContentLength ?? 0, contentType: head.ContentType };
+    return { size: head.ContentLength ?? 0, contentType: head.ContentType, etag: head.ETag };
   } catch (error) {
     if (error instanceof NotFound || error instanceof NoSuchKey) return undefined;
     throw error;
@@ -104,7 +104,11 @@ export async function headObject(key: string): Promise<ObjectInfo | undefined> {
  * The first `length` bytes of an object, for checking its format signature (API_DESIGN §22.3), or
  * undefined when it does not exist.
  */
-export async function readObjectStart(key: string, length = 16): Promise<Uint8Array | undefined> {
+export async function readObjectStart(
+  key: string,
+  length = 16,
+  ifMatch?: string,
+): Promise<Uint8Array | undefined> {
   const { config, client } = storage();
   try {
     const result = await client.send(
@@ -112,6 +116,7 @@ export async function readObjectStart(key: string, length = 16): Promise<Uint8Ar
         Bucket: config.R2_BUCKET_NAME,
         Key: key,
         Range: `bytes=0-${length - 1}`,
+        ...(ifMatch ? { IfMatch: ifMatch } : {}),
       }),
     );
     return result.Body ? await result.Body.transformToByteArray() : new Uint8Array();
@@ -121,8 +126,17 @@ export async function readObjectStart(key: string, length = 16): Promise<Uint8Ar
   }
 }
 
-/** Copies a verified upload from staging to its final key, with the final Content-Type. */
-export async function copyObject(from: string, to: string, contentType: string): Promise<void> {
+/**
+ * Copies a verified upload from staging to its final key, with the final Content-Type. With
+ * `ifMatch` (the ETag that was verified) the copy fails if the object changed since: the browser
+ * could otherwise re-upload through its still-valid URL between verification and copy.
+ */
+export async function copyObject(
+  from: string,
+  to: string,
+  contentType: string,
+  ifMatch?: string,
+): Promise<void> {
   const { config, client } = storage();
   await client.send(
     new CopyObjectCommand({
@@ -131,6 +145,7 @@ export async function copyObject(from: string, to: string, contentType: string):
       Key: to,
       ContentType: contentType,
       MetadataDirective: 'REPLACE',
+      ...(ifMatch ? { CopySourceIfMatch: ifMatch } : {}),
       // Keys are never reused (fresh key ids), so the content behind a URL never changes.
       CacheControl: 'public, max-age=31536000, immutable',
     }),

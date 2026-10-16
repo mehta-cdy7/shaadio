@@ -16,3 +16,12 @@
     @apply outline-2 outline-offset-2 outline-focus;
   }
 }
+
+/* Horizontal chip and tab rows: still scrollable by touch, trackpad and keyboard, without the
+   desktop scrollbar that phones never show. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

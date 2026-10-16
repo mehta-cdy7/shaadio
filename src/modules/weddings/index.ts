@@ -17,6 +17,15 @@ export {
 } from './wedding.service';
 export type { InvitationWedding, MemberContext } from './wedding.service';
 export {
+  changeFeaturedCount,
+  countUploadOutcomes,
+  galleryUrl,
+  getGallerySettings,
+  releasePhotoSlots,
+  reservePhotoSlots,
+  updateGallerySettings,
+} from './gallery.service';
+export {
   findPublicWebsite,
   getWebsite,
   setWebsitePublished,
