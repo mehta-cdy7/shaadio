@@ -1,4 +1,4 @@
-# Shaadioo
+# Shaadio
 ## API Design Document
 
 **Version:** V1 (Document revision 1)
@@ -807,7 +807,7 @@ The browser parses the CSV (so the server never handles file uploads or encoding
 
 ## Template
 
-The template is a static file, `/templates/shaadioo-guests.csv`:
+The template is a static file, `/templates/shaadio-guests.csv`:
 
 ```csv
 name,side,email,phone,max_people,events,notes
@@ -1063,7 +1063,7 @@ The server fetches the place's name, address, phone and website from Google **on
 
 ```ts
 {
-  url: string;                          // https://shaadioo.com/w/akshay-princi-k7x2m9
+  url: string;                          // https://shaadio.in/w/akshay-princi-k7x2m9
   published: boolean; publishedAt?: string;
   theme: 'CLASSIC' | 'MINIMAL' | 'MODERN';
   welcomeMessage?: string;

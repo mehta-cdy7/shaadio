@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
  * through the real route handlers on the in-memory replica set. Resend is replaced by a fake that
  * records what would have been sent. Own database.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-email');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-email');
 
 const sent = vi.hoisted(() => ({ single: [] as string[], batches: [] as string[][], fail: false }));
 vi.mock('@/server/email/email', async (original) => ({

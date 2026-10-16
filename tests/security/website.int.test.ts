@@ -15,7 +15,7 @@ import { adminWithWedding, getRequest, jsonRequest, sidFrom, signUp } from '../f
  * Wedding website (PRD §9.18, API_DESIGN §20, SYSTEM_DESIGN §26) through the real route handlers
  * and the public page's service, on the in-memory replica set. Own database.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-website');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-website');
 
 type Website = {
   url: string;

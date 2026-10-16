@@ -3,8 +3,8 @@ import { InvalidEnvError, parseAuthEnv, parseCoreEnv } from './env';
 
 describe('parseCoreEnv', () => {
   const valid = {
-    MONGODB_URI: 'mongodb+srv://user:pass@cluster.example.net/shaadioo',
-    APP_ORIGIN: 'https://shaadioo.example',
+    MONGODB_URI: 'mongodb+srv://user:pass@cluster.example.net/shaadio',
+    APP_ORIGIN: 'https://shaadio.example',
   };
 
   it('accepts a valid environment and defaults NODE_ENV', () => {
@@ -27,9 +27,9 @@ describe('parseCoreEnv', () => {
     expect(
       parseCoreEnv({
         ...valid,
-        MONGODB_URI: 'mongodb://localhost:27017/shaadioo-dev?replicaSet=rs0',
+        MONGODB_URI: 'mongodb://localhost:27017/shaadio-dev?replicaSet=rs0',
       }),
-    ).toMatchObject({ MONGODB_URI: expect.stringContaining('/shaadioo-dev') });
+    ).toMatchObject({ MONGODB_URI: expect.stringContaining('/shaadio-dev') });
   });
 
   it('names the variable but never echoes its value', () => {

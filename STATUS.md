@@ -1,4 +1,4 @@
-# Shaadioo — Project Status
+# Shaadio — Project Status
 
 **Last updated:** 2026-10-15 · **Production:** https://shaadio.in · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
 **Next slice:** 9 — Password reset (email foundation landed with slice 11), then Tasks

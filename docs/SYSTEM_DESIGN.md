@@ -1,4 +1,4 @@
-# Shaadioo
+# Shaadio
 ## System Design Architecture Document
 
 **Version:** V1 (Document revision 3)
@@ -22,7 +22,7 @@
 
 Changes from the original revision of this document:
 
-1. **Renamed** from "Make My Marriage" to **Shaadioo** throughout, including example URLs and the R2 bucket naming convention.
+1. **Renamed** from "Make My Marriage" to **Shaadio** throughout, including example URLs and the R2 bucket naming convention.
 2. **Photo pipeline (§37, §42, §97):** the browser now produces a display image (max 2560 px) and a thumbnail before upload. Originals are not stored. HEIC is converted in the browser before the server signature check. Galleries load thumbnails, not originals. This replaces "originals with lazy loading, thumbnails deferred".
 3. **Photo quota (§97):** 2,000 photos per wedding, enforced by an atomic reservation before upload URLs are issued; 30 per upload; 150 per device per day.
 4. **Wedding website (§26, §27):** publish toggle, `noindex`, and a random suffix on the slug. The site is unlisted rather than public.
@@ -41,7 +41,7 @@ Changes from the original revision of this document:
 
 # 1. Purpose
 
-This document defines the high-level system architecture for **Shaadioo**, a collaborative Indian wedding-management platform.
+This document defines the high-level system architecture for **Shaadio**, a collaborative Indian wedding-management platform.
 
 It establishes:
 
@@ -285,7 +285,7 @@ No account or login. Access is controlled by possession of an unpredictable secr
 
 # 8. Authentication Architecture
 
-Shaadioo implements custom email/password authentication. No external authentication framework is used in V1.
+Shaadio implements custom email/password authentication. No external authentication framework is used in V1.
 
 ## 8.1 Signup Flow
 
@@ -617,7 +617,7 @@ Gallery viewing and gallery uploading are independently switchable by members (P
 The QR code encodes the stable gallery URL:
 
 ```text
-https://shaadioo.com/gallery/7hP3kD9a...
+https://shaadio.in/gallery/7hP3kD9a...
 ```
 
 The QR image is generated on demand and is not persisted. The URL is stable so previously printed codes keep working. Misuse is handled by turning viewing or uploads off, never by rotating the URL.
@@ -766,7 +766,7 @@ Expense
  └── notes
 ```
 
-`paidBy` is free text rather than a member reference, because the person who paid is frequently not a Shaadioo user.
+`paidBy` is free text rather than a member reference, because the person who paid is frequently not a Shaadio user.
 
 No budgets, no variance, no payment schedules.
 
@@ -826,11 +826,11 @@ Google Places Result
         ↓ Vendor now belongs to the Wedding
 ```
 
-The copied record includes name, category, phone, address, website and `googlePlaceId`, plus Shaadioo-owned fields: contact person, agreed cost, related events, notes.
+The copied record includes name, category, phone, address, website and `googlePlaceId`, plus Shaadio-owned fields: contact person, agreed cost, related events, notes.
 
 After this point the Vendor record does not depend on Google remaining available.
 
-**Recorded risk.** Google Maps Platform terms restrict long-term storage of most Places content; the place ID is the documented exception. Copying details is a deliberate V1 trade-off for a portfolio project, chosen for offline resilience and zero per-view cost. It is **not** a compliant pattern for a commercial launch and must be revisited before Shaadioo is offered publicly. The alternative — store the place ID and fetch details at view time — is recorded in `PRD.md` §9.17 as the compliant path.
+**Recorded risk.** Google Maps Platform terms restrict long-term storage of most Places content; the place ID is the documented exception. Copying details is a deliberate V1 trade-off for a portfolio project, chosen for offline resilience and zero per-view cost. It is **not** a compliant pattern for a commercial launch and must be revisited before Shaadio is offered publicly. The alternative — store the place ID and fetch details at view time — is recorded in `PRD.md` §9.17 as the compliant path.
 
 Google attribution is displayed on the discovery results screen.
 
@@ -969,7 +969,7 @@ Wedding Settings → YouTube URL → Validate → Store video identifier
 
 Accepted URL formats: `youtube.com/live/…`, `youtube.com/watch?v=…`, `youtu.be/…`.
 
-Shaadioo is responsible only for displaying the stream.
+Shaadio is responsible only for displaying the stream.
 
 ---
 
@@ -1349,7 +1349,7 @@ These values never appear in browser bundles.
 # 69. Google Places Security
 
 ```text
-Browser → Shaadioo API → Google Places API
+Browser → Shaadio API → Google Places API
 ```
 
 This protects credentials, allows request validation, centralizes usage and enables later caching. Quota caps and billing alerts are configured at the Google Cloud project.
@@ -1366,7 +1366,7 @@ R2 buckets are never publicly writable. Uploads use narrowly scoped, expiring si
 
 Private wedding-management information is available only to Wedding Members. Guest invitation pages expose only that invitation's data. The website exposes only published information. The gallery exposes only gallery content.
 
-**Guest personal data.** Shaadioo stores names, phone numbers and email addresses of people who never signed up. Only the fields listed in the PRD are collected, they are never shared with third parties, and they are permanently removed when a wedding is deleted (§98).
+**Guest personal data.** Shaadio stores names, phone numbers and email addresses of people who never signed up. Only the fields listed in the PRD are collected, they are never shared with third parties, and they are permanently removed when a wedding is deleted (§98).
 
 ---
 
@@ -1461,7 +1461,7 @@ Local Development
 Production
 ```
 
-A staging environment is added when needed. Each environment has isolated credentials, an isolated Atlas database and an isolated R2 bucket (`shaadioo-dev`, `shaadioo-prod`). Preview deployments require their own configuration.
+A staging environment is added when needed. Each environment has isolated credentials, an isolated Atlas database (`shaadioo-dev`, `shaadioo-prod`: named before the 2026-10-15 rename to Shaadio and kept, since renaming a database means copying it) and an isolated R2 bucket (`shaadio-dev`, `shaadio-prod`). Preview deployments require their own configuration.
 
 Production data must never be used during local development.
 
@@ -1704,7 +1704,7 @@ The consequence line is the point of the format. It is what tells a future reade
 **Consequence:** Per-event RSVP in V1.1 requires a data migration. Accepted knowingly (§31).
 
 ## ADR-14: Copy Vendor Details on Add
-**Decision:** Copy Google Places details into the Shaadioo vendor record rather than storing only the place ID.
+**Decision:** Copy Google Places details into the Shaadio vendor record rather than storing only the place ID.
 **Reason:** Offline resilience, no per-view API cost, and the family can edit the details.
 **Consequence:** Diverges from Google Maps Platform storage terms. Acceptable for a portfolio project; must be revisited before public launch (§36).
 
@@ -1733,7 +1733,7 @@ Microservices · separate Express backend · NestJS · GraphQL · Kafka · Rabbi
 
 # 94. Final System Summary
 
-Shaadioo V1 operates as a **TypeScript modular monolith built with Next.js**, with the same application serving the user interface and explicit REST backend APIs.
+Shaadio V1 operates as a **TypeScript modular monolith built with Next.js**, with the same application serving the user interface and explicit REST backend APIs.
 
 Authenticated bride, groom and family members interact through server-side sessions and secure cookies. Every Wedding is an isolated tenant, and that isolation is enforced in backend queries and verified by mandatory tests.
 
@@ -1743,11 +1743,11 @@ MongoDB Atlas persists application data through Mongoose. Cloudflare R2 stores w
 
 Resend delivers transactional email immediately; invitation and reminder campaigns run through a MongoDB-backed job queue drained on a schedule, within a daily quota that reserves capacity for transactional mail.
 
-Google Places powers vendor discovery, with selected vendors copied into Shaadioo-owned records.
+Google Places powers vendor discovery, with selected vendors copied into Shaadio-owned records.
 
 Wedding websites are rendered by Next.js from stable, unlisted slugs using predefined themes, and publish only what members explicitly publish.
 
-YouTube provides livestream infrastructure; Shaadioo only embeds the configured stream.
+YouTube provides livestream infrastructure; Shaadio only embeds the configured stream.
 
 The entire application deploys to Vercel without additional servers, containers, queues, cache clusters or microservices.
 

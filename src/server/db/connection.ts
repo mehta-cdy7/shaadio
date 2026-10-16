@@ -8,8 +8,8 @@ import { env } from '@/server/env';
  */
 type ConnectionCache = { promise: Promise<typeof mongoose> | null; uri?: string };
 
-const globalForMongo = globalThis as typeof globalThis & { __shaadiooMongo?: ConnectionCache };
-const cache: ConnectionCache = (globalForMongo.__shaadiooMongo ??= { promise: null });
+const globalForMongo = globalThis as typeof globalThis & { __shaadioMongo?: ConnectionCache };
+const cache: ConnectionCache = (globalForMongo.__shaadioMongo ??= { promise: null });
 
 export function connectDb(): Promise<typeof mongoose> {
   const { MONGODB_URI, NODE_ENV } = env();

@@ -1,4 +1,4 @@
-# Shaadioo
+# Shaadio
 ## Database Design Document
 
 **Version:** V1 (Document revision 1)
@@ -1378,7 +1378,7 @@ Indexes are declared in the Mongoose schemas, where they document intent, but in
 
 ## 17.3 Renaming note
 
-The existing development data and R2 bucket use the previous product name. Rename the bucket to `shaadioo-dev` and start the development database fresh rather than migrating it; there is no real data to preserve yet.
+The existing development data and R2 bucket use the previous product name. Rename the bucket to `shaadio-dev` and start the development database fresh rather than migrating it; there is no real data to preserve yet.
 
 ## 17.4 V1.1 per-event RSVP migration
 
@@ -1412,7 +1412,7 @@ SYSTEM §99 requires backups before the first pilot wedding. At the data level:
 - **Must be backed up:** every collection except `rate_limits` and `sessions` (losing sessions only logs people out).
 - **Two workable options:**
   1. A paid Atlas tier with automated backups enabled.
-  2. A scheduled `mongodump --gzip --archive` of production, run from a scheduled CI job (for example a GitHub Actions workflow on a daily cron), written to a separate R2 bucket such as `shaadioo-backups` whose credentials the application does not have.
+  2. A scheduled `mongodump --gzip --archive` of production, run from a scheduled CI job (for example a GitHub Actions workflow on a daily cron), written to a separate R2 bucket such as `shaadio-backups` whose credentials the application does not have.
 - **A backup is taken immediately before every production migration** (§17.1).
 - **A restore is tested** into a scratch database before the pilot. A backup that has never been restored is not a backup.
 

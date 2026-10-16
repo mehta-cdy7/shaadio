@@ -12,7 +12,7 @@ const BENEFITS: Array<{
   { key: 'privacy', Icon: ShieldCheckIcon },
 ];
 
-/** Sign-up side panel: three reasons families choose Shaadioo, in one card. */
+/** Sign-up side panel: three reasons families choose Shaadio, in one card. */
 export async function FamilyBenefits() {
   const t = await getTranslations('auth.benefits');
 

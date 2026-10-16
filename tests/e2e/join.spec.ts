@@ -7,7 +7,7 @@ import { expect, test } from '@playwright/test';
 test('a malformed invitation link shows the invalid state and is not indexed', async ({ page }) => {
   await page.goto('/join/not-a-real-token');
   await expect(page.getByRole('heading', { name: 'Invalid invitation' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Go to Shaadioo' })).toHaveAttribute('href', '/');
+  await expect(page.getByRole('link', { name: 'Go to Shaadio' })).toHaveAttribute('href', '/');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
 });
 

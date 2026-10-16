@@ -19,7 +19,7 @@ import { adminWithWedding, getRequest, jsonRequest, sidFrom, signUp } from '../f
  * Wedding members and member invitations (PRD §9.4, API_DESIGN §12, §26, DATABASE_DESIGN §5.5,
  * §5.6, §9.2) through the real route handlers on the in-memory replica set. Own database.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-members');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-members');
 
 const PASSWORD = 'plum-and-brass-2026';
 let emailCounter = 0;

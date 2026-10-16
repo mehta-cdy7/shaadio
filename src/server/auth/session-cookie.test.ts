@@ -17,7 +17,7 @@ describe('session cookie', () => {
     function stubDev(origin: string) {
       vi.stubEnv('NODE_ENV', 'development');
       vi.stubEnv('APP_ORIGIN', origin);
-      vi.stubEnv('MONGODB_URI', 'mongodb://localhost:27017/shaadioo-dev');
+      vi.stubEnv('MONGODB_URI', 'mongodb://localhost:27017/shaadio-dev');
     }
 
     it('drops Secure on a plain-http origin so Safari keeps the cookie', () => {
@@ -28,7 +28,7 @@ describe('session cookie', () => {
     });
 
     it('keeps Secure on an https origin', () => {
-      stubDev('https://dev.shaadioo.example');
+      stubDev('https://dev.shaadio.example');
       expect(sessionCookie(token)).toContain('HttpOnly; Secure; SameSite=Lax');
     });
   });

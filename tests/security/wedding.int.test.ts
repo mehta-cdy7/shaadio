@@ -18,7 +18,7 @@ import { Membership } from '@/modules/members/membership.model';
  * §6.5; PRD Rule 1 and §9.2), through the real route handlers on the in-memory replica set.
  * Own database, so other files dropping collections cannot interfere.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-wedding');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-wedding');
 
 const ORIGIN = process.env.APP_ORIGIN!;
 let ipCounter = 0;

@@ -22,7 +22,7 @@ test.describe('sign-in page', () => {
   });
 
   test('renders the form and links to sign-up', async ({ page }) => {
-    await expect(page).toHaveTitle('Sign in · Shaadioo');
+    await expect(page).toHaveTitle('Sign in · Shaadio');
     await expect(page.getByRole('heading', { level: 1, name: 'Welcome back' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Create an account' })).toHaveAttribute(
       'href',
@@ -100,7 +100,7 @@ test.describe('sign-in page', () => {
     await page.route('**/api/auth/login', (route) => route.abort('internetdisconnected'));
     await submit(page);
     await expect(page.getByRole('main').getByRole('alert')).toHaveText(
-      "We couldn't reach Shaadioo. Check your internet connection and try again.",
+      "We couldn't reach Shaadio. Check your internet connection and try again.",
     );
   });
 

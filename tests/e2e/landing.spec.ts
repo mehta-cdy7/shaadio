@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('landing page', () => {
   test('renders the hero and every section', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle('Shaadioo');
+    await expect(page).toHaveTitle('Shaadio');
     await expect(
       page.getByRole('heading', { level: 1, name: 'From roka to reception, all in one place.' }),
     ).toBeVisible();

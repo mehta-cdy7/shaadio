@@ -19,7 +19,7 @@ import { adminWithWedding, getRequest, jsonRequest, signUp } from '../factories/
  * Events (API_DESIGN §3, §13, §30; DATABASE_DESIGN §5.7, §5.15, §6.5, §14.1) through the real
  * route handlers on the in-memory replica set. Own database, so other files cannot interfere.
  */
-process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadioo-test', '/shaadioo-events');
+process.env.MONGODB_URI = process.env.MONGODB_URI!.replace('/shaadio-test', '/shaadio-events');
 
 const params = (id: string) => ({ params: Promise.resolve({ id }) });
 
