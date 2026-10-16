@@ -130,7 +130,8 @@ export function PhotoViewer({
       link.href = url;
       link.download = `photo-${photo.id}.${blob.type === 'image/jpeg' ? 'jpg' : (blob.type.split('/')[1] ?? 'webp')}`;
       link.click();
-      URL.revokeObjectURL(url);
+      // Some browsers (Firefox, mobile) start the download after click() returns.
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch {
       window.open(photo.displayUrl, '_blank', 'noopener');
     }

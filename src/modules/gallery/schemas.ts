@@ -48,6 +48,30 @@ export const uploadRequestSchema = z.strictObject({
 });
 export type UploadRequestInput = z.output<typeof uploadRequestSchema>;
 
+/**
+ * The guest version (API_DESIGN §22.1, §22.5): may add an optional name. Blank means no name.
+ */
+export const guestUploadRequestSchema = uploadRequestSchema.extend({
+  uploaderName: z
+    .string()
+    .trim()
+    .max(UPLOADER_NAME_MAX, `Use at most ${UPLOADER_NAME_MAX} characters.`)
+    .optional()
+    .transform((value) => value || undefined),
+});
+export type GuestUploadRequestInput = z.output<typeof guestUploadRequestSchema>;
+
+/** Guest daily limits (API_DESIGN §7). The IP limit is generous: a venue shares one address. */
+export const DEVICE_PHOTOS_PER_DAY = 150;
+export const IP_PHOTOS_PER_DAY = 2000;
+
+/**
+ * `X-Device-Id` (API_DESIGN §7): a random id the gallery page makes once and keeps in the browser.
+ * A limit on ordinary use, not a security boundary.
+ */
+export const DEVICE_ID_HEADER = 'X-Device-Id';
+export const DEVICE_ID_PATTERN = /^[A-Za-z0-9_-]{16,64}$/;
+
 /** `POST …/complete` and `…/cancel` (API_DESIGN §22.3, §22.4). */
 export const uploadIdsSchema = z.strictObject({
   uploadIds: z.array(objectId).min(1).max(PHOTOS_PER_REQUEST),
@@ -99,6 +123,27 @@ export type Photo = {
 };
 
 export type PhotoListResponse = { items: Photo[]; nextCursor?: string };
+
+/** `GET /api/public/gallery/:token/photos` query: albums only (API_DESIGN §25). */
+export const publicPhotoListQuerySchema = photoListQuerySchema.pick({
+  eventId: true,
+  limit: true,
+  cursor: true,
+});
+
+/** A photo as guests see it: no featured flag, no uploader type (API_DESIGN §25). */
+export type PublicPhoto = Omit<Photo, 'featured' | 'uploaderType'>;
+
+export type PublicPhotoListResponse = { items: PublicPhoto[]; nextCursor?: string };
+
+/** `GET /api/public/gallery/:token` (API_DESIGN §25). */
+export type PublicGallery = {
+  wedding: { brideName: string; groomName: string; nameOrder: 'BRIDE_FIRST' | 'GROOM_FIRST' };
+  albums: { eventId: string; name: string }[];
+  viewEnabled: boolean;
+  uploadEnabled: boolean;
+  photosPurged: boolean;
+};
 
 export type UploadTicketsResponse = {
   uploads: { uploadId: string; displayPutUrl: string; thumbPutUrl: string }[];

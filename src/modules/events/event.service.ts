@@ -291,6 +291,20 @@ export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
   });
 }
 
+/**
+ * The gallery's albums for guests (API_DESIGN §25): every event's id and name, in date order.
+ * Nothing else about the events is public on the gallery.
+ */
+export async function galleryAlbums(scope: {
+  weddingId: Types.ObjectId;
+}): Promise<{ eventId: string; name: string }[]> {
+  await connectDb();
+  const events = await Event.find({ weddingId: scope.weddingId }, { name: 1 })
+    .sort({ date: 1, startTime: 1, _id: 1 })
+    .lean();
+  return events.map((event) => ({ eventId: event._id.toHexString(), name: event.name }));
+}
+
 export type InvitationEvent = Pick<
   EventResponse,
   'name' | 'type' | 'date' | 'startTime' | 'endTime' | 'venue' | 'dressCode'

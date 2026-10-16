@@ -7,6 +7,7 @@ export {
   deleteEvent,
   eventDeletePreview,
   eventSummary,
+  galleryAlbums,
   getEvent,
   hasEvents,
   invitationEvents,

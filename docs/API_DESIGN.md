@@ -1315,13 +1315,15 @@ No session. Access is possession of the gallery token.
 
 ```ts
 {
-  wedding: { brideName: string; groomName: string };
+  wedding: { brideName: string; groomName: string; nameOrder: 'BRIDE_FIRST' | 'GROOM_FIRST' };
   albums: { eventId: string; name: string }[];   // events, for the upload picker and album filter
   viewEnabled: boolean;
   uploadEnabled: boolean;
   photosPurged: boolean;
 }
 ```
+
+`nameOrder` (added 2026-10-16) lets the page show the couple in the family's chosen order, as the invitation and website do.
 
 ## `GET /api/public/gallery/:token/photos`
 

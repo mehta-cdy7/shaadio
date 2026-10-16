@@ -102,6 +102,22 @@ export async function findPublishedWeddingIdBySlug(
   return doc ? (doc._id as Types.ObjectId) : undefined;
 }
 
+/**
+ * Lookup 5: the wedding behind a gallery link (unique `gallery.token`), only while ACTIVE (SYSTEM
+ * §24). Returns only the id; the caller continues scoped by it and checks the guest switches. A
+ * token that is not a 22-character base64url string is not looked up.
+ */
+export async function findActiveWeddingIdByGalleryToken(
+  token: string,
+): Promise<Types.ObjectId | undefined> {
+  if (!/^[A-Za-z0-9_-]{22}$/.test(token)) return undefined;
+  const mongoose = await connectDb();
+  const doc = await mongoose.connection
+    .db!.collection('weddings')
+    .findOne({ 'gallery.token': token, status: 'ACTIVE' }, { projection: { _id: 1 } });
+  return doc ? (doc._id as Types.ObjectId) : undefined;
+}
+
 export type ClaimedEmailJob = {
   jobId: Types.ObjectId;
   weddingId: Types.ObjectId;
