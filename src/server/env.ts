@@ -104,6 +104,42 @@ export function cronSecret(): string | undefined {
   return value && value.length >= 32 ? value : undefined;
 }
 
+const storageEnvSchema = z.object({
+  R2_ACCOUNT_ID: z
+    .string()
+    .regex(/^[0-9a-f]{32}$/, 'must be the 32-character Cloudflare account id'),
+  R2_ACCESS_KEY_ID: z.string().min(1),
+  R2_SECRET_ACCESS_KEY: z.string().min(1),
+  R2_BUCKET_NAME: z
+    .string()
+    .regex(/^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/, 'must be an R2 bucket name'),
+  // Public domain serving the bucket by key, e.g. https://media.shaadio.in (SYSTEM_DESIGN §42).
+  MEDIA_BASE_URL: z
+    .url()
+    .regex(/^https?:\/\/[^/]+$/, 'must be an origin with no path or trailing slash'),
+});
+
+export type StorageEnv = z.infer<typeof storageEnvSchema>;
+
+/**
+ * The R2 variables, or undefined when none are set: storage is off and the storage adapter refuses
+ * to run. Partly set or invalid values throw, naming the variables and never their values.
+ */
+export function storageEnv(
+  source: Record<string, string | undefined> = process.env,
+): StorageEnv | undefined {
+  const keys = Object.keys(storageEnvSchema.shape) as (keyof StorageEnv)[];
+  if (keys.every((key) => !source[key])) return undefined;
+  const result = storageEnvSchema.safeParse(source);
+  if (!result.success) {
+    const problems = result.error.issues
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+      .join('; ');
+    throw new InvalidEnvError(`Invalid storage environment: ${problems}`);
+  }
+  return result.data;
+}
+
 export type EmailEnv = z.infer<typeof emailEnvSchema>;
 
 /**

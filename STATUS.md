@@ -59,6 +59,7 @@ Checks: lint, typecheck, 326 unit + integration tests, build — all green (e2e 
 
 - [x] Atlas dev cluster → `MONGODB_URI` for `pnpm dev` (run `pnpm db:migrate` against it after each new migration)
 - [x] Vercel project linked; production live on `shaadio.in` (2026-10-11)
+- [ ] R2 prod: `shaadio-prod` custom domain `media.shaadio.in` (needs Cloudflare zone Active), CORS, staging rule, prod token, Vercel vars, then `pnpm r2:check` with prod values (steps: IMPLEMENTATION_NOTES 2026-10-15). Dev bucket done, r2:check passed 2026-10-16. Needed before the M2 photo slice
 - [ ] Domain bought + verified in Resend (needed for slice 9; DNS takes days). Resend key + `EMAIL_FROM` are in `.env.local`; until the domain is verified, member invites reach only the Resend account owner, so Admins share the link on WhatsApp
 - [ ] Stitch designs for guest pages (invitation, gallery, website) and mobile screens (needed for slices 5, 7)
 - [ ] Pilot wedding date confirmed
