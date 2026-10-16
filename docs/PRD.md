@@ -1231,6 +1231,7 @@ Deliberately excluded from V1.
 - Face recognition and "Find my photos"
 - AI photo tagging
 - Automatic event classification
+- Private photo files: today the gallery page is gated by its link, but each photo file is reachable by anyone holding its exact (unguessable) URL (SYSTEM_DESIGN §42). A later phase may gate the files themselves (signed or session-checked media URLs), weighing caching and slow-network cost
 
 ### Accounts
 - Multiple weddings per user

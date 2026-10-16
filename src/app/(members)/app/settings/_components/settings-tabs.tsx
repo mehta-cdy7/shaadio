@@ -53,7 +53,10 @@ export function SettingsTabs({ isAdmin }: { isAdmin: boolean }) {
     <nav aria-label={t('tabsLabel')} className="border-b border-line">
       <div
         ref={scrollRef}
-        className={cn('-mb-px overflow-x-auto', FADE[`${overflow.start}-${overflow.end}`])}
+        className={cn(
+          '-mb-px scrollbar-none overflow-x-auto',
+          FADE[`${overflow.start}-${overflow.end}`],
+        )}
       >
         <ul className="flex min-w-max gap-6">
           {SETTINGS_TABS.filter((tab) => isAdmin || !tab.adminOnly).map((tab) => {

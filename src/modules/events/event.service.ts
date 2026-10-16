@@ -2,6 +2,7 @@ import 'server-only';
 import type { Types } from 'mongoose';
 import type { z } from 'zod';
 import { recordActivity } from '@/modules/activity';
+import { countEventPhotos, removeEventFromPhotos } from '@/modules/gallery';
 import { eventHeadcounts, eventInvitees, removeEventFromGuests } from '@/modules/guests';
 import { connectDb } from '@/server/db/connection';
 import { toObjectId } from '@/server/db/ids';
@@ -245,9 +246,9 @@ export async function updateEvent(
 }
 
 /**
- * `GET /api/events/:id/delete-preview` (DATABASE_DESIGN §14.1): who loses this event. Tasks,
- * expenses and photos do not exist yet, so their counts are 0; each module adds its count here
- * when it lands (M3).
+ * `GET /api/events/:id/delete-preview` (DATABASE_DESIGN §14.1): who loses this event. Tasks and
+ * expenses do not exist yet, so their counts are 0; each module adds its count here when it lands
+ * (M3).
  */
 export async function eventDeletePreview(
   ctx: { weddingId: Types.ObjectId },
@@ -257,18 +258,17 @@ export async function eventDeletePreview(
   await connectDb();
   const exists = await Event.exists({ _id, weddingId: ctx.weddingId });
   if (!exists) throw notFound();
-  return {
-    ...(await eventInvitees(ctx, _id)),
-    tasks: 0,
-    expenses: 0,
-    photos: 0,
-  };
+  const [invitees, photos] = await Promise.all([
+    eventInvitees(ctx, _id),
+    countEventPhotos(ctx, _id),
+  ]);
+  return { ...invitees, tasks: 0, expenses: 0, photos };
 }
 
 /**
  * `DELETE /api/events/:id`: one transaction deletes the event, removes it from every guest's
- * invitation and writes `event.deleted` (DATABASE_DESIGN §8, §14.1). The task, expense, vendor and
- * photo cascades join this transaction as those modules land (M3).
+ * invitation, moves its photos to "Other" and writes `event.deleted` (DATABASE_DESIGN §8, §14.1).
+ * The task, expense and vendor cascades join this transaction as those modules land (M3).
  */
 export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
   const _id = eventId(id);
@@ -280,6 +280,7 @@ export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
     ).lean();
     if (!event) throw notFound();
     const meta = await removeEventFromGuests(session, ctx, _id);
+    await removeEventFromPhotos(session, ctx, _id);
     await recordActivity(session, {
       weddingId: ctx.weddingId,
       actor: { userId: ctx.userId, name: ctx.user.name },

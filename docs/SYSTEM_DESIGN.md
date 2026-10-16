@@ -954,6 +954,8 @@ Any Wedding Member can delete a photo, and deletions are recorded in the activit
 
 Private photo objects use unguessable keys and are served directly from R2. Signed, expiring read URLs were considered and rejected for V1: they break browser caching and expire mid-scroll on a slow connection, which fails §3.6. The gallery **page** remains gated by the gallery token; individual object URLs are unguessable but bearer-accessible.
 
+**Revisit after V1 (product owner, 2026-10-16):** gating the photo files themselves, so a copied photo URL stops working outside the gallery. Options: short-lived signed read URLs with long client caching, or a session/token-checked media proxy or Worker in front of R2. Tracked in PRD §17 (Photos); out of scope for V1.
+
 Because private photos bypass Next's public image optimiser, the browser-side derivative pipeline (§37) is what makes the gallery fast — it is load-bearing, not an optimisation.
 
 ---

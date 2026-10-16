@@ -891,6 +891,85 @@
         "NO_EVENTS": "This guest isn't invited to any event yet.",
         "VALIDATION_ERROR": "Add an email address to send by email."
       }
+    },
+    "photos": {
+      "metaTitle": "Photos",
+      "title": "Photos",
+      "lead": "Your private wedding gallery. Upload photos, sort them by ceremony, and feature up to 12 on your website.",
+      "albums": {
+        "label": "Albums",
+        "all": "All photos",
+        "other": "Other / Wedding memories",
+        "featured": "Featured"
+      },
+      "usage": "{used, plural, one {# photo} other {# photos}} of {limit}",
+      "featuredUsage": "{count} of {limit} featured",
+      "usageLabel": "Gallery storage used",
+      "retentionNote": "Photos are kept for 12 months after the wedding date, then deleted.",
+      "storageOff": "Photo storage isn't set up on this server yet, so photos can't be uploaded or shown.",
+      "full": "The gallery has reached {limit} photos. Delete some photos to make room for new ones.",
+      "empty": {
+        "title": "No photos here yet",
+        "body": "Upload photos from your phone or computer. Guests will be able to add theirs through the gallery QR code.",
+        "featuredTitle": "No featured photos yet",
+        "featuredBody": "Open a photo and choose Feature to show it on your wedding website. Up to {limit} photos."
+      },
+      "openPhoto": "Open photo {index}",
+      "featuredBadge": "Featured",
+      "loading": "Loading…",
+      "loadMore": "Load more photos",
+      "listChanged": "The gallery has changed. Reload the page to see the latest photos.",
+      "upload": {
+        "open": "Upload photos",
+        "title": "Upload photos",
+        "lead": "Choose up to {max} photos at a time, or more: they go up in batches.",
+        "close": "Close upload",
+        "album": "Album",
+        "albumHint": "The ceremony these photos are from.",
+        "other": "Other / Wedding memories",
+        "choose": "Choose photos",
+        "note": "Photos are resized to at most 2560 pixels before upload, so they load fast on every phone. Original full-size files aren't kept. Videos aren't supported.",
+        "summary": "{done} of {total} uploaded{failed, plural, =0 {} other { · # failed}}",
+        "clear": "Clear list",
+        "retry": "Retry",
+        "status": {
+          "preparing": "Preparing…",
+          "uploading": "Uploading…",
+          "finishing": "Finishing…",
+          "done": "Uploaded"
+        },
+        "errors": {
+          "VIDEO": "Videos can't be uploaded. Choose a photo.",
+          "NOT_AN_IMAGE": "This file isn't a photo.",
+          "TOO_BIG": "This photo is over 15 MB. Choose a smaller one.",
+          "UNREADABLE": "This browser can't open this photo. Try again from your phone's Photos app, or choose a JPEG.",
+          "MISSING_OBJECT": "The upload didn't finish. Retry.",
+          "EXPIRED": "The upload took too long. Retry.",
+          "UPLOAD_FAILED": "The upload failed. Check your connection and retry.",
+          "NETWORK_ERROR": "You seem to be offline. Retry when you're connected.",
+          "GALLERY_FULL": "The gallery is full. {remaining, plural, =0 {No more photos fit.} one {Only # more photo fits.} other {Only # more photos fit.}}",
+          "generic": "Something went wrong. Retry."
+        }
+      },
+      "viewer": {
+        "label": "Photo viewer",
+        "guest": "A guest",
+        "other": "Other / Wedding memories",
+        "close": "Close",
+        "previous": "Previous photo",
+        "next": "Next photo",
+        "featuredLimit": "{limit} photos are already featured. Unfeature one first.",
+        "gone": "This photo was deleted by someone else.",
+        "confirmDelete": "Delete this photo for everyone? This can't be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "featured": "Featured",
+        "feature": "Feature",
+        "album": "Album",
+        "download": "Download",
+        "position": "{index} of {total}",
+        "featuredNote": "Featured photos appear on your wedding website."
+      }
     }
   },
   "landing": {

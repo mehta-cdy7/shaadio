@@ -41,6 +41,7 @@ describe('runMigrations', () => {
       '0005_member_invitation_indexes',
       '0006_email_job_indexes',
       '0007_email_job_one_waiting',
+      '0008_photo_indexes',
     ]);
 
     expect(await indexKeys(db, 'users')).toContainEqual({ key: { email: 1 }, unique: true });
@@ -59,6 +60,7 @@ describe('runMigrations', () => {
       '0005_member_invitation_indexes',
       '0006_email_job_indexes',
       '0007_email_job_one_waiting',
+      '0008_photo_indexes',
     ]);
   });
 
@@ -116,6 +118,21 @@ describe('runMigrations', () => {
     expect(jobs).toContainEqual({ key: { purgeAt: 1 }, ttl: 0 });
   });
 
+  it('creates the photo indexes; pending uploads expire by job, not TTL', async () => {
+    const db = await freshDb();
+    await runMigrations(db);
+    const photos = await indexKeys(db, 'photos');
+    expect(photos).toContainEqual({ key: { weddingId: 1, createdAt: -1, _id: -1 } });
+    expect(photos).toContainEqual({ key: { weddingId: 1, eventId: 1, createdAt: -1, _id: -1 } });
+    const featured = (await db.collection('photos').indexes()).find(
+      (index) => index.key.featuredAt === -1,
+    );
+    expect(featured?.partialFilterExpression).toEqual({ featured: true });
+    const uploads = await indexKeys(db, 'photo_uploads');
+    expect(uploads).toContainEqual({ key: { weddingId: 1, createdAt: 1 } });
+    expect(uploads).toContainEqual({ key: { expiresAt: 1 } });
+  });
+
   it('skips migrations already applied', async () => {
     const db = await freshDb();
     await runMigrations(db);
@@ -150,6 +167,7 @@ describe('runMigrations', () => {
       '0005_member_invitation_indexes',
       '0006_email_job_indexes',
       '0007_email_job_one_waiting',
+      '0008_photo_indexes',
     ]);
   });
 });

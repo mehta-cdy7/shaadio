@@ -70,14 +70,19 @@ describe('storage adapter', () => {
 
   it('reads size and type of an object', async () => {
     stubR2();
-    reply = () => ({ ContentLength: 42, ContentType: 'image/webp' });
-    await expect(headObject('k')).resolves.toEqual({ size: 42, contentType: 'image/webp' });
+    reply = () => ({ ContentLength: 42, ContentType: 'image/webp', ETag: '"abc"' });
+    await expect(headObject('k')).resolves.toEqual({
+      size: 42,
+      contentType: 'image/webp',
+      etag: '"abc"',
+    });
   });
 
   it('copies with the final type and an immutable cache header', async () => {
     stubR2();
-    await copyObject('staging/w/k/d', 'weddings/w/photos/k/d.webp', 'image/webp');
+    await copyObject('staging/w/k/d', 'weddings/w/photos/k/d.webp', 'image/webp', '"abc"');
     expect(sent[0]?.input).toMatchObject({
+      CopySourceIfMatch: '"abc"',
       Bucket: ENV.R2_BUCKET_NAME,
       CopySource: `${ENV.R2_BUCKET_NAME}/staging/w/k/d`,
       Key: 'weddings/w/photos/k/d.webp',
