@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { InvalidEnvError, parseAuthEnv, parseCoreEnv } from './env';
+import { InvalidEnvError, parseAuthEnv, parseCoreEnv, storageEnv } from './env';
 
 describe('parseCoreEnv', () => {
   const valid = {
@@ -49,6 +49,42 @@ describe('parseAuthEnv', () => {
   it('rejects a missing or short secret without echoing it', () => {
     expect(() => parseAuthEnv({})).toThrow(/SESSION_SECRET/);
     expect(() => parseAuthEnv({ SESSION_SECRET: 'short-hunter2' })).toThrow(
+      expect.objectContaining({ message: expect.not.stringContaining('hunter2') }),
+    );
+  });
+});
+
+describe('storageEnv', () => {
+  const valid = {
+    R2_ACCOUNT_ID: '0123456789abcdef0123456789abcdef',
+    R2_ACCESS_KEY_ID: 'access-key',
+    R2_SECRET_ACCESS_KEY: 'secret-key',
+    R2_BUCKET_NAME: 'shaadio-dev',
+    MEDIA_BASE_URL: 'https://media.shaadio.in',
+  };
+
+  it('is off when no R2 variable is set', () => {
+    expect(storageEnv({})).toBeUndefined();
+  });
+
+  it('accepts a complete configuration', () => {
+    expect(storageEnv(valid)).toEqual(valid);
+  });
+
+  it('throws when partly set, naming the missing variable', () => {
+    expect(() => storageEnv({ ...valid, R2_SECRET_ACCESS_KEY: undefined })).toThrow(
+      /R2_SECRET_ACCESS_KEY/,
+    );
+  });
+
+  it('rejects a media URL with a path or trailing slash', () => {
+    for (const url of ['https://media.shaadio.in/', 'https://media.shaadio.in/photos']) {
+      expect(() => storageEnv({ ...valid, MEDIA_BASE_URL: url })).toThrow(/MEDIA_BASE_URL/);
+    }
+  });
+
+  it('never echoes the secret key', () => {
+    expect(() => storageEnv({ ...valid, R2_ACCOUNT_ID: 'hunter2' })).toThrow(
       expect.objectContaining({ message: expect.not.stringContaining('hunter2') }),
     );
   });

@@ -50,6 +50,26 @@ export default defineConfig([
     },
   },
 
+  // --- Provider SDKs only inside their adapters (CLAUDE.md "Boundaries") ----------------------
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/server/storage/**', 'src/server/email/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@aws-sdk/*'],
+              message: 'R2 is reached only through src/server/storage.',
+            },
+            { group: ['resend'], message: 'Resend is reached only through src/server/email.' },
+          ],
+        },
+      ],
+    },
+  },
+
   // --- Theme: UI code uses token utilities, never raw colours (src/styles/tokens.css) ----------
   {
     files: ['src/app/**/*.tsx', 'src/components/**/*.tsx'],

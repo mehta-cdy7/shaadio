@@ -601,3 +601,27 @@ Kept on purpose:
 - The Atlas databases stay `shaadioo-dev` / `shaadioo-prod` (renaming a Mongo database means copying it). `.env.example`, the `MONGODB_URI` validation message and `scripts/migrate.ts` name them as they are. Test and CI databases use the new name; they are throwaway.
 - The Stitch design system is still titled "Shaadioo" in Stitch, so the `tokens.css` source comment keeps that title.
 - R2 buckets do not exist yet; they are created as `shaadio-dev` / `shaadio-prod`.
+
+## 2026-10-15 — R2 storage adapter (no photo features yet)
+
+`src/server/storage/` is the only place that talks to Cloudflare R2 (S3-compatible API, `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner`, approved 2026-10-15). Lint (`no-restricted-imports`) keeps `@aws-sdk/*` inside it and `resend` inside `src/server/email`.
+
+- `keys.ts`: the DATABASE_DESIGN §5.12 key layout (`weddings/{id}/photos|covers/…`, `staging/{id}/…`), 128-bit `newKeyId()`, and a segment check so no key can leave its wedding prefix.
+- `storage.ts`: `signUploadUrl` (presigned PUT, 1 hour, Content-Type **and** Content-Length signed, so the browser cannot store another type or a bigger file than it declared), `headObject`, `readObjectStart` (format-signature check, API §22.3), `copyObject` (staging → final, `Cache-Control: immutable`), `deleteObjects` (batches of 1,000), `deletePrefix`, `publicUrl` (`MEDIA_BASE_URL + key`, SYSTEM §42 / API-11; closes open item 7 of the 2026-09-16 prototype notes).
+- `storageEnv()` in `env.ts`: all five variables or none. None set → storage is off (`storageConfigured()` false, the adapter throws `StorageNotConfiguredError`); partly set or invalid → `InvalidEnvError` naming the variables.
+- SDK checksums are set to `WHEN_REQUIRED`: R2 rejects the SDK's default CRC32 checksum on presigned PUTs.
+- No photo model, API, UI or new error code yet; those land with the M2 photo slice, which also decides how a request reports "storage off".
+
+**Setup (per environment; dev and prod get separate buckets and tokens):**
+
+1. Cloudflare → R2 → create bucket `shaadio-dev` (production: `shaadio-prod`).
+2. Bucket → Settings → CORS policy:
+   ```json
+   [{ "AllowedOrigins": ["http://localhost:3000"], "AllowedMethods": ["PUT", "GET"], "AllowedHeaders": ["content-type"], "MaxAgeSeconds": 3600 }]
+   ```
+   Production uses `["https://shaadio.in"]`.
+3. Bucket → Settings → Public access → connect a custom domain (production `media.shaadio.in`; dev may use the r2.dev URL). This is `MEDIA_BASE_URL`. Public access serves objects by key only; listing stays private.
+4. Bucket → Object lifecycle rules → delete objects with prefix `staging/` after 1 day (DATABASE_DESIGN §12 backstop).
+5. R2 → Manage API tokens → create token, **Object Read & Write**, applied to this bucket only. Copy the access key id and secret (shown once) and the account id.
+6. Put `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `MEDIA_BASE_URL` in `.env.local` (dev) and in Vercel → Production (prod values), then redeploy.
+7. `pnpm r2:check` uploads a test object through a signed URL, checks the CORS preflight from `APP_ORIGIN`, reads it back from `MEDIA_BASE_URL` and deletes it. For production values, prefix the variables on the command line as with `db:migrate`.
