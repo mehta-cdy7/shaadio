@@ -118,6 +118,67 @@ export async function findActiveWeddingIdByGalleryToken(
   return doc ? (doc._id as Types.ObjectId) : undefined;
 }
 
+/**
+ * Lookup 7: pending photo uploads past `expiresAt`, across weddings (DATABASE_DESIGN §14.6), oldest
+ * first. Returns only ids; the cleanup continues scoped by each one's `weddingId`.
+ */
+export async function findExpiredPhotoUploads(
+  now: Date,
+  limit: number,
+): Promise<{ uploadId: Types.ObjectId; weddingId: Types.ObjectId }[]> {
+  const mongoose = await connectDb();
+  const docs = await mongoose.connection
+    .db!.collection('photo_uploads')
+    .find({ expiresAt: { $lt: now } }, { projection: { _id: 1, weddingId: 1 } })
+    .sort({ expiresAt: 1 })
+    .limit(limit)
+    .toArray();
+  return docs.map((doc) => ({
+    uploadId: doc._id as Types.ObjectId,
+    weddingId: doc.weddingId as Types.ObjectId,
+  }));
+}
+
+/** Lookup 7, read-only: how many expired uploads are left, for the job's report. */
+export async function countExpiredPhotoUploads(now: Date): Promise<number> {
+  const mongoose = await connectDb();
+  return mongoose.connection
+    .db!.collection('photo_uploads')
+    .countDocuments({ expiresAt: { $lt: now } });
+}
+
+/**
+ * Lookup 8: ACTIVE weddings whose photos are past retention (DATABASE_DESIGN §14.7): wedding date
+ * before `cutoff` ("YYYY-MM-DD", a plain string comparison) and not yet purged. Ids only; the job
+ * continues scoped by each.
+ */
+export async function findWeddingsPastPhotoRetention(
+  cutoff: string,
+  limit: number,
+): Promise<Types.ObjectId[]> {
+  const mongoose = await connectDb();
+  const docs = await mongoose.connection
+    .db!.collection('weddings')
+    .find(
+      { status: 'ACTIVE', weddingDate: { $lt: cutoff }, photosPurgedAt: { $exists: false } },
+      { projection: { _id: 1 } },
+    )
+    .sort({ weddingDate: 1 })
+    .limit(limit)
+    .toArray();
+  return docs.map((doc) => doc._id as Types.ObjectId);
+}
+
+/** Lookup 8, read-only: weddings still waiting for retention, for the job's report. */
+export async function countWeddingsPastPhotoRetention(cutoff: string): Promise<number> {
+  const mongoose = await connectDb();
+  return mongoose.connection.db!.collection('weddings').countDocuments({
+    status: 'ACTIVE',
+    weddingDate: { $lt: cutoff },
+    photosPurgedAt: { $exists: false },
+  });
+}
+
 export type ClaimedEmailJob = {
   jobId: Types.ObjectId;
   weddingId: Types.ObjectId;

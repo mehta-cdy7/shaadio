@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { addYears, todayIn } from '@/lib/dates';
 
 /**
  * Request and response shapes for photos and gallery settings (API_DESIGN §21, §22). Client-safe:
@@ -18,6 +19,17 @@ export const THUMB_MAX_SIDE = 640;
 export const UPLOADER_NAME_MAX = 60;
 export const PHOTO_PAGE_SIZE_DEFAULT = 40;
 export const PHOTO_PAGE_SIZE_MAX = 100;
+
+/** Photos are kept for 12 months after the wedding date (PRD §9.22, SYSTEM_DESIGN §98). */
+export const PHOTO_RETENTION_YEARS = 1;
+
+/**
+ * Weddings dated before this day ("YYYY-MM-DD", in India time) are past photo retention: no new
+ * uploads, and the daily job deletes their photos (DATABASE_DESIGN §14.7).
+ */
+export function photoRetentionCutoff(now = new Date()): string {
+  return addYears(todayIn('Asia/Kolkata', now), -PHOTO_RETENTION_YEARS);
+}
 
 export const PHOTO_MIME_TYPES = ['image/jpeg', 'image/webp', 'image/png'] as const;
 export type PhotoMimeType = (typeof PHOTO_MIME_TYPES)[number];
@@ -168,3 +180,42 @@ export type GallerySettings = {
   photoLimit: number;
   photosPurgedAt?: string;
 };
+
+// --- Covers (API_DESIGN §23) ----------------------------------------------------------------------
+
+export const COVER_TARGETS = ['WEDDING', 'EVENT'] as const;
+export type CoverTarget = (typeof COVER_TARGETS)[number];
+
+/** An event cover names its event; a wedding cover names none. Shared by upload and delete. */
+function coverTargetMatches(input: { target: CoverTarget; eventId?: string }): boolean {
+  return (input.target === 'EVENT') === Boolean(input.eventId);
+}
+const COVER_TARGET_ERROR = {
+  message: 'An event cover needs the event; a wedding cover takes none.',
+  path: ['eventId'],
+};
+
+const coverTarget = z
+  .strictObject({ target: z.enum(COVER_TARGETS), eventId: objectId.optional() })
+  .refine(coverTargetMatches, COVER_TARGET_ERROR);
+
+/** `POST /api/covers/upload-request`: one display-size image, prepared in the browser. */
+export const coverUploadRequestSchema = z
+  .strictObject({
+    target: z.enum(COVER_TARGETS),
+    eventId: objectId.optional(),
+    mimeType: z.enum(PHOTO_MIME_TYPES),
+    bytes: z.number().int().min(1).max(DISPLAY_MAX_BYTES),
+    width: dimension,
+    height: dimension,
+  })
+  .refine(coverTargetMatches, COVER_TARGET_ERROR);
+export type CoverUploadRequestInput = z.output<typeof coverUploadRequestSchema>;
+
+/** `POST /api/covers/complete`. */
+export const completeCoverSchema = z.strictObject({ ticket: z.string().min(1).max(1000) });
+
+/** `DELETE /api/covers` query. */
+export const deleteCoverQuerySchema = coverTarget;
+
+export type CoverUploadResponse = { ticket: string; putUrl: string; expiresAt: string };

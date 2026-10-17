@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { currentMember } from '@/app/_lib/current-member';
+import { CoverCard } from '@/components/photos/cover-card';
 import { getWedding } from '@/modules/weddings';
+import { storageConfigured } from '@/server/storage/storage';
 import { RsvpDeadlineCard } from './_components/rsvp-deadline-card';
 import { WeddingDetailsForm } from './_components/wedding-details-form';
 
@@ -17,11 +19,20 @@ export default async function WeddingDetailsPage() {
   if (!current?.member) redirect('/onboarding');
   // Same service as GET /api/wedding (API-08), scoped by the membership only.
   const wedding = await getWedding({ weddingId: current.member.weddingId });
+  const t = await getTranslations('coverImage.wedding');
   return (
     <div className="flex flex-col gap-8">
       <WeddingDetailsForm wedding={wedding} />
-      <div className="lg:max-w-[calc(100%-24rem)]">
+      <div className="flex flex-col gap-8 lg:max-w-[calc(100%-24rem)]">
         <RsvpDeadlineCard wedding={wedding} />
+        {storageConfigured() && (
+          <CoverCard
+            target="WEDDING"
+            {...(wedding.coverImageUrl ? { initialUrl: wedding.coverImageUrl } : {})}
+            title={t('title')}
+            hint={t('hint')}
+          />
+        )}
       </div>
     </div>
   );

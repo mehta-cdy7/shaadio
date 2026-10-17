@@ -198,3 +198,11 @@ export function publicUrl(key: string): string {
   if (!config) throw new StorageNotConfiguredError('R2 storage is not configured');
   return `${config.MEDIA_BASE_URL}/${key.split('/').map(encodeURIComponent).join('/')}`;
 }
+
+/**
+ * The public URL of an optional key, or undefined when there is no key or storage is off. For
+ * optional images such as covers, which must not break a page on a server without R2.
+ */
+export function optionalPublicUrl(key: string | null | undefined): string | undefined {
+  return key && storageConfigured() ? publicUrl(key) : undefined;
+}

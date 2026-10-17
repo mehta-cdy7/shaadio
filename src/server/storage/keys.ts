@@ -39,6 +39,11 @@ export function weddingPrefix(weddingId: string): string {
   return `weddings/${segment(weddingId)}/`;
 }
 
+/** A wedding's photos only, for retention: covers live apart and stay (§5.12). */
+export function photosPrefix(weddingId: string): string {
+  return `weddings/${segment(weddingId)}/photos/`;
+}
+
 export function stagingPrefix(weddingId: string): string {
   return `staging/${segment(weddingId)}/`;
 }

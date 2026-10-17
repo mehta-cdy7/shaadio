@@ -4,6 +4,7 @@ import type { z } from 'zod';
 import {
   FEATURED_LIMIT,
   PHOTO_LIMIT,
+  photoRetentionCutoff,
   type GallerySettings,
   type updateGallerySettingsSchema,
 } from '@/modules/gallery/schemas';
@@ -98,16 +99,29 @@ export async function reservePhotoSlots(
   count: number,
 ): Promise<{ reserved: true } | { reserved: false; remaining: number }> {
   await connectDb();
+  // Past retention, no new photos: the daily job is about to delete them (§14.7).
+  const open = {
+    weddingDate: { $gte: photoRetentionCutoff() },
+    photosPurgedAt: { $exists: false },
+  };
   const result = await Wedding.updateOne(
-    { _id: weddingId, status: ACTIVE, 'counters.photoSlotsUsed': { $lte: PHOTO_LIMIT - count } },
+    {
+      _id: weddingId,
+      status: ACTIVE,
+      ...open,
+      'counters.photoSlotsUsed': { $lte: PHOTO_LIMIT - count },
+    },
     { $inc: { 'counters.photoSlotsUsed': count, 'uploadStats.requested': count } },
   );
   if (result.modifiedCount === 1) return { reserved: true };
   const doc = await Wedding.findOne(
     { _id: weddingId, status: ACTIVE },
-    { 'counters.photoSlotsUsed': 1 },
+    { 'counters.photoSlotsUsed': 1, weddingDate: 1, photosPurgedAt: 1 },
   ).lean();
   if (!doc) throw noWedding();
+  if (doc.photosPurgedAt || doc.weddingDate < open.weddingDate.$gte) {
+    throw new AppError('UPLOADS_DISABLED', 'Photos for this wedding are no longer kept.');
+  }
   return { reserved: false, remaining: Math.max(0, PHOTO_LIMIT - doc.counters.photoSlotsUsed) };
 }
 
@@ -155,6 +169,24 @@ export async function changeFeaturedCount(
     { session },
   );
   return result.modifiedCount === 1 || delta < 0;
+}
+
+/**
+ * The last step of photo retention (DATABASE_DESIGN §14.7): counters to zero, guest uploads off,
+ * `photosPurgedAt` set. Run after the photos and their files are gone, so a failed run is retried.
+ */
+export async function markPhotosPurged(weddingId: Types.ObjectId, now = new Date()): Promise<void> {
+  await Wedding.updateOne(
+    { _id: weddingId },
+    {
+      $set: {
+        'counters.photoSlotsUsed': 0,
+        'counters.featuredPhotoCount': 0,
+        'gallery.guestUploadEnabled': false,
+        photosPurgedAt: now,
+      },
+    },
+  );
 }
 
 /** Diagnostic upload outcomes (SYSTEM_DESIGN §63): never used to enforce anything. */

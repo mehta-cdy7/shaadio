@@ -12,6 +12,7 @@ export {
   hasEvents,
   invitationEvents,
   listEvents,
+  setEventCover,
   updateEvent,
   websiteEvents,
 } from './event.service';

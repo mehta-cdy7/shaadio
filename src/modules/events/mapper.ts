@@ -1,4 +1,5 @@
 import 'server-only';
+import { optionalPublicUrl } from '@/server/storage/storage';
 import type { EventDoc } from './event.model';
 import type { EventResponse } from './schemas';
 
@@ -19,6 +20,7 @@ export function toEventResponse(
         ...(doc.venue.mapUrl ? { mapUrl: doc.venue.mapUrl } : {}),
       }
     : undefined;
+  const coverImageUrl = optionalPublicUrl(doc.coverImageKey);
   return {
     id: doc._id.toHexString(),
     name: doc.name,
@@ -29,6 +31,7 @@ export function toEventResponse(
     ...(venue && Object.keys(venue).length ? { venue } : {}),
     ...(doc.description ? { description: doc.description } : {}),
     ...(doc.dressCode ? { dressCode: doc.dressCode } : {}),
+    ...(coverImageUrl ? { coverImageUrl } : {}),
     headcount,
     createdAt: doc.createdAt.toISOString(),
     updatedAt: doc.updatedAt.toISOString(),

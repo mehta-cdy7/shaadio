@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: PageProps<'/w/[slug]'>): Prom
 /**
  * The couple's unlisted wedding website (PRD §9.18–9.19, SYSTEM_DESIGN §26–28, Stitch "Public
  * Wedding Website"). Server-rendered with no client JavaScript, rendered on every request so
- * unpublishing is immediate. Shows all events; never links to the gallery or any invitation.
- * Cover photo, featured photos and livestream arrive with Milestone 2.
+ * unpublishing is immediate. Shows all events and the featured photos; never links to the gallery
+ * or any invitation. Livestream arrives later in Milestone 2.
  */
 export default async function WeddingWebsitePage({ params }: PageProps<'/w/[slug]'>) {
   const website = await loadWebsite((await params).slug);
@@ -41,6 +41,16 @@ export default async function WeddingWebsitePage({ params }: PageProps<'/w/[slug
   return (
     <div data-theme={website.theme.toLowerCase()} className="min-h-dvh bg-canvas text-ink">
       <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8 md:gap-12 md:px-8 md:py-14">
+        {website.coverImageUrl && (
+          // Private media bypass Next's optimiser (SYSTEM §42); the cover is resized on upload.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={website.coverImageUrl}
+            alt=""
+            fetchPriority="high"
+            className="aspect-[16/9] w-full rounded-t-arch rounded-b-card object-cover shadow-card md:aspect-[21/9]"
+          />
+        )}
         <header className="rounded-t-arch rounded-b-card border border-line bg-surface px-6 pt-12 pb-10 text-center shadow-card md:px-12 md:pt-16 md:pb-12">
           <span
             aria-hidden
@@ -180,6 +190,39 @@ export default async function WeddingWebsitePage({ params }: PageProps<'/w/[slug
             </ol>
           )}
         </section>
+
+        {website.glimpse.length > 0 && (
+          <section aria-labelledby="glimpse-title" className="flex flex-col gap-5">
+            <h2
+              id="glimpse-title"
+              className="border-b border-line pb-4 font-display text-headline-sm text-ink md:text-headline-md"
+            >
+              {t('glimpseTitle')}
+            </h2>
+            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:gap-3 lg:grid-cols-4">
+              {website.glimpse.map((photo) => (
+                <li key={photo.thumbUrl}>
+                  <a
+                    href={photo.displayUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t('openPhoto')}
+                    className="block aspect-square overflow-hidden rounded-card bg-fill shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={photo.thumbUrl}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover"
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <footer className="flex flex-col items-center gap-1 border-t border-line pt-8 text-center">
           <p className="font-display text-title text-ink">

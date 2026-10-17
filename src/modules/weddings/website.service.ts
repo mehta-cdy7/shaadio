@@ -4,11 +4,13 @@ import type { z } from 'zod';
 import { coupleNames } from '@/lib/couple';
 import { recordActivity } from '@/modules/activity';
 import { websiteEvents } from '@/modules/events';
+import { websiteGlimpse } from '@/modules/gallery';
 import { connectDb } from '@/server/db/connection';
 import { withTransaction } from '@/server/db/transaction';
 import { findPublishedWeddingIdBySlug } from '@/server/db/unscoped';
 import { env } from '@/server/env';
 import { AppError } from '@/server/http/errors';
+import { optionalPublicUrl } from '@/server/storage/storage';
 import type { PublicWebsite, updateWebsiteSchema, WebsiteResponse } from './schemas';
 import { Wedding, type WeddingDoc } from './wedding.model';
 
@@ -141,9 +143,15 @@ export async function findPublicWebsite(slug: string): Promise<PublicWebsite | u
       'location.city': 1,
       'website.theme': 1,
       'website.welcomeMessage': 1,
+      coverImageKey: 1,
     },
   ).lean();
   if (!doc) return undefined;
+  const [events, glimpse] = await Promise.all([
+    websiteEvents({ weddingId }),
+    websiteGlimpse({ weddingId }),
+  ]);
+  const coverImageUrl = optionalPublicUrl(doc.coverImageKey);
   return {
     brideName: doc.brideName,
     groomName: doc.groomName,
@@ -154,6 +162,8 @@ export async function findPublicWebsite(slug: string): Promise<PublicWebsite | u
     city: doc.location.city,
     theme: doc.website.theme,
     ...(doc.website.welcomeMessage ? { welcomeMessage: doc.website.welcomeMessage } : {}),
-    events: await websiteEvents({ weddingId }),
+    ...(coverImageUrl ? { coverImageUrl } : {}),
+    events,
+    glimpse,
   };
 }

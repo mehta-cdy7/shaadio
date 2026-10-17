@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { coverKey, newKeyId, photoKeys, stagingKeys, stagingPrefix, weddingPrefix } from './keys';
+import {
+  coverKey,
+  newKeyId,
+  photoKeys,
+  photosPrefix,
+  stagingKeys,
+  stagingPrefix,
+  weddingPrefix,
+} from './keys';
 
 const WEDDING = '6650a1b2c3d4e5f6a7b8c9d0';
 
@@ -22,6 +30,7 @@ describe('storage keys', () => {
     });
     expect(weddingPrefix(WEDDING)).toBe(`weddings/${WEDDING}/`);
     expect(stagingPrefix(WEDDING)).toBe(`staging/${WEDDING}/`);
+    expect(photosPrefix(WEDDING)).toBe(`weddings/${WEDDING}/photos/`);
   });
 
   it('refuses segments that could escape the wedding prefix', () => {

@@ -55,6 +55,16 @@ export default async function InvitePage({ params }: PageProps<'/invite/[token]'
     <main className="min-h-dvh bg-canvas px-4 py-8 text-ink md:py-14">
       <OpenedBeacon token={token} />
       <div className="mx-auto flex max-w-2xl flex-col gap-8 md:gap-10">
+        {wedding.coverImageUrl && (
+          // Private media bypass Next's optimiser (SYSTEM §42); the cover is resized on upload.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={wedding.coverImageUrl}
+            alt=""
+            fetchPriority="high"
+            className="-mb-4 aspect-[16/9] w-full rounded-t-arch rounded-b-card object-cover shadow-card"
+          />
+        )}
         <header className="rounded-t-arch rounded-b-card border border-line bg-surface px-6 pt-12 pb-10 text-center shadow-card md:px-12 md:pt-16">
           <p className="text-label-sm font-semibold tracking-widest text-secondary-ink uppercase">
             ✦ {t('eyebrow')} ✦

@@ -13,6 +13,7 @@ export {
   getWedding,
   isWeddingEmpty,
   resolveMember,
+  setWeddingCover,
   updateWedding,
 } from './wedding.service';
 export type { InvitationWedding, MemberContext } from './wedding.service';
@@ -22,6 +23,7 @@ export {
   findPublicGalleryWedding,
   galleryUrl,
   getGallerySettings,
+  markPhotosPurged,
   releasePhotoSlots,
   reservePhotoSlots,
   updateGallerySettings,

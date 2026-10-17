@@ -6,6 +6,7 @@ import { findInvitationGuest, markInvitationOpened, submitLinkRsvp } from '@/mod
 import { findInvitationWedding, type InvitationWedding } from '@/modules/weddings';
 import { findGuestByInviteToken } from '@/server/db/unscoped';
 import { AppError } from '@/server/http/errors';
+import { optionalPublicUrl } from '@/server/storage/storage';
 import type { guestRsvpSchema, GuestRsvpResponse, InvitationResponse } from './schemas';
 
 /** Bad, regenerated and deleted-guest tokens all get this identical 404 (API_DESIGN §30). */
@@ -40,6 +41,7 @@ async function resolve(token: string) {
 export async function getInvitation(token: string): Promise<InvitationResponse> {
   const { scope, wedding, guest } = await resolve(token);
   const events = await invitationEvents(scope, guest.invitedEventIds);
+  const coverImageUrl = optionalPublicUrl(wedding.coverImageKey);
   return {
     wedding: {
       brideName: wedding.brideName,
@@ -48,6 +50,7 @@ export async function getInvitation(token: string): Promise<InvitationResponse> 
       weddingDate: wedding.weddingDate,
       theme: wedding.website.theme,
       ...(wedding.website.welcomeMessage ? { welcomeMessage: wedding.website.welcomeMessage } : {}),
+      ...(coverImageUrl ? { coverImageUrl } : {}),
     },
     guest: { name: guest.name, maxPeople: guest.maxPeople },
     events,

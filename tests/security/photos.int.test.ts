@@ -12,8 +12,10 @@ import { POST as cancelRoute } from '@/app/api/photos/cancel/route';
 import { POST as completeRoute } from '@/app/api/photos/complete/route';
 import { GET as listRoute } from '@/app/api/photos/route';
 import { POST as uploadRequestRoute } from '@/app/api/photos/upload-requests/route';
+import { POST as publishWebsiteRoute } from '@/app/api/website/publish/route';
 import { GET as getWeddingRoute } from '@/app/api/wedding/route';
 import { Photo } from '@/modules/gallery/photo.model';
+import { findPublicWebsite } from '@/modules/weddings';
 import { connectDb } from '@/server/db/connection';
 import { UnscopedQueryError } from '@/server/db/tenant-guard';
 import { adminWithWedding, getRequest, jsonRequest, signUp } from '../factories/api';
@@ -51,6 +53,7 @@ vi.mock('@/server/storage/storage', () => {
     },
     deletePrefix: async () => 0,
     publicUrl: (key: string) => `https://media.test/${key}`,
+    optionalPublicUrl: (key?: string | null) => (key ? `https://media.test/${key}` : undefined),
   };
 });
 
@@ -527,6 +530,30 @@ describe('photos security', () => {
     const wedding = await (await getWeddingRoute(getRequest('/api/wedding', cookie))).text();
     expect(wedding).not.toContain(token);
     expect(JSON.parse(wedding).isEmpty).toBe(false);
+  });
+
+  it('only featured photos reach the published website, newest featured first', async () => {
+    const { cookie } = await adminWithWedding();
+    const [a, b, c] = await publish(cookie, 3);
+    for (const id of [a!, c!]) {
+      await patchPhotoRoute(
+        jsonRequest('PATCH', `/api/photos/${id}`, { featured: true }, cookie),
+        params(id),
+      );
+    }
+    const website = await (
+      await publishWebsiteRoute(jsonRequest('POST', '/api/website/publish', {}, cookie))
+    ).json();
+    const site = await findPublicWebsite(website.url.split('/').pop());
+    expect(site!.glimpse).toHaveLength(2);
+    const stored = await db()
+      .collection('photos')
+      .find({ _id: { $in: [a, c].map((id) => new Types.ObjectId(id)) } })
+      .toArray();
+    const thumbOf = (id: string) =>
+      `https://media.test/${stored.find((doc) => doc._id.toHexString() === id)!.thumbKey}`;
+    expect(site!.glimpse.map((photo) => photo.thumbUrl)).toEqual([thumbOf(c!), thumbOf(a!)]);
+    expect(JSON.stringify(site)).not.toContain(b!);
   });
 
   it('the tenant guard refuses unscoped photo queries', async () => {

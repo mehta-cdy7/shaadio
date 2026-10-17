@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { ButtonLink } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { currentMember } from '@/app/_lib/current-member';
 import { coupleNames } from '@/lib/couple';
 import { cn } from '@/lib/cn';
 import { getWebsite } from '@/modules/weddings';
+import { FEATURED_LIMIT } from '@/modules/gallery/schemas';
 import { AVAILABLE_THEMES, WEBSITE_THEMES } from '@/modules/weddings/schemas';
 import { PublishCard } from './_components/publish-card';
 import { WelcomeMessageCard } from './_components/welcome-message-card';
@@ -75,6 +77,19 @@ export default async function WebsitePage() {
                 );
               })}
             </ul>
+          </Card>
+          <Card className="flex flex-col gap-2">
+            <h2 className="font-display text-headline-sm text-ink">{t('glimpse.title')}</h2>
+            <p className="text-body text-ink-muted">
+              {t('glimpse.body', { count: website.featuredPhotoCount, limit: FEATURED_LIMIT })}
+            </p>
+            <ButtonLink
+              href="/app/photos?album=featured"
+              variant="outline"
+              className="mt-2 self-start"
+            >
+              {t('glimpse.cta')}
+            </ButtonLink>
           </Card>
           <p className="rounded-card bg-canvas-muted p-4 text-body text-ink-muted">
             {t('allEventsNote')}
