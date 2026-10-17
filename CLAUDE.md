@@ -3,6 +3,12 @@
 Indian wedding-planning app. Next.js App Router + TS modular monolith on Vercel; MongoDB Atlas +
 Mongoose; Zod; server-side sessions; R2, Resend, Google Places, Vercel Cron.
 
+## Project state (paused 2026-10-17)
+- Read STATUS.md first: its "Paused" section lists the production checks and the order to resume
+  (backups + password reset before any real wedding, then Livestream, CSV import, Tasks).
+- Migrations applied through 0008; the next one is 0009. Crons: email, cleanup, retention.
+- Git: feature branch → `--no-ff` into dev → fast-forward main. Push only when asked.
+
 ## Sources of truth
 - @AGENTS.md — read node_modules/next/dist/docs/ before using Next APIs.
 - Authority: docs/PRD.md → SYSTEM_DESIGN → DATABASE_DESIGN → API_DESIGN. Conflict = defect: raise it, never resolve in code.
@@ -17,6 +23,8 @@ dev | lint | format | typecheck | test | test:unit | test:int | e2e | build | db
 - src/modules/<domain>: logic. Cross-module imports only via `@/modules/x` or `@/modules/x/schemas`.
 - src/server: infra, never imports modules. src/lib: pure isomorphic. src/components: UI, imports lib + module schemas only.
 - Server files start with `import 'server-only'`. SDKs only in adapters: server/email, server/storage, server/places.
+- Photos: browser resizes (src/components/photos), uploads go straight to R2, server verifies bytes.
+  Reuse src/modules/gallery services; never stream image bytes through the app.
 
 ## Tenant isolation — non-negotiable (DB §6, API §3)
 - weddingId only from ctx or a resolved public token — never body/query/path.

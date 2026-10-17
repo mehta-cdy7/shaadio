@@ -1,7 +1,23 @@
 # Shaadio — Project Status
 
-**Last updated:** 2026-10-16 · **Production:** https://shaadio.in · **Current milestone:** M1 Guest Loop (target 15 Nov 2026)
-**Next slice:** M2 Livestream (photos A–C done), then 9 — Password reset, then Tasks
+**Last updated:** 2026-10-17 · **Production:** https://shaadio.in · **Project paused (2026-10-17)** by the product owner
+
+## Paused — where things stand
+
+Work stopped after M2 Photos C. Everything below is merged to `main` and deployed. To resume,
+start here:
+
+1. **Production checks** for the photo work: migration `0008` applied to prod, `MEDIA_BASE_URL`
+   set to `https://media.shaadio.in` in Vercel, the r2.dev URL disabled on `shaadio-prod`, and
+   the cleanup and retention crons listed in Vercel → Settings → Cron Jobs.
+2. **Before any real wedding:** Atlas backups + a tested restore (slice 8, SYSTEM_DESIGN §99) and
+   password reset (slice 9: users who forget their password currently have no way back in).
+3. **Then, in order:** M2 Livestream, slice 12 (CSV import), Tasks (pulled forward from M3),
+   then the rest of M3 and M4 below.
+4. Open decisions and known gaps at the bottom still apply.
+
+**Next slice when resumed:** 9 — Password reset (plan in IMPLEMENTATION_NOTES is not written yet;
+the agreed scope: `password_resets` + migration 0009, forgot/reset endpoints, email, two pages)
 
 This is a one-screen snapshot. Update it in the same PR that finishes or changes a slice.
 Detailed history lives in [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOTES.md); scope in [docs/PRD.md](docs/PRD.md).
