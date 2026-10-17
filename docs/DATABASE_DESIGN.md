@@ -1292,6 +1292,8 @@ For each wedding with `status: 'ACTIVE'`, `weddingDate < (today − 12 months)` 
 
 The cutoff is a `"YYYY-MM-DD"` string, so the comparison is a plain string comparison.
 
+From the cutoff on, new upload reservations are refused (`UPLOADS_DISABLED`, the condition is in the §9.3 reservation filter), so nothing is added while the job runs. Steps 1–2 run before step 3 sets `photosPurgedAt`, so a failed run is retried the next day. The cutoff is computed in India time (`Asia/Kolkata`), like every V1 wedding.
+
 ## 14.8 Delete a wedding
 
 Implements SYSTEM §98. Every step is idempotent. The request runs the whole sequence; if it fails partway, the daily cleanup job finds the wedding still `DELETING` and resumes from the top.

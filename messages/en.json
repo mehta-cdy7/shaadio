@@ -797,7 +797,12 @@
         "selected": "Selected",
         "comingSoon": "Coming soon"
       },
-      "allEventsNote": "Your website lists all events. Event invitations only control who is asked to RSVP."
+      "allEventsNote": "Your website lists all events. Event invitations only control who is asked to RSVP.",
+      "glimpse": {
+        "title": "Photos on your website",
+        "body": "{count, plural, =0 {No photos featured yet.} one {# photo featured} other {# photos featured}} (up to {limit}). Only featured photos appear on the website; uploads never do on their own.",
+        "cta": "Choose photos"
+      }
     },
     "invitations": {
       "metaTitle": "Invitations & RSVPs",
@@ -1476,7 +1481,9 @@
     "timeTba": "Time announced shortly",
     "openInMaps": "Open in Maps",
     "dressCode": "Dress: {dressCode}",
-    "madeWith": "Made with <brand>Shaadio</brand>"
+    "madeWith": "Made with <brand>Shaadio</brand>",
+    "glimpseTitle": "Moments",
+    "openPhoto": "Open photo"
   },
   "photoUpload": {
     "summary": "{done} of {total} uploaded{failed, plural, =0 {} other { · # failed}}",
@@ -1543,6 +1550,28 @@
       "next": "Next photo",
       "download": "Download",
       "downloadNote": "Saves the gallery-size copy."
+    }
+  },
+  "coverImage": {
+    "add": "Add cover photo",
+    "change": "Change photo",
+    "remove": "Remove",
+    "uploading": "Uploading…",
+    "removing": "Removing…",
+    "uploadFailed": "The upload didn't finish. Check your connection and try again.",
+    "prepare": {
+      "VIDEO": "Videos can't be uploaded. Choose a photo.",
+      "NOT_AN_IMAGE": "This file isn't a photo.",
+      "TOO_BIG": "This photo is over 15 MB. Choose a smaller one.",
+      "UNREADABLE": "This browser can't open this photo. Try again from your phone's Photos app, or choose a JPEG."
+    },
+    "wedding": {
+      "title": "Cover photo",
+      "hint": "Shown at the top of your wedding website and guest invitations."
+    },
+    "event": {
+      "title": "Event cover photo",
+      "hint": "An optional photo for this ceremony."
     }
   }
 }

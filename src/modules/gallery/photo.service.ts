@@ -8,11 +8,12 @@ import { connectDb } from '@/server/db/connection';
 import { toObjectId } from '@/server/db/ids';
 import { withTransaction } from '@/server/db/transaction';
 import { AppError } from '@/server/http/errors';
-import { deleteObjects } from '@/server/storage/storage';
+import { deleteObjects, storageConfigured } from '@/server/storage/storage';
 import { toPhotoResponse } from './mapper';
 import { Photo } from './photo.model';
 import { PhotoUpload } from './photo-upload.model';
 import {
+  FEATURED_LIMIT,
   NO_EVENT,
   PHOTO_PAGE_SIZE_DEFAULT,
   type Photo as PhotoResponse,
@@ -111,6 +112,25 @@ export async function listPhotos(scope: Scope, query: PhotoListQuery): Promise<P
         }
       : {}),
   };
+}
+
+/**
+ * The website's "Gallery glimpse" (PRD §9.18): the featured photos only, newest featured first,
+ * at most 12. Uploads never reach the website on their own (SYSTEM_DESIGN §41).
+ */
+export async function websiteGlimpse(
+  scope: Scope,
+): Promise<Pick<PhotoResponse, 'thumbUrl' | 'displayUrl' | 'width' | 'height'>[]> {
+  if (!storageConfigured()) return [];
+  await connectDb();
+  const docs = await Photo.find({ weddingId: scope.weddingId, featured: true })
+    .sort({ featuredAt: -1, _id: -1 })
+    .limit(FEATURED_LIMIT)
+    .lean();
+  return docs.map((doc) => {
+    const { thumbUrl, displayUrl, width, height } = toPhotoResponse(doc);
+    return { thumbUrl, displayUrl, width, height };
+  });
 }
 
 /** Whether the wedding has any photo (for the wedding's `isEmpty`, API_DESIGN §11). */

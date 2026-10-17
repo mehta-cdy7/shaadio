@@ -147,7 +147,7 @@ async function verifyStaged(upload: PhotoUploadDoc): Promise<Verified> {
  * Removes pending uploads and gives back exactly the slots they held, in one transaction. Rows
  * already gone (published or released by someone else) release nothing. Returns how many went.
  */
-async function releaseUploads(
+export async function releaseUploads(
   weddingId: Types.ObjectId,
   ids: Types.ObjectId[],
   session?: ClientSession,
@@ -161,7 +161,7 @@ async function releaseUploads(
   return session ? run(session) : withTransaction(run);
 }
 
-async function deleteStaging(uploads: PhotoUploadDoc[]): Promise<void> {
+export async function deleteStaging(uploads: PhotoUploadDoc[]): Promise<void> {
   try {
     await deleteObjects(uploads.flatMap((u) => [u.stagingDisplayKey, u.stagingThumbKey]));
   } catch {

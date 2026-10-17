@@ -8,6 +8,7 @@ import { connectDb } from '@/server/db/connection';
 import { toObjectId } from '@/server/db/ids';
 import { withTransaction } from '@/server/db/transaction';
 import { AppError } from '@/server/http/errors';
+import { deleteObjects } from '@/server/storage/storage';
 import { Event, type EventDoc } from './event.model';
 import { toEventResponse } from './mapper';
 import {
@@ -273,7 +274,7 @@ export async function eventDeletePreview(
 export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
   const _id = eventId(id);
   await connectDb();
-  await withTransaction(async (session) => {
+  const cover = await withTransaction(async (session) => {
     const event = await Event.findOneAndDelete(
       { _id, weddingId: ctx.weddingId },
       { session },
@@ -288,7 +289,35 @@ export async function deleteEvent(ctx: EventCtx, id: string): Promise<void> {
       target: { type: 'event', id: _id, label: event.name },
       meta,
     });
+    return event.coverImageKey ?? undefined;
   });
+  // The event's cover goes after commit (§14.1); a failure only orphans one file.
+  if (cover) {
+    try {
+      await deleteObjects([cover]);
+    } catch {
+      console.error('[events] cover cleanup failed');
+    }
+  }
+}
+
+/**
+ * Sets or clears an event's cover key (API_DESIGN §23) and returns the previous one, so the caller
+ * can delete that object after this commits. Another wedding's event is 404.
+ */
+export async function setEventCover(
+  scope: { weddingId: Types.ObjectId },
+  id: string,
+  key: string | undefined,
+): Promise<string | undefined> {
+  await connectDb();
+  const before = await Event.findOneAndUpdate(
+    { _id: eventId(id), weddingId: scope.weddingId },
+    key ? { $set: { coverImageKey: key } } : { $unset: { coverImageKey: '' } },
+    { returnDocument: 'before', projection: { coverImageKey: 1 } },
+  ).lean();
+  if (!before) throw notFound();
+  return before.coverImageKey ?? undefined;
 }
 
 /**

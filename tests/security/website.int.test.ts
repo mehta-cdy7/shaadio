@@ -192,6 +192,7 @@ describe('website security', () => {
         'brideName',
         'city',
         'events',
+        'glimpse',
         'groomName',
         'nameOrder',
         'theme',
@@ -199,6 +200,8 @@ describe('website security', () => {
         'welcomeMessage',
       ].sort(),
     );
+    // Featured photos only; none are featured here (PRD §9.18).
+    expect(site!.glimpse).toEqual([]);
     expect(site!.events.map((event) => event.name)).toEqual(['Haldi', 'Sangeet']);
     for (const event of site!.events) {
       expect(Object.keys(event)).not.toContain('id');

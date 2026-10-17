@@ -42,6 +42,7 @@ vi.mock('@/server/storage/storage', () => ({
   },
   deletePrefix: async () => 0,
   publicUrl: (key: string) => `https://media.test/${key}`,
+  optionalPublicUrl: (key?: string | null) => (key ? `https://media.test/${key}` : undefined),
 }));
 
 const params = (token: string) => ({ params: Promise.resolve({ token }) });

@@ -1,5 +1,6 @@
 import 'server-only';
 import { todayIn } from '@/lib/dates';
+import { optionalPublicUrl } from '@/server/storage/storage';
 import type { WeddingResponse } from './schemas';
 import type { WeddingDoc } from './wedding.model';
 
@@ -9,6 +10,7 @@ import type { WeddingDoc } from './wedding.model';
  */
 export function toWeddingResponse(doc: WeddingDoc, isEmpty: boolean): WeddingResponse {
   const { location } = doc;
+  const coverImageUrl = optionalPublicUrl(doc.coverImageKey);
   return {
     id: doc._id.toHexString(),
     brideName: doc.brideName,
@@ -27,6 +29,7 @@ export function toWeddingResponse(doc: WeddingDoc, isEmpty: boolean): WeddingRes
       ...(location.lng !== undefined && location.lng !== null ? { lng: location.lng } : {}),
       ...(location.googlePlaceId ? { googlePlaceId: location.googlePlaceId } : {}),
     },
+    ...(coverImageUrl ? { coverImageUrl } : {}),
     ...(doc.rsvpDeadline ? { rsvpDeadline: doc.rsvpDeadline } : {}),
     rsvpLocked: Boolean(doc.rsvpDeadline && todayIn(doc.timezone) > doc.rsvpDeadline),
     isEmpty,

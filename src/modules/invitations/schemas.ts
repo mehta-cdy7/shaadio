@@ -32,6 +32,7 @@ export type InvitationResponse = {
     weddingDate: string;
     theme: 'CLASSIC' | 'MINIMAL' | 'MODERN';
     welcomeMessage?: string;
+    coverImageUrl?: string;
   };
   guest: { name: string; maxPeople: number };
   events: {

@@ -206,5 +206,8 @@ export type PublicWebsite = {
   city: string;
   theme: WebsiteTheme;
   welcomeMessage?: string;
+  coverImageUrl?: string;
   events: PublicWebsiteEvent[];
+  /** Featured photos only, at most 12 (PRD §9.18 "Gallery glimpse"). */
+  glimpse: { thumbUrl: string; displayUrl: string; width: number; height: number }[];
 };

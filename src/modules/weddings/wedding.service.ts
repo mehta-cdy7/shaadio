@@ -242,7 +242,13 @@ export async function updateWedding(
 
 export type InvitationWedding = Pick<
   WeddingDoc,
-  'brideName' | 'groomName' | 'nameOrder' | 'weddingDate' | 'timezone' | 'rsvpDeadline'
+  | 'brideName'
+  | 'groomName'
+  | 'nameOrder'
+  | 'weddingDate'
+  | 'timezone'
+  | 'rsvpDeadline'
+  | 'coverImageKey'
 > & {
   website: Pick<WeddingDoc['website'], 'theme' | 'welcomeMessage'>;
   location: Pick<WeddingDoc['location'], 'city'>;
@@ -269,6 +275,7 @@ export async function findInvitationWedding(
       'website.theme': 1,
       'website.welcomeMessage': 1,
       'location.city': 1,
+      coverImageKey: 1,
     },
   ).lean();
   return wedding ?? undefined;
@@ -294,4 +301,22 @@ export async function changeAdminCount(
     { session },
   );
   return result.modifiedCount === 1;
+}
+
+/**
+ * Sets or clears the wedding's cover key (API_DESIGN §23) and returns the previous one, so the
+ * caller can delete that object after this commits.
+ */
+export async function setWeddingCover(
+  ctx: { weddingId: Types.ObjectId },
+  key: string | undefined,
+): Promise<string | undefined> {
+  await connectDb();
+  const before = await Wedding.findOneAndUpdate(
+    { _id: ctx.weddingId, status: 'ACTIVE' },
+    key ? { $set: { coverImageKey: key } } : { $unset: { coverImageKey: '' } },
+    { returnDocument: 'before', projection: { coverImageKey: 1 } },
+  ).lean();
+  if (!before) throw new AppError('NO_WEDDING', 'You are not part of a wedding.');
+  return before.coverImageKey ?? undefined;
 }
