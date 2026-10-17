@@ -58,6 +58,8 @@ jobs:
     env:
       MONGODB_URI: mongodb://localhost:27017/shaadio-e2e
       APP_ORIGIN: http://localhost:3100
+      # Throwaway value for CI only: token pages hash links with it (src/server/auth/tokens.ts).
+      SESSION_SECRET: ci-e2e-only-session-secret-not-used-anywhere-else
       MONGOMS_DISABLE_POSTINSTALL: '1' # e2e uses the mongo service, not the in-memory binary
     steps:
       - uses: actions/checkout@v5
